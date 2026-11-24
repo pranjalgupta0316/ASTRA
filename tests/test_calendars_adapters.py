@@ -87,3 +87,24 @@ def test_yahoo_normalize_contract_and_close_time():
     assert (out["split_ratio"] == 1.0).all()
     # available at 15:30 IST = 10:00 UTC
     assert out["close_time_utc"].iloc[0] == pd.Timestamp("2024-03-04 10:00", tz="UTC")
+
+
+def test_yahoo_drops_in_progress_session():
+    """Retrieved at 09:00 UTC on 2024-03-05 (14:30 IST): that session closes at 10:00 UTC -> incomplete."""
+    inst = CFG.instrument("RELIANCE")
+    idx = pd.DatetimeIndex(["2024-03-04", "2024-03-05"]).tz_localize("Asia/Kolkata")
+    raw = pd.DataFrame(
+        {
+            "Date": idx,
+            "Open": [100.0, 101.0],
+            "High": [102.0, 103.0],
+            "Low": [99.0, 100.0],
+            "Close": [101.0, 102.0],
+            "Adj Close": [100.0, 101.0],
+            "Volume": [1e6, 1.1e6],
+        }
+    )
+    batch = RawBatch("yahoo", inst, datetime(2024, 3, 5, 9, 0, tzinfo=UTC), raw)
+    out = YahooAdapter().normalize_daily(batch, CFG.markets["IN"])
+    assert [str(d) for d in out["session_date"]] == ["2024-03-04"]
+    assert any("incomplete" in n for n in batch.notes)

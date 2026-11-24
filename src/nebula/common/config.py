@@ -54,7 +54,7 @@ class InstrumentConfig(BaseModel):
 class NebulaConfig(BaseModel):
     markets: dict[MarketCode, MarketConfig]
     instruments: list[InstrumentConfig]
-    expansion: dict[str, list[str]] = Field(default_factory=dict)
+    holdout: list[str] = Field(default_factory=list)
     defaults: dict[str, str] = Field(default_factory=dict)
 
     def instrument(self, symbol: str) -> InstrumentConfig:

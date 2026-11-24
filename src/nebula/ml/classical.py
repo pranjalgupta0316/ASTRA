@@ -68,6 +68,26 @@ def walk_forward_classifier(
     return WalkForwardResult(proba=proba, baseline_proba=baseline, folds=folds)
 
 
+def walk_forward_from_splits(
+    X: np.ndarray,
+    y: np.ndarray,
+    make_model: Callable[[], Any],
+    splits: Any,
+) -> tuple[np.ndarray, np.ndarray, list[dict[str, Any]]]:
+    """Generic walk-forward over explicit (train_idx, test_idx) splits (e.g. date-based panel folds).
+    Returns OOS probabilities, ex-ante train-fold base-rate baseline, and fold info."""
+    proba = np.full(len(X), np.nan)
+    base = np.full(len(X), np.nan)
+    folds = []
+    for k, (tr, te) in enumerate(splits):
+        model = make_model()
+        model.fit(X[tr], y[tr])
+        proba[te] = model.predict_proba(X[te])[:, 1]
+        base[te] = float(y[tr].mean())
+        folds.append({"fold": k, "n_train": len(tr), "n_test": len(te)})
+    return proba, base, folds
+
+
 def _pointwise_log_loss(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     p = np.clip(p, 1e-6, 1 - 1e-6)
     return -(y * np.log(p) + (1 - y) * np.log(1 - p))

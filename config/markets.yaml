@@ -28,12 +28,20 @@ instruments:
   - {symbol: AAPL, market: US, provider: yahoo, provider_symbol: AAPL, exchange: NASDAQ}
   - {symbol: RELIANCE, market: IN, provider: yahoo, provider_symbol: RELIANCE.NS, exchange: NSE}
   - {symbol: BTCUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: BTCUSDT, exchange: BINANCE}
+  # expansion universe (added after the vertical slice passed audit, 2026-11-24)
+  - {symbol: MSFT, market: US, provider: yahoo, provider_symbol: MSFT, exchange: NASDAQ}
+  - {symbol: NVDA, market: US, provider: yahoo, provider_symbol: NVDA, exchange: NASDAQ}
+  - {symbol: SPY, market: US, provider: yahoo, provider_symbol: SPY, exchange: NYSEARCA}
+  - {symbol: QQQ, market: US, provider: yahoo, provider_symbol: QQQ, exchange: NASDAQ}
+  - {symbol: TCS, market: IN, provider: yahoo, provider_symbol: TCS.NS, exchange: NSE}
+  - {symbol: INFY, market: IN, provider: yahoo, provider_symbol: INFY.NS, exchange: NSE}
+  - {symbol: HDFCBANK, market: IN, provider: yahoo, provider_symbol: HDFCBANK.NS, exchange: NSE}
+  - {symbol: NIFTY50, market: IN, provider: yahoo, provider_symbol: ^NSEI, exchange: NSE}
+  - {symbol: ETHUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: ETHUSDT, exchange: BINANCE}
+  - {symbol: SOLUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: SOLUSDT, exchange: BINANCE}
 
-# Expansion universe (not ingested until the vertical slice is validated)
-expansion:
-  US: [MSFT, NVDA, SPY, QQQ]
-  IN: [TCS.NS, INFY.NS, HDFCBANK.NS, ^NSEI]
-  CRYPTO: [ETHUSDT, SOLUSDT]
+# Instruments never used to design a hypothesis - held out for confirmatory tests (e.g. H-XM-003)
+holdout: [MSFT, NVDA, SPY, QQQ, TCS, INFY, HDFCBANK, NIFTY50, ETHUSDT, SOLUSDT]
 
 defaults:
   start: "2018-01-01"

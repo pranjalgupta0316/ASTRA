@@ -56,6 +56,45 @@ def research(symbols: list[str] = typer.Argument(None)) -> None:
 
 
 @app.command()
+def report(
+    llm: bool = typer.Option(False, help="append local-LLM narration if NEBULA_LLM_URL is set"),
+) -> None:
+    """Run the deterministic research agents and write data/reports/research/latest.md."""
+    from nebula.agents.orchestrator import write_report
+
+    typer.echo(str(write_report(use_llm=llm)))
+
+
+@app.command()
+def holdout() -> None:
+    """Run the confirmatory H-XM-003 Sharpe-difference test on held-out instruments."""
+    from nebula.research.holdout_study import run_holdout_tsmom
+
+    res = run_holdout_tsmom()
+    t = res.pop("table")
+    typer.echo(t.to_string(index=False))
+    typer.echo(json.dumps(res, indent=2, default=str))
+
+
+@app.command("ml-study")
+def ml_study(
+    panel: bool = typer.Option(True, help="also run the pooled-panel H-ML-002 study"),
+    grid: bool = typer.Option(True, help="run the per-instrument H-ML-001 grid"),
+    device: str | None = typer.Option(None, help="cuda | cpu (default: auto)"),
+) -> None:
+    """Run H-ML-001 (5 models x 13 instruments) and H-ML-002 (pooled panel DL)."""
+    from nebula.research.ml_study import run_instrument_grid, run_panel
+
+    if grid:
+        res = run_instrument_grid(device=device)
+        g = res.pop("grid")
+        typer.echo(g.to_string(index=False))
+        typer.echo(json.dumps(res, indent=2, default=str))
+    if panel:
+        typer.echo(json.dumps(run_panel(device=device), indent=2, default=str))
+
+
+@app.command()
 def dashboard(port: int = 8501) -> None:
     """Launch the Streamlit dashboard (localhost only)."""
     app_path = Path(__file__).parent / "dashboard" / "app.py"

@@ -36,10 +36,20 @@ rate; Diebold-Mariano-style Newey-West t on per-row log-loss differences. Reject
 strategy (NW t) is significantly worse (t < −1.96); supported only if both are significantly better;
 else inconclusive. Each record stores `verdict_original_rule` next to the amended verdict.
 
-## H-XM-003 (proposed, NOT yet run) Momentum as a risk-reducer
-Motivated by observed H-XM-001 results (BTC Sharpe 1.01 vs 0.63 while mean-return test is
-inconclusive) - therefore **not a clean pre-registration**; must be tested on held-out instruments
-(ETHUSDT, SOLUSDT, MSFT, TCS.NS) before any claim. H0: Sharpe(TSMOM) ≤ Sharpe(volatility-matched
-buy-and-hold); test: Ledoit-Wolf (2008) Sharpe-difference test with HAC/bootstrap inference.
+## H-XM-003 Momentum as a risk-reducer (confirmatory, held-out instruments only)
+Motivated by observed H-XM-001 results (BTC Sharpe 1.01 vs 0.63 while the mean-return test was
+inconclusive) - therefore **not a clean pre-registration for the original 3 instruments**; it is tested
+only on the 10 held-out instruments (`holdout` in config/markets.yaml), never used in design.
+Finalized 2026-11-24 before running:
+- Strategy: identical to H-XM-001 (60d TSMOM long/flat, next-open fills, market costs).
+- Statistic: ΔSR = annualized net Sharpe(TSMOM) − net Sharpe(buy-and-hold) on the same dates.
+  (Volatility matching is unnecessary: Sharpe is scale-invariant.)
+- Inference: paired stationary bootstrap (mean block 20, 2000 resamples) of ΔSR, in the spirit of
+  Ledoit & Wolf (2008, J. Empirical Finance) who recommend studentized block bootstrap; ours is not
+  studentized (limitation). Two-sided p = 2·min(P*(ΔSR* ≤ 0), P*(ΔSR* ≥ 0)).
+- Per instrument: supported if 95% CI > 0; rejected if CI < 0; else inconclusive.
+- Family: Benjamini-Hochberg across the 10 instruments; H-XM-003 overall supported only if ≥ 3
+  BH-significant positive ΔSR and none significantly negative; rejected if more significant negatives
+  than positives; otherwise inconclusive.
 
 Results: see `docs/VALIDATION_REPORT.md` and the dashboard "Research experiments" page.

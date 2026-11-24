@@ -71,6 +71,17 @@ def test_psr_and_dsr_behaviour():
     assert deflated_sharpe_ratio(r, n_trials=100) < deflated_sharpe_ratio(r, n_trials=1)
 
 
+def test_sharpe_difference_bootstrap():
+    from nebula.stats.inference import sharpe_difference_bootstrap
+
+    rng = np.random.default_rng(11)
+    a = pd.Series(rng.normal(0.0005, 0.01, 1500))
+    same = sharpe_difference_bootstrap(a, a, 252, n_boot=300)
+    assert same["delta_sr"] == pytest.approx(0.0) and same["ci_low"] <= 0 <= same["ci_high"]
+    better = sharpe_difference_bootstrap(a + 0.002, a, 252, n_boot=300)
+    assert better["delta_sr"] > 0 and better["ci_low"] > 0 and better["p_two_sided"] < 0.01
+
+
 def test_purged_walk_forward_no_overlap():
     cv = PurgedWalkForward(min_train=100, test_size=20, label_horizon=2, embargo=3)
     splits = list(cv.split(200))

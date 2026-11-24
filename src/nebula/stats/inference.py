@@ -16,6 +16,50 @@ def sharpe(returns: pd.Series | np.ndarray, periods_per_year: int) -> float:
     return float(x.mean() / x.std(ddof=1) * math.sqrt(periods_per_year))
 
 
+def stationary_bootstrap_indices(n: int, n_boot: int, mean_block: int, seed: int = 0) -> np.ndarray:
+    """(n_boot, n) index matrix for the Politis-Romano stationary bootstrap (vectorized over resamples)."""
+    rng = np.random.default_rng(seed)
+    idx = np.empty((n_boot, n), dtype=np.int64)
+    idx[:, 0] = rng.integers(n, size=n_boot)
+    new_block = rng.random((n_boot, n)) < 1.0 / mean_block
+    starts = rng.integers(n, size=(n_boot, n))
+    for t in range(1, n):
+        idx[:, t] = np.where(new_block[:, t], starts[:, t], (idx[:, t - 1] + 1) % n)
+    return idx
+
+
+def sharpe_difference_bootstrap(
+    r1: pd.Series,
+    r2: pd.Series,
+    periods_per_year: int,
+    n_boot: int = 2000,
+    mean_block: int = 20,
+    seed: int = 0,
+) -> dict[str, float]:
+    """Paired stationary-bootstrap inference for SR(r1) - SR(r2) on aligned return series."""
+    df = pd.concat([r1, r2], axis=1).dropna()
+    a, b = df.iloc[:, 0].to_numpy(dtype=float), df.iloc[:, 1].to_numpy(dtype=float)
+    k = math.sqrt(periods_per_year)
+
+    def sr(x: np.ndarray) -> np.ndarray:
+        sd = x.std(axis=-1, ddof=1)
+        return np.where(sd > 0, x.mean(axis=-1) / np.where(sd > 0, sd, 1.0) * k, np.nan)
+
+    point = float(sr(a) - sr(b))
+    idx = stationary_bootstrap_indices(len(a), n_boot, mean_block, seed)
+    boot = sr(a[idx]) - sr(b[idx])
+    boot = boot[np.isfinite(boot)]
+    lo, hi = np.quantile(boot, [0.025, 0.975])
+    p = 2 * min(float((boot <= 0).mean()), float((boot >= 0).mean()))
+    return {
+        "delta_sr": point,
+        "ci_low": float(lo),
+        "ci_high": float(hi),
+        "p_two_sided": min(1.0, p),
+        "n": len(a),
+    }
+
+
 def stationary_bootstrap_sharpe_ci(
     returns: pd.Series,
     periods_per_year: int,
