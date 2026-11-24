@@ -1,0 +1,39 @@
+# Market definitions. Costs are ASSUMPTIONS (per side, basis points) - see
+# .claude/skills/backtesting-audit/references/cost_and_cv.md and docs/RESEARCH_METHODOLOGY.md.
+markets:
+  US:
+    description: US equities and ETFs
+    calendar: XNYS            # exchange_calendars code
+    exchange_tz: America/New_York
+    currency: USD
+    periods_per_year: 252
+    costs_bps: {commission: 0.0, half_spread: 1.0, slippage: 2.0, sell_tax: 0.3}
+  IN:
+    description: Indian equities (NSE symbols via Yahoo '.NS')
+    calendar: XBOM            # BSE calendar used as NSE proxy (shared holiday list); see KNOWN_ISSUES
+    exchange_tz: Asia/Kolkata
+    currency: INR
+    periods_per_year: 252
+    # STT on delivery 0.1% per side dominates; exchange + stamp approximated in commission
+    costs_bps: {commission: 1.5, half_spread: 2.0, slippage: 3.0, sell_tax: 10.0, buy_tax: 10.0}
+  CRYPTO:
+    description: Crypto spot (Binance)
+    calendar: "24/7"
+    exchange_tz: UTC
+    currency: USDT
+    periods_per_year: 365
+    costs_bps: {commission: 10.0, half_spread: 1.0, slippage: 2.0}
+
+instruments:
+  - {symbol: AAPL, market: US, provider: yahoo, provider_symbol: AAPL, exchange: NASDAQ}
+  - {symbol: RELIANCE, market: IN, provider: yahoo, provider_symbol: RELIANCE.NS, exchange: NSE}
+  - {symbol: BTCUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: BTCUSDT, exchange: BINANCE}
+
+# Expansion universe (not ingested until the vertical slice is validated)
+expansion:
+  US: [MSFT, NVDA, SPY, QQQ]
+  IN: [TCS.NS, INFY.NS, HDFCBANK.NS, ^NSEI]
+  CRYPTO: [ETHUSDT, SOLUSDT]
+
+defaults:
+  start: "2018-01-01"

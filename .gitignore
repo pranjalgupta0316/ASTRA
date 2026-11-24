@@ -1,0 +1,26 @@
+# environments
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# secrets
+.env
+*.key
+
+# data and generated outputs (reproducible from code + providers; never commit)
+data/
+logs/
+experiments/
+mlruns/
+*.parquet
+*.zip
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

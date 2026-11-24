@@ -1,0 +1,18 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install (CPU, without the torch extra)
+        run: uv sync --python 3.12
+      - name: Lint
+        run: uv run ruff check src tests scripts
+      - name: Type check
+        run: uv run pyright src
+      - name: Offline tests
+        run: uv run pytest -m "not network" -q
+      - name: Skill validation
+        run: uv run python scripts/validate_skills.py
