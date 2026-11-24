@@ -82,6 +82,9 @@ N_BOOT = 2000
 MEAN_BLOCK = 20
 COST_MULTIPLIERS = (0.0, 1.0, 2.0, 4.0)
 TESTED = ("minvar", "rp")
+# registered in docs/research/H-PF.md ("rebalance tolerance 2% per asset"); passed explicitly since the
+# engine default changed to 0.0 - keeps the recorded H-PF results reproducible.
+REGISTERED_REBALANCE_TOLERANCE = 0.02
 SURVIVORSHIP_NOTE = (
     "Survivorship: the universe is today's well-known survivors (mega-cap US tech/ETFs, top Indian large "
     "caps, BTC/ETH/SOL), chosen with hindsight; absolute returns are biased upward for every strategy and "
@@ -182,7 +185,12 @@ def _last_risk_contributions(
     return pd.DataFrame(rows)
 
 
-def run_market(market: str, paths: Paths | None = None, tracker: Tracker | None = None) -> dict[str, Any]:
+def run_market(
+    market: str,
+    paths: Paths | None = None,
+    tracker: Tracker | None = None,
+    rebalance_tolerance: float = REGISTERED_REBALANCE_TOLERANCE,
+) -> dict[str, Any]:
     set_seed(SEED)
     t_start = time.perf_counter()
     paths = paths or get_paths()
@@ -196,7 +204,7 @@ def run_market(market: str, paths: Paths | None = None, tracker: Tracker | None 
     dates = monthly_decision_dates(panel.close.index)
     cap = default_cap(market)
     datasets = [read_manifest(s, market, paths) for s in syms]
-    bt_cfg = PortfolioBacktestConfig(costs=mkt.costs_bps)
+    bt_cfg = PortfolioBacktestConfig(costs=mkt.costs_bps, rebalance_tolerance=rebalance_tolerance)
     costs_dict = {
         **mkt.costs_bps.model_dump(),
         "max_participation": bt_cfg.max_participation,

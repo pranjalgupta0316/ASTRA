@@ -106,10 +106,15 @@ def check_intraday_continuity(df: pd.DataFrame, freq: str) -> CheckResult:
     missing = expected.difference(ts)
     off_grid = ts.difference(expected)
     frac = len(missing) / max(len(expected), 1)
-    status: Status = (
-        "pass" if not len(missing) and not len(off_grid) else ("warn" if frac <= 0.02 else "fail")
-    )
-    if len(off_grid):
+    off_frac = len(off_grid) / max(len(ts), 1)
+    # Off-grid bars are a known Binance artifact (after the 2018-02-09 outage klines were stamped at
+    # :28:14.789 for a while). Kept in storage, excluded by research loaders; fail only if widespread.
+    status: Status
+    if not len(missing) and not len(off_grid):
+        status = "pass"
+    elif frac <= 0.02 and off_frac <= 0.01:
+        status = "warn"
+    else:
         status = "fail"
     # summarize gaps as contiguous runs (an outage is one run, not hundreds of bars)
     runs = 0
@@ -233,6 +238,15 @@ def check_corporate_actions(df: pd.DataFrame) -> CheckResult:
         return CheckResult(name="corporate_actions", status="fail", details="non-positive split ratio")
     if df["adj_close"].isna().all():
         return _ok("corporate_actions", "no adj_close provided")
+    nonpos = df["adj_close"] <= 0
+    if nonpos.any():
+        return CheckResult(
+            name="corporate_actions",
+            status="warn",
+            count=int(nonpos.sum()),
+            details="non-positive adj_close (provider back-adjustment error); rows treated as missing",
+            examples=_examples(df.loc[nonpos, "session_date"]),
+        )
     factor = (df["adj_close"] / df["close"]).astype(float)
     decreasing = factor.diff() < -1e-6
     n_div = int((df["dividend"] > 0).sum())

@@ -99,6 +99,13 @@ def test_intraday_continuity_and_duplicate_key():
     assert _status(validate_bars(_hourly(), CRYPTO, freq="1h"), "duplicates") == "pass"
     big = _hourly().drop(index=range(50, 120)).reset_index(drop=True)
     assert _status(validate_bars(big, CRYPTO, freq="1h"), "sessions") == "fail"
+    # a few off-grid bars (provider artifact) -> warn; many -> fail
+    few = _hourly(1000)
+    few.loc[500:502, "open_time_utc"] += pd.Timedelta(minutes=28)
+    assert _status(validate_bars(few, CRYPTO, freq="1h"), "sessions") == "warn"
+    many = _hourly(1000)
+    many.loc[100:200, "open_time_utc"] += pd.Timedelta(minutes=28)
+    assert _status(validate_bars(many, CRYPTO, freq="1h"), "sessions") == "fail"
 
 
 def test_validation_does_not_mutate(us_bars):

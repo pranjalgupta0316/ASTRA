@@ -34,6 +34,9 @@ FEATURE_COLUMNS = [
 
 def adjusted_ohlc(bars: pd.DataFrame) -> pd.DataFrame:
     factor = (bars["adj_close"] / bars["close"]).fillna(1.0)
+    # A non-positive adjustment factor is a provider back-adjustment error (seen: ADANIENT 2002, Yahoo
+    # adj_close < 0). Those rows become missing prices instead of producing negative/invalid returns.
+    factor = factor.where(factor > 0)
     out = pd.DataFrame(index=bars.index)
     out["session_date"] = pd.to_datetime(bars["session_date"])
     out["close_time_utc"] = bars["close_time_utc"]

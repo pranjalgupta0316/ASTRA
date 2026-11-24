@@ -21,6 +21,10 @@ def load_features(
     for indices, whose Yahoo volume is unreliable, H == L only)."""
     inst = get_config().instrument(symbol)
     bars = read_bars(symbol, inst.market, paths or get_paths(), freq=freq, window=window)
+    if freq != "1d":  # drop provider off-grid bars (flagged by validation) so bars align across symbols
+        step = {"1m": "1min", "5m": "5min", "15m": "15min", "1h": "1h", "4h": "4h"}[freq]
+        t = pd.to_datetime(bars["open_time_utc"], utc=True)
+        bars = bars.loc[t == t.dt.floor(step)].reset_index(drop=True)
     flat = bars["high"] == bars["low"]
     placeholder = flat if inst.kind == "index" else flat & (bars["volume"] == 0)
     bars = bars.loc[~placeholder].reset_index(drop=True)

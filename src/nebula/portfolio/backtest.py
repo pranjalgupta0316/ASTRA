@@ -6,8 +6,10 @@ Conventions are those of `nebula.backtest.engine` (single asset), extended to N 
                 scaled down pro rata if cash after sells cannot pay for them -> cash is never negative.
                 Each leg is capped at max_participation * volume(t); the remainder is cancelled.
                 Zero-volume or missing bars never fill; that leg stays pending until it fills or a new
-                decision replaces it. Legs within `rebalance_tolerance` of the current weight are skipped
-                (full exits always run).
+                decision replaces it. Legs within `rebalance_tolerance` (absolute weight) of the current
+                weight are skipped (full exits always run). Default 0: decisions only happen on rebalance
+                dates, and an absolute band never tops up underweights smaller than the band, so with
+                many small weights (e.g. 30-49 names at 2-3 %) a 2 % band lets the book drift into cash.
   2. Close(t):  mark to close(t); an asset without a bar today is marked at its last close.
   3. Decision:  if t is a decision date, its target row becomes pending for open(t+1).
 Costs: per side, bps of traded notional from CostConfig (commission + half-spread + slippage + taxes),
@@ -38,7 +40,9 @@ class PortfolioBacktestConfig:
     cost_multiplier: float = 1.0
     max_participation: float = 0.05
     min_trade_weight: float = 1e-4
-    rebalance_tolerance: float = 0.02
+    # absolute per-leg band; 0.0 = always trade to target on decision dates (default since 2026-11-25;
+    # the registered H-PF study passes its registered 0.02 explicitly)
+    rebalance_tolerance: float = 0.0
 
 
 @dataclass

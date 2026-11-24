@@ -27,6 +27,22 @@ def test_targets_are_forward_looking(us_bars):
     assert f["target_ret_oo"].iloc[-1:].isna().all() and f["target_ret_oo"].iloc[-2:].isna().all()
 
 
+def test_nonpositive_adjustment_becomes_missing(us_bars):
+    """Provider error (ADANIENT 2002): adj_close <= 0 must give missing prices, never negative ones."""
+    from nebula.common.config import get_config
+    from nebula.data.validation import validate_bars
+    from nebula.features.technical import adjusted_ohlc
+
+    bad = us_bars.copy()
+    bad.loc[10:12, "adj_close"] = -0.01
+    adj = adjusted_ohlc(bad)
+    assert adj.loc[10:12, "close"].isna().all() and (adj["close"].dropna() > 0).all()
+    chk = next(
+        c for c in validate_bars(bad, get_config().markets["US"]).checks if c.name == "corporate_actions"
+    )
+    assert chk.status == "warn" and chk.count == 3
+
+
 def test_rsi_known_values():
     up = pd.Series(np.arange(1.0, 40.0))
     assert rsi(up).dropna().eq(100.0).all()

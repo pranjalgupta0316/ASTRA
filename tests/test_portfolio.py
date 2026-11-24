@@ -337,3 +337,30 @@ def test_paired_bootstrap_ratio_brackets_point_estimate():
     out = paired_bootstrap_ci(a, b, 252, n_boot=300, seed=1)
     assert out["vol_ratio_ci_lo"] < out["vol_ratio"] < out["vol_ratio_ci_hi"]
     assert out["vol_ratio_ci_hi"] < 1.0
+
+
+def test_many_small_weights_stay_fully_invested():
+    """Regression: an absolute 2 % band never topped up underweights < 2pp, so EW books of 30-49 names
+    drifted into cash. With the default (tolerance 0) a fully invested target stays fully invested."""
+    rng = np.random.default_rng(3)
+    n, t = 40, 400
+    idx = pd.bdate_range("2020-01-01", periods=t)
+    close = pd.DataFrame(
+        100 * np.exp(np.cumsum(rng.normal(0, 0.02, (t, n)), axis=0)),
+        index=idx,
+        columns=[f"A{i}" for i in range(n)],
+    )
+    opn = close.shift(1).fillna(100.0) * np.exp(rng.normal(0, 0.003, (t, n)))
+    panel = MarketPanel("TEST", opn, close, pd.DataFrame(1e12, index=idx, columns=close.columns))
+    dates = monthly_decision_dates(idx)
+    targets = pd.DataFrame(1.0 / n, index=dates, columns=close.columns)
+    cfg = PortfolioBacktestConfig(costs=CostConfig(commission=10.0, half_spread=2.0, slippage=3.0))
+    assert cfg.rebalance_tolerance == 0.0
+    res = run_portfolio_backtest(panel, targets, cfg)
+    exposure = res.ledger["exposure"].iloc[1:]
+    assert exposure.min() > 0.99
+    # the legacy absolute 2 % band leaves sale proceeds in cash (the defect this guards against)
+    legacy = run_portfolio_backtest(
+        panel, targets, PortfolioBacktestConfig(costs=cfg.costs, rebalance_tolerance=0.02)
+    )
+    assert legacy.ledger["exposure"].iloc[-1] < exposure.iloc[-1]
