@@ -59,6 +59,21 @@ class ExperimentRecord(BaseModel):
     reproduce: str = ""
 
 
+def record_subject(rec: ExperimentRecord) -> str:
+    """Instrument for single-dataset records; market (or 'multi') for multi-instrument records."""
+    ds = [d for d in rec.datasets if isinstance(d, dict)]
+    if not ds:
+        return ""
+    if len(ds) == 1 and ds[0].get("symbol"):
+        return str(ds[0]["symbol"])
+    markets = {str(d["market"]) for d in ds if d.get("market")}
+    if len(markets) == 1:
+        return markets.pop()
+    if len(ds) == 1 and ds[0].get("market"):
+        return str(ds[0]["market"])
+    return "multi"
+
+
 class Tracker:
     def __init__(self, paths: Paths | None = None) -> None:
         self.paths = (paths or get_paths()).ensure()

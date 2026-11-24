@@ -138,7 +138,9 @@ def walk_forward_gmm(
                 "n_train": len(x_train),
                 "converged": bool(m.gmm.converged_),
                 **{f"train_vol_state{k}": float(v) for k, v in enumerate(m.train_state_vol)},
-                **{f"weight_state{k}": float(m.gmm.weights_[m.order[k]]) for k in range(n_states)},
+                **{
+                    f"weight_state{k}": float(np.asarray(m.gmm.weights_)[m.order[k]]) for k in range(n_states)
+                },
             }
         )
     return RegimeResult(

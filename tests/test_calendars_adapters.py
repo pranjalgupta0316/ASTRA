@@ -108,3 +108,8 @@ def test_yahoo_drops_in_progress_session():
     out = YahooAdapter().normalize_daily(batch, CFG.markets["IN"])
     assert [str(d) for d in out["session_date"]] == ["2024-03-04"]
     assert any("incomplete" in n for n in batch.notes)
+    # 30 minutes after the 10:00 UTC close is still inside the 2 h settlement buffer
+    batch2 = RawBatch("yahoo", inst, datetime(2024, 3, 5, 10, 30, tzinfo=UTC), raw)
+    assert len(YahooAdapter().normalize_daily(batch2, CFG.markets["IN"])) == 1
+    batch3 = RawBatch("yahoo", inst, datetime(2024, 3, 5, 12, 30, tzinfo=UTC), raw)
+    assert len(YahooAdapter().normalize_daily(batch3, CFG.markets["IN"])) == 2

@@ -58,6 +58,7 @@ class TorchClassifier:
     patience: int = 15
     batch_size: int = 256
     val_frac: float = 0.15
+    val_gap: int = 2
     seed: int = 0
     device: str | None = None
     history: dict[str, float] = field(default_factory=dict)
@@ -76,7 +77,10 @@ class TorchClassifier:
         X = np.asarray(X, dtype=np.float32)
         y = np.asarray(y, dtype=np.float32)
         n_val = max(1, int(len(X) * self.val_frac))
-        Xtr, ytr, Xva, yva = X[:-n_val], y[:-n_val], X[-n_val:], y[-n_val:]
+        # purge `val_gap` rows between the fit part and the validation tail (labels span 2 bars)
+        cut = len(X) - n_val
+        Xtr, ytr = X[: max(1, cut - self.val_gap)], y[: max(1, cut - self.val_gap)]
+        Xva, yva = X[cut:], y[cut:]
         self.mu_ = Xtr.mean(axis=0)
         self.sd_ = Xtr.std(axis=0) + 1e-8
         tr_x = torch.from_numpy((Xtr - self.mu_) / self.sd_).to(dev)

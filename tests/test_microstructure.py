@@ -286,9 +286,21 @@ def test_long_capture_requires_disk_budget(monkeypatch: pytest.MonkeyPatch) -> N
         return CaptureReport(symbol=symbol, run_dir="", parquet_mb_per_hour=20.0)
 
     monkeypatch.setattr(mod, "run_capture", fake_run)
-    assert mod.main(["--duration", "3600"]) == 2  # probe only, then abort (no budget)
-    assert calls == [mod.PROBE_S]
+    # default cap (500 MB) applies to every capture: 20 MB projected fits, so it runs, with the cap passed on
+    seen_caps: list[float] = []
+
+    def fake_run_cap(symbol, duration_s, out_dir=None, **kw):
+        calls.append(duration_s)
+        seen_caps.append(kw.get("max_raw_mb"))
+        return CaptureReport(symbol=symbol, run_dir="", parquet_mb_per_hour=20.0)
+
+    monkeypatch.setattr(mod, "run_capture", fake_run_cap)
+    assert mod.main(["--duration", "3600"]) == 0
+    assert calls == [mod.PROBE_S, 3600.0] and seen_caps[-1] == 500.0
     calls.clear()
+    with pytest.raises(SystemExit):  # beyond the 24 h maximum
+        mod.main(["--duration", str(mod.MAX_DURATION_S + 1)])
+    monkeypatch.setattr(mod, "run_capture", fake_run)
     assert mod.main(["--duration", "3600", "--max-disk-mb", "10"]) == 2  # 20 MB projected > 10
     calls.clear()
     assert mod.main(["--duration", "3600", "--max-disk-mb", "50"]) == 0

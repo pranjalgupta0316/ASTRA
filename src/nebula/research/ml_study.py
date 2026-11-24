@@ -76,8 +76,12 @@ def _inputs(df: pd.DataFrame, name: str) -> np.ndarray:
 
 def _date_dm(y: np.ndarray, p_ref: np.ndarray, p_model: np.ndarray, dates: np.ndarray) -> float:
     """NW t-stat of the per-date mean of (log loss of reference - log loss of model); > 0 favours model."""
+    """Row-weighted mean loss difference with date-clustered (Newey-West over dates) inference:
+    per-date SUMS scaled by the mean rows per date, so every row has equal weight (crypto-only weekend
+    dates are not over-weighted) while within-date correlation is absorbed by clustering."""
     d = _pointwise_log_loss(y, p_ref) - _pointwise_log_loss(y, p_model)
-    daily = pd.Series(d).groupby(dates).mean()
+    g = pd.Series(d).groupby(dates)
+    daily = g.sum() / g.size().mean()
     return newey_west_tstat(daily)
 
 
@@ -193,7 +197,7 @@ def run_panel(
     probas: dict[str, np.ndarray] = {}
     base = None
     for name in ["logit", "mlp", "gru"]:
-        splits = date_folds(df["session_date"], min_train_dates=504, test_dates=63, gap_dates=7)
+        splits = date_folds(df["session_date"], min_train_dates=730, test_dates=91, gap_dates=7)
         proba, base, folds = walk_forward_from_splits(
             _inputs(df, name), y, model_factory(name, device), splits
         )
@@ -236,8 +240,8 @@ def run_panel(
             model={"type": name, "seq_len": SEQ_LEN if name == "gru" else 1},
             validation={
                 "type": "date-based purged expanding walk-forward",
-                "min_train_dates": 504,
-                "test_dates": 63,
+                "min_train_dates": 730,
+                "test_dates": 91,
                 "gap_dates": 7,
             },
             seed=SEED,

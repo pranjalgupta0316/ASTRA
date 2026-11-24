@@ -12,7 +12,7 @@ import pandas as pd
 from nebula.common.config import get_config
 from nebula.common.paths import Paths, get_paths
 from nebula.data.storage import read_manifest
-from nebula.tracking.tracker import ExperimentRecord, Tracker
+from nebula.tracking.tracker import ExperimentRecord, Tracker, record_subject
 
 Severity = Literal["info", "warn", "error"]
 
@@ -44,10 +44,7 @@ def _latest_records(tracker: Tracker) -> list[ExperimentRecord]:
 
 
 def _subject(r: ExperimentRecord) -> str:
-    if r.datasets and isinstance(r.datasets[0], dict):
-        d = r.datasets[0]
-        return str(d.get("symbol") or d.get("market") or d.get("symbols") or "")
-    return ""
+    return record_subject(r)
 
 
 class DataQualityAgent:

@@ -44,6 +44,7 @@ def narrate(report_markdown: str, timeout_s: float = 120.0) -> str | None:
                 "options": {"temperature": 0},
             },
             timeout=timeout_s,
+            allow_redirects=False,  # a local proxy must not be able to forward report contents off-machine
         )
         r.raise_for_status()
         return str(r.json().get("response", "")).strip() or None

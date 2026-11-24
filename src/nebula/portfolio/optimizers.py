@@ -162,6 +162,8 @@ def max_sharpe(
     cons = [ex_n @ y == 1, y >= 0, y <= c * tot]
     prob = cp.Problem(cp.Minimize(cp.quad_form(y, cp.psd_wrap(s_n))), cons)
     _solve(prob)
+    if y.value is None:
+        raise RuntimeError("max-Sharpe solve returned no solution")
     return _clean(y.value / float(np.sum(y.value)), c), False
 
 

@@ -19,6 +19,7 @@ from pathlib import Path
 
 from nebula.microstructure.capture import run_capture
 
+MAX_DURATION_S = 24 * 3600
 PROBE_THRESHOLD_S = 600
 PROBE_S = 60
 
@@ -28,11 +29,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--symbol", default="BTCUSDT")
     ap.add_argument("--duration", type=float, default=300.0, help="capture seconds (hard stop)")
     ap.add_argument("--out-dir", type=Path, default=None, help="default: data/microstructure")
-    ap.add_argument("--max-disk-mb", type=float, default=None, help="required for captures > 10 min")
+    ap.add_argument(
+        "--max-disk-mb",
+        type=float,
+        default=500.0,
+        help="hard cap on raw bytes received (disk use is always below it); default 500",
+    )
     ap.add_argument("--verify-every", type=float, default=120.0, help="verification snapshot interval, s")
     a = ap.parse_args(argv)
-    if a.duration <= 0:
-        ap.error("--duration must be positive")
+    if not 0 < a.duration <= MAX_DURATION_S:
+        ap.error(f"--duration must be in (0, {MAX_DURATION_S}] seconds")
+    if a.max_disk_mb <= 0:
+        ap.error("--max-disk-mb must be positive")
 
     if a.duration > PROBE_THRESHOLD_S:
         probe = run_capture(a.symbol, PROBE_S, a.out_dir, verify_every_s=0)
@@ -42,11 +50,13 @@ def main(argv: list[str] | None = None) -> int:
             f"({probe.ws_json_mb_per_hour:.1f} MB/hour raw JSON); projected {projected_mb:.0f} MB "
             f"for {a.duration:.0f} s"
         )
-        if a.max_disk_mb is None or projected_mb > a.max_disk_mb:
+        if projected_mb > a.max_disk_mb:
             print("aborting: pass --max-disk-mb above the projection to proceed", file=sys.stderr)
             return 2
 
-    rep = run_capture(a.symbol, a.duration, a.out_dir, verify_every_s=a.verify_every)
+    rep = run_capture(
+        a.symbol, a.duration, a.out_dir, verify_every_s=a.verify_every, max_raw_mb=a.max_disk_mb
+    )
     d = asdict(rep)
     print(json.dumps({k: v for k, v in d.items() if k != "errors"}, indent=2))
     if rep.errors:

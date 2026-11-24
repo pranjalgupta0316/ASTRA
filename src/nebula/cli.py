@@ -76,6 +76,62 @@ def holdout() -> None:
     typer.echo(json.dumps(res, indent=2, default=str))
 
 
+@app.command("vol-study")
+def vol_study() -> None:
+    """H-VOL-001 volatility forecasts and H-REG-001 regimes on all instruments."""
+    from nebula.research.regime_study import run_regime_study
+    from nebula.research.volatility_study import run_volatility_study
+
+    for res in (run_volatility_study(), run_regime_study()):
+        t = res.pop("table", None)
+        if t is not None:
+            typer.echo(t.to_string(index=False))
+        typer.echo(json.dumps(res.get("counts", {}), indent=2, default=str))
+
+
+@app.command("portfolio-study")
+def portfolio_study(markets: list[str] = typer.Argument(None)) -> None:
+    """H-PF-001/002 portfolio construction study per market."""
+    from nebula.research.portfolio_study import run_portfolio_study
+
+    typer.echo(json.dumps(run_portfolio_study(markets or None), indent=2, default=str)[:20000])
+
+
+@app.command("micro-study")
+def micro_study(
+    capture_seconds: int = typer.Option(0, help="also run a live depth capture (seconds)"),
+) -> None:
+    """Microstructure: aggTrades study (H-MS-000); optional live capture + H-MS-001."""
+    from nebula.microstructure.capture import run_capture
+    from nebula.research.microstructure_study import run_aggtrades_study, run_capture_study
+
+    typer.echo(run_aggtrades_study().experiment_id)
+    if capture_seconds > 0:
+        rep = run_capture("BTCUSDT", float(capture_seconds))
+        typer.echo(str(rep))
+        typer.echo(run_capture_study().experiment_id)
+
+
+@app.command("run-all")
+def run_all(skip_ingest: bool = False) -> None:
+    """Reproduce every study in order (ingest -> research -> holdout -> vol -> portfolio -> ML -> report)."""
+    steps = ([] if skip_ingest else [["ingest"]]) + [
+        ["research"],
+        ["holdout"],
+        ["vol-study"],
+        ["portfolio-study"],
+        ["ml-study"],
+        ["micro-study"],
+        ["report"],
+    ]
+    for s in steps:
+        typer.echo(f"== nebula {' '.join(s)}")
+        r = subprocess.run([sys.executable, "-m", "nebula.cli", *s], check=False)
+        if r.returncode != 0:
+            typer.echo(f"step {s} failed with exit code {r.returncode}")
+            raise typer.Exit(code=r.returncode)
+
+
 @app.command("ml-study")
 def ml_study(
     panel: bool = typer.Option(True, help="also run the pooled-panel H-ML-002 study"),

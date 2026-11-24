@@ -12,10 +12,11 @@ htmlcov/
 *.key
 
 # data and generated outputs (reproducible from code + providers; never commit)
-data/
-logs/
-experiments/
-mlruns/
+# Anchored to the repo root: an unanchored `data/` also matched the src/nebula/data package.
+/data/
+/logs/
+/experiments/
+/mlruns/
 *.parquet
 *.zip
 

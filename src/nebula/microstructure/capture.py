@@ -211,8 +211,13 @@ async def capture(
     ws_urls: tuple[str, ...] = WS_URLS,
     verify_every_s: float = 120.0,
     flush_every_s: float = 30.0,
+    max_raw_mb: float | None = None,
 ) -> CaptureReport:
-    """Capture depth + aggTrades for `duration_s` seconds (hard stop). Returns the capture report."""
+    """Capture depth + aggTrades for `duration_s` seconds (hard stop). Returns the capture report.
+
+    `max_raw_mb` stops the capture once the raw WebSocket bytes received exceed the cap. Parquet on
+    disk is always smaller than the raw JSON (~7x in the measured run), so disk use stays below it.
+    """
     sym = symbol.upper()
     stream = sym.lower()
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -323,6 +328,10 @@ async def capture(
                         t_last_msg = time.monotonic()
                         rep.ws_messages += 1
                         rep.ws_bytes += len(raw)
+                        if max_raw_mb is not None and rep.ws_bytes > max_raw_mb * 1e6:
+                            rep.errors.append(f"disk cap reached: {rep.ws_bytes / 1e6:.1f} MB raw received")
+                            deadline = time.monotonic()  # hard stop; finalization below still runs
+                            break
                         msg = json.loads(raw)
                         data = msg.get("data", msg)
                         etype = data.get("e")

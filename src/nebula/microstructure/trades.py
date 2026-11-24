@@ -12,11 +12,9 @@ These are trades only (no quotes): VWAP changes are used as a price proxy, not m
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import tempfile
-import time
 import zipfile
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -28,6 +26,7 @@ import requests
 
 from nebula.common.logging import get_logger
 from nebula.common.paths import get_paths
+from nebula.data.download import checked_download, sha256_of
 
 log = get_logger(__name__)
 
@@ -93,24 +92,14 @@ def download_aggtrades(
     dest_dir = dest_dir or raw_dir(symbol)
     url = aggtrades_url(symbol, day)
     dest = dest_dir / url.rsplit("/", 1)[-1]
-    if dest.exists():
-        return dest
     http = session or requests.Session()
     http.headers["User-Agent"] = USER_AGENT
-    r = http.get(url, timeout=TIMEOUT_S)
-    time.sleep(REQUEST_PAUSE_S)
-    if r.status_code == 404:
+    existed = dest.exists()
+    if checked_download(http, url, dest) is None:  # streamed, sha256-verified; cache re-verified
         return None
-    r.raise_for_status()
-    c = http.get(url + ".CHECKSUM", timeout=TIMEOUT_S)
-    time.sleep(REQUEST_PAUSE_S)
-    c.raise_for_status()
-    expected = c.text.split()[0].strip().lower()
-    actual = hashlib.sha256(r.content).hexdigest()
-    if actual != expected:
-        raise RuntimeError(f"Checksum mismatch for {url}: {actual} != {expected}")
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(r.content)
+    if existed and dest.with_suffix(".meta.json").exists():
+        return dest
+    actual = sha256_of(dest)
     meta = {
         "provider": "binance_vision",
         "dataset": "spot/daily/aggTrades",
@@ -120,10 +109,10 @@ def download_aggtrades(
         "retrieved_at_utc": datetime.now(UTC).isoformat(),
         "sha256": actual,
         "checksum_verified": True,
-        "bytes": len(r.content),
+        "bytes": dest.stat().st_size,
     }
     dest.with_suffix(".meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
-    log.info("aggtrades.download", url=url, bytes=len(r.content))
+    log.info("aggtrades.download", url=url, bytes=meta["bytes"])
     return dest
 
 

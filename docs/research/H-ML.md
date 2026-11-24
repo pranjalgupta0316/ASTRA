@@ -34,3 +34,14 @@ significantly worse than baseline; else inconclusive.
 
 Trading evaluation is performed only for models that pass the statistical gate (prevents choosing the
 best of 65 backtests).
+
+## Amendment A2 (2026-11-24, after the first run - disclosed as post hoc; verdicts unchanged)
+Independent audit of the first run found:
+1. H-ML-002 per-date DM statistic weighted each date equally, over-weighting crypto-only weekend dates
+   (MLP t flipped from -0.61 row-wise to +0.20). Now: row-weighted mean with date-clustered Newey-West
+   inference (per-date sums / mean rows per date).
+2. Panel folds were 504/63 *union dates* (≈1.4 y / 2 months, because crypto makes every calendar day a
+   date), not the registered 2 y / 1 quarter. Now 730/91/7 calendar days = the registered design.
+3. MLP/GRU early stopping had no purge between the fit rows and the validation tail; now a 2-row gap
+   (= label horizon).
+First-run records are kept in experiments/ (superseded, not deleted). Results below are from the rerun.
