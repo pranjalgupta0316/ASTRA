@@ -102,7 +102,7 @@ if page == "Overview":
         index="hypothesis_id", columns="conclusion", values="experiment_id", aggfunc="count", fill_value=0
     )
     st.subheader("Latest conclusions per hypothesis (count of experiments)")
-    st.dataframe(piv, use_container_width=True)
+    st.dataframe(piv, width="stretch")
     st.caption(
         "Negative and inconclusive results are retained by design. Registered hypotheses: "
         "docs/RESEARCH_HYPOTHESES.md and docs/research/*.md."
@@ -135,12 +135,12 @@ elif page == "Data availability & quality":
         "quality_status",
         "written_at_utc",
     ]
-    st.dataframe(man[[c for c in cols if c in man]], use_container_width=True)
+    st.dataframe(man[[c for c in cols if c in man]], width="stretch")
     for _, r in man.iterrows():
         if isinstance(r.get("quality_report"), str):
             rep = json.loads((PATHS.root / r["quality_report"]).read_text(encoding="utf-8"))
             with st.expander(f"{r['symbol']} - {rep['created_at_utc'][:19]} - {r['quality_status']}"):
-                st.dataframe(pd.DataFrame(rep["checks"]), use_container_width=True)
+                st.dataframe(pd.DataFrame(rep["checks"]), width="stretch")
                 if r.get("transform_notes"):
                     st.write("Transform notes:", r["transform_notes"])
 
@@ -169,7 +169,7 @@ elif page == "Market overview":
         xaxis_rangeslider_visible=False,
         yaxis_title=f"{sym} ({CFG.markets[inst.market].currency}, provider prices)",
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.caption("Yahoo OHLC are split-adjusted, not dividend-adjusted; research uses total-return adjustment.")
 
 elif page == "Research experiments":
@@ -185,7 +185,7 @@ elif page == "Research experiments":
         view = view.drop_duplicates(subset=["hypothesis_id", "name", "subject"], keep="last")
     st.dataframe(
         view[["experiment_id", "hypothesis_id", "name", "subject", "conclusion", "created_at_utc"]],
-        use_container_width=True,
+        width="stretch",
     )
     eid = st.selectbox("Inspect experiment", view["experiment_id"].tolist()[::-1])
     if eid:
@@ -223,7 +223,7 @@ elif page == "Backtests":
     if "bh_equity_net" in eq:
         fig.add_scatter(x=eq.index, y=eq["bh_equity_net"], name="buy & hold net")
     fig.update_layout(height=450, yaxis_title="equity")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     m = rec.metrics
     c = st.columns(4)
     c[0].metric("Net Sharpe", f"{m.get('net_sharpe', m.get('tsmom_sharpe', float('nan'))):.2f}")
@@ -233,7 +233,7 @@ elif page == "Backtests":
     sens = artifact(eid, "cost_sensitivity")
     if sens is not None:
         st.subheader("Transaction-cost sensitivity")
-        st.dataframe(sens, use_container_width=True)
+        st.dataframe(sens, width="stretch")
 
 elif page == "Machine learning":
     st.header("Machine learning & deep learning")
@@ -245,7 +245,7 @@ elif page == "Machine learning":
         st.write({k: v for k, v in rec.metrics.items() if k != "gpu"})
         grid = artifact(eid, "grid")
         if grid is not None:
-            st.dataframe(grid, use_container_width=True)
+            st.dataframe(grid, width="stretch")
             heat = grid.pivot_table(index="symbol", columns="model", values="dm_t")
             st.plotly_chart(
                 go.Figure(
@@ -258,7 +258,7 @@ elif page == "Machine learning":
                         colorbar={"title": "DM t"},
                     )
                 ),
-                use_container_width=True,
+                width="stretch",
             )
             st.caption(
                 "DM t > 0: model beats its ex-ante (train-fold) base rate on OOS log loss. "
@@ -277,14 +277,14 @@ elif page == "Machine learning":
                 }
             )
         st.subheader("H-ML-002 pooled panel")
-        st.dataframe(pd.DataFrame(rows), use_container_width=True)
+        st.dataframe(pd.DataFrame(rows), width="stretch")
 
 elif page == "Volatility forecasting":
     st.header("Volatility forecasting (H-VOL-001)")
     v = latest("H-VOL-001")
     if not need(v, "H-VOL-001"):
         st.stop()
-    st.dataframe(v[["subject", "conclusion", "experiment_id"]], use_container_width=True)
+    st.dataframe(v[["subject", "conclusion", "experiment_id"]], width="stretch")
     sym = st.selectbox("Instrument", v["subject"].tolist())
     eid = v.loc[v["subject"] == sym, "experiment_id"].iloc[-1]
     fc = artifact(eid, "forecasts")
@@ -298,7 +298,7 @@ elif page == "Volatility forecasting":
         for col in ["ewma", "gjr"]:
             fig.add_scatter(x=x, y=fc[col] ** 0.5, name=f"{col} forecast")
         fig.update_layout(height=450, yaxis_title="daily volatility")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     st.json({k: v for k, v in rec.metrics.items()}, expanded=False)
 
 elif page == "Market regimes":
@@ -306,7 +306,7 @@ elif page == "Market regimes":
     rg = latest("H-REG-001")
     if not need(rg, "H-REG-001"):
         st.stop()
-    st.dataframe(rg[["subject", "conclusion", "experiment_id"]], use_container_width=True)
+    st.dataframe(rg[["subject", "conclusion", "experiment_id"]], width="stretch")
     sym = st.selectbox("Instrument", rg["subject"].tolist())
     eid = rg.loc[rg["subject"] == sym, "experiment_id"].iloc[-1]
     s = artifact(eid, "states")
@@ -324,7 +324,7 @@ elif page == "Market regimes":
             marker={"size": 3, "color": "crimson"},
         )
         fig.update_layout(height=420)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         st.caption(
             "States are out-of-sample (model refit on expanding windows). Visual regimes are not "
             "evidence of economic meaning; see the record's statistical tests."
@@ -342,14 +342,14 @@ elif page == "Portfolio & risk":
     perf = artifact(eid, "performance")
     if perf is not None:
         st.subheader("Performance (net)")
-        st.dataframe(perf, use_container_width=True)
+        st.dataframe(perf, width="stretch")
     eq = artifact(eid, "equity")
     if eq is not None:
         fig = go.Figure()
         for c in [c for c in eq.columns if c.endswith("_equity_net")]:
             fig.add_scatter(x=eq.index, y=eq[c], name=c.replace("_equity_net", ""))
         fig.update_layout(height=420, yaxis_title="equity (net)")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     for name, title in [
         ("risk_contributions_last", "Risk contributions (last rebalance)"),
         ("var_es", "VaR / Expected Shortfall"),
@@ -358,12 +358,12 @@ elif page == "Portfolio & risk":
         a = artifact(eid, name)
         if a is not None:
             st.subheader(title)
-            st.dataframe(a, use_container_width=True)
+            st.dataframe(a, width="stretch")
     h2 = latest("H-PF-002")
     st.subheader("Verdicts")
     st.dataframe(
         pd.concat([pf, h2])[["hypothesis_id", "subject", "conclusion", "experiment_id"]],
-        use_container_width=True,
+        width="stretch",
     )
 
 elif page == "Market microstructure":
@@ -381,24 +381,24 @@ elif page == "Market microstructure":
                 x=pd.to_datetime(b["ts"]), y=b["signed_volume"], name="signed volume", yaxis="y2", opacity=0.4
             )
             fig.update_layout(height=420, yaxis2={"overlaying": "y", "side": "right"})
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         k = artifact(eid, "kyle_lambda")
         if k is not None:
-            st.dataframe(k, use_container_width=True)
+            st.dataframe(k, width="stretch")
     c = latest("H-MS-001")
     if need(c, "depth capture study (H-MS-001)"):
         eid = c["experiment_id"].iloc[-1]
         st.subheader(f"H-MS-001: {conclusion_badge(record(eid).conclusion)}")
         r = artifact(eid, "h_ms_001_results")
         if r is not None:
-            st.dataframe(r, use_container_width=True)
+            st.dataframe(r, width="stretch")
         bk = artifact(eid, "book_1s_summary")
         if bk is not None:
             fig = go.Figure()
             fig.add_scatter(x=bk["sec"], y=bk["mid"], name="mid")
             fig.add_scatter(x=bk["sec"], y=bk["imbalance_5"], name="top-5 imbalance", yaxis="y2")
             fig.update_layout(height=380, yaxis2={"overlaying": "y", "side": "right"})
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         st.json(record(eid).metrics, expanded=False)
 
 elif page == "Research report & agents":
@@ -412,7 +412,7 @@ elif page == "Research report & agents":
     st.subheader("Agent activity")
     if act.exists():
         rows = [json.loads(x) for x in act.read_text(encoding="utf-8").splitlines() if x.strip()]
-        st.dataframe(pd.DataFrame(rows).tail(50), use_container_width=True)
+        st.dataframe(pd.DataFrame(rows).tail(50), width="stretch")
     else:
         st.info("No agent activity logged yet.")
 

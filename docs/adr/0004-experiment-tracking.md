@@ -9,3 +9,4 @@
 - **Reasoning**: our record schema is research-specific; files are diffable and readable by the dashboard.
 - **Trade-offs**: no built-in comparison UI (dashboard page covers it); no concurrent-writer locking.
 - **Reversibility**: high - records can be exported to MLflow runs later.
+- **Update 2026-11-24**: the optional `mlflow-skinny` extra was removed because nothing imported it.

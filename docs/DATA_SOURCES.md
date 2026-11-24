@@ -17,6 +17,21 @@ an HTTP request on 2026-11-24; **researched** = documentation reviewed only; **r
 | India official | NSE / BSE websites, bhavcopy | — | 1d | website | ToS restrict automated access | — | — | **not scraped**; manual download only if ever needed | — | rejected (automation) |
 | News | public RSS feeds | varies | event | RSS | per-publisher; headlines only | — | full text usually not licensed | optional; deferred until M5+ | — | researched |
 
+## Endpoints actually used by code
+| Purpose | Endpoint | Module |
+|---|---|---|
+| US/IN daily bars | Yahoo chart API via `yfinance` | data/adapters/yahoo.py |
+| Crypto daily klines | `https://data.binance.vision/data/spot/{monthly,daily}/klines/...` (+ `.CHECKSUM`) | data/adapters/binance.py, data/download.py |
+| Crypto aggTrades (daily) | `https://data.binance.vision/data/spot/daily/aggTrades/...` (+ `.CHECKSUM`) | microstructure/trades.py |
+| L2 snapshot | `https://data-api.binance.vision/api/v3/depth?limit=1000` | microstructure/capture.py |
+| L2 diffs + trades (live) | `wss://stream.binance.com:9443` (fallback `wss://data-stream.binance.vision`) | microstructure/capture.py |
+| Optional LLM | localhost only (`NEBULA_LLM_URL`), disabled by default | agents/llm.py |
+
+## Verified ingestion (2026-11-24)
+All 13 instruments ingested daily bars from 2018-01-01 (SOLUSDT from its 2020-08 listing): AAPL, MSFT,
+NVDA, QQQ pass; SPY, the Indian names and crypto pass with explained warnings (Muhurat sessions, Yahoo
+gaps/placeholder rows, real crash days). Yahoo's in-progress session bar is dropped (2 h settlement buffer).
+
 ## Key verified facts (2026-11-24 probes)
 - Yahoo chart meta: AAPL tz America/New_York USD; RELIANCE.NS and ^NSEI tz Asia/Kolkata INR.
 - Binance public data files for 2017-08 (first BTCUSDT month), 2026-10 monthly, and 2026-11-22 daily

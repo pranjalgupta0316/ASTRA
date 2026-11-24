@@ -1,25 +1,29 @@
 # Project status
 
-Last session: 2026-11-24. Current milestone: **vertical slice (M0–M6 subset) complete and audited**.
+Last session: 2026-11-24. **All milestones M0-M12 have a delivered, tested scope** (scope limits per
+milestone below). Final report: [FINAL_PROJECT_REPORT.md](FINAL_PROJECT_REPORT.md).
 
-| Milestone | State | Evidence |
+| Milestone | State | Scope delivered / not delivered |
 |---|---|---|
-| M0 environment & feasibility | done | env inspected (below); docs/DATA_SOURCES.md matrix; docs/RISK_REGISTER.md |
-| M1 skills & agents | implemented, statically validated | 7 skills + 7 agents pass scripts/validate_skills.py. Discoverability: Claude Code registered all 7 agents and 7 skills when the session moved into C:\Projects\NEBULA (observed in session) |
-| M2 architecture | designed | SYSTEM_ARCHITECTURE.md, contracts.py, ADR 0001–0004 |
-| M3 engineering foundation | implemented | uv + lock, ruff clean, pyright 0 errors, pytest, CI workflow written (**not yet run on GitHub** - repo not pushed) |
-| M4 data (AAPL, RELIANCE.NS, BTCUSDT daily) | tested on real data | quality: AAPL pass; RELIANCE warn (Muhurat sessions, 2 Yahoo gaps, 2 placeholder rows); BTC warn (2020-03-12 crash, real) |
-| M5 features + stats baselines | tested | causal-feature truncation test; H-XM-000/001 recorded |
-| M6 classical ML | tested; DL **not started** | H-XM-002 recorded; PyTorch install still downloading (KI-2) |
-| M7–M12 | planned | see IMPLEMENTATION_ROADMAP.md |
+| M0 environment & feasibility | done | env report, source matrix, risk register |
+| M1 skills & agents | done | 7 skills + 7 subagents, validator; agents used for real work and audits |
+| M2 architecture | done | SYSTEM_ARCHITECTURE, contracts, ADR 0001-0006 |
+| M3 engineering foundation | done | uv lock, ruff, pyright, pytest, CI workflow (**not yet run on GitHub - repo not pushed**) |
+| M4 data | tested | 13 instruments daily; fundamentals/macro/news **not built** |
+| M5 features + stats, volatility, regimes | validated | H-XM-000/001, H-VOL-001, H-REG-001 |
+| M6 classical ML + DL | validated (after A2) | logit/RF/XGB/MLP/GRU; Transformers/TCN deliberately not built (no baseline beat the base rate) |
+| M7 microstructure | tested | L2 sync + capture + aggTrades; one 5-min capture only |
+| M8 portfolio & risk | validated | per-market, local currency; no FX / cross-market |
+| M9 backtesting | validated | single-asset and multi-asset event engines, audits |
+| M10 tracking & agents | tested | file tracker; deterministic research roles; LLM optional and unbenchmarked |
+| M11 dashboard & integration | tested | 12 pages (AppTest), `run-all` reproduction |
+| M12 final validation | done | 3 independent audits, fixes applied, 2 identical reproduction runs |
 
-## Environment (measured 2026-11-24)
-i7-14700HX 20C/28T · 15.8 GB RAM (5.6 GB free at inspection) · RTX 4060 Laptop 8 GB, driver 616.92
-(CUDA 13.4 UMD; no system CUDA toolkit - not needed for PyTorch wheels) · C: 168 GB free · system
-Python 3.14.4, project Python 3.12.16 (uv 0.13.9) · git 2.55 · Node 24.
-GPU availability to PyTorch: **verified** - torch 2.11.0+cu128, `cuda.is_available() = True`,
-RTX 4060 Laptop 8.59 GB; 20 × 4096² fp32 matmuls in 0.45 s, peak 1.4 GB allocated.
-Data footprint of the slice: 1.13 MB.
+## Environment (measured)
+i7-14700HX 20C/28T · 15.8 GB RAM · RTX 4060 Laptop 8.59 GB (driver 616.92, CUDA 13.4 UMD) · project
+Python 3.12.16 via uv 0.13.9 · torch 2.11.0+cu128 (`cuda.is_available() = True`).
+Measured footprint: data/ 26.8 MB, experiments/ 33.6 MB; full `run-all` 16-18 min; peak DL VRAM 96 MB;
+peak study RAM ≈ 0.6 GB process working set (ML grid), portfolio/vol studies < 0.3 GB.
 
 ## Repository
-Git initialized on `main`, **no commits yet**.
+`main`, 14+ commits, clean tree at the final commit; nothing pushed (no remote configured).
