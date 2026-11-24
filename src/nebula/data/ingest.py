@@ -30,22 +30,30 @@ def ingest_symbol(
     config: NebulaConfig | None = None,
     paths: Paths | None = None,
     allow_warn: bool = True,
+    freq: str = "1d",
 ) -> IngestResult:
     config = config or get_config()
     paths = (paths or get_paths()).ensure()
     inst = config.instrument(symbol)
     market = config.markets[inst.market]
     adapter = get_adapter(inst.provider)
-    start = start or config.defaults.get("start", "2018-01-01")
-    batch = adapter.fetch_daily(
-        inst, start, end, raw_dir(paths, inst.provider, inst.provider_symbol) / "files"
-    )
-    raw_file = write_raw(batch, paths)
-    bars = adapter.normalize_daily(batch, market)
-    report = validate_bars(bars, market)
-    log.info("ingest.validated", symbol=symbol, status=report.status, rows=report.rows)
+    start = start or config.start_for(symbol)
+    files_dir = raw_dir(paths, inst.provider, inst.provider_symbol, freq) / "files"
+    if freq == "1d":
+        batch = adapter.fetch_daily(inst, start, end, files_dir)
+        raw_file = write_raw(batch, paths)
+        bars = adapter.normalize_daily(batch, market)
+    else:
+        fetch, normalize = getattr(adapter, "fetch", None), getattr(adapter, "normalize", None)
+        if fetch is None or normalize is None:
+            raise ValueError(f"provider {inst.provider} has no intraday history (only Binance does)")
+        batch = fetch(inst, start, end, files_dir, interval=freq)
+        raw_file = write_raw(batch, paths)
+        bars = normalize(batch, market)
+    report = validate_bars(bars, market, freq=freq)
+    log.info("ingest.validated", symbol=symbol, freq=freq, status=report.status, rows=report.rows)
     ok = report.status == "pass" or (allow_warn and report.status == "warn")
-    validated = write_validated(bars, report, raw_file, paths, notes=batch.notes) if ok else None
+    validated = write_validated(bars, report, raw_file, paths, freq=freq, notes=batch.notes) if ok else None
     if not ok:
         from nebula.data.storage import write_report
 

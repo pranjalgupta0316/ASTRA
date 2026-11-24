@@ -51,7 +51,7 @@ def load_study_frame(
     """Adjusted OHLC indexed by session date, placeholder rows removed -> (frame, manifest, excluded)."""
     paths = paths or get_paths()
     inst = get_config().instrument(symbol)
-    bars = read_bars(symbol, inst.market, paths)
+    bars = read_bars(symbol, inst.market, paths, window=get_config().core_window())
     manifest = read_manifest(symbol, inst.market, paths)
     if symbol in VOLUME_UNRELIABLE:
         placeholder = bars["high"] == bars["low"]
@@ -150,7 +150,7 @@ def run_volatility_study(symbols: list[str] | None = None, paths: Paths | None =
     set_seed(SEED)
     paths = paths or get_paths()
     cfg = get_config()
-    symbols = symbols or [i.symbol for i in cfg.instruments]
+    symbols = symbols or cfg.symbols(tier="core")
     tracker = Tracker(paths)
     per: dict[str, dict[str, Any]] = {}
     for sym in symbols:

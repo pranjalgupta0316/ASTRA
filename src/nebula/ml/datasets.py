@@ -11,13 +11,18 @@ from nebula.data.storage import read_bars
 from nebula.features.technical import FEATURE_COLUMNS, build_features
 
 
-def load_features(symbol: str, paths: Paths | None = None) -> pd.DataFrame:
+def load_features(
+    symbol: str,
+    paths: Paths | None = None,
+    window: tuple[str | None, str | None] | None = None,
+    freq: str = "1d",
+) -> pd.DataFrame:
     """Features for one instrument with provider placeholder rows excluded (V == 0 and H == L;
     for indices, whose Yahoo volume is unreliable, H == L only)."""
     inst = get_config().instrument(symbol)
-    bars = read_bars(symbol, inst.market, paths or get_paths())
+    bars = read_bars(symbol, inst.market, paths or get_paths(), freq=freq, window=window)
     flat = bars["high"] == bars["low"]
-    placeholder = flat if symbol == "NIFTY50" else flat & (bars["volume"] == 0)
+    placeholder = flat if inst.kind == "index" else flat & (bars["volume"] == 0)
     bars = bars.loc[~placeholder].reset_index(drop=True)
     f = build_features(bars)
     f["symbol"] = symbol
@@ -43,8 +48,14 @@ def lag_columns(seq_len: int = 10) -> list[str]:
     return [f"{c}_lag{k}" for k in range(seq_len - 1, -1, -1) for c in FEATURE_COLUMNS]
 
 
-def panel(symbols: list[str], seq_len: int = 10, paths: Paths | None = None) -> pd.DataFrame:
-    frames = [model_frame(load_features(s, paths), seq_len) for s in symbols]
+def panel(
+    symbols: list[str],
+    seq_len: int = 10,
+    paths: Paths | None = None,
+    window: tuple[str | None, str | None] | None = None,
+    freq: str = "1d",
+) -> pd.DataFrame:
+    frames = [model_frame(load_features(s, paths, window, freq), seq_len) for s in symbols]
     df = pd.concat(frames, ignore_index=True)
     df["session_date"] = pd.to_datetime(df["session_date"])
     return df.sort_values(["session_date", "symbol"]).reset_index(drop=True)

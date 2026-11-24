@@ -31,6 +31,7 @@ class QualityReport(BaseModel):
     symbol: str
     market: str
     provider: str
+    freq: str = "1d"
     rows: int
     first_session: str | None
     last_session: str | None
@@ -81,17 +82,47 @@ def check_nulls(df: pd.DataFrame) -> CheckResult:
     return _ok("nulls")
 
 
-def check_duplicates(df: pd.DataFrame) -> CheckResult:
-    dup = df["session_date"].duplicated(keep=False)
+def check_duplicates(df: pd.DataFrame, key: str = "session_date") -> CheckResult:
+    dup = df[key].duplicated(keep=False)
     if dup.any():
         return CheckResult(
             name="duplicates",
             status="fail",
             count=int(dup.sum()),
-            details="duplicate session_date rows",
-            examples=_examples(df.loc[dup, "session_date"]),
+            details=f"duplicate {key} rows",
+            examples=_examples(df.loc[dup, key]),
         )
     return _ok("duplicates")
+
+
+def check_intraday_continuity(df: pd.DataFrame, freq: str) -> CheckResult:
+    """24/7 intraday bars: every expected bar between first and last should exist. Exchange outages
+    (e.g. Binance maintenance) produce real gaps - warn below 2% missing, fail above."""
+    ts = pd.DatetimeIndex(pd.to_datetime(df["open_time_utc"], utc=True))
+    if ts.empty:
+        return CheckResult(name="sessions", status="fail", details="no rows")
+    step = {"1m": "1min", "5m": "5min", "15m": "15min", "1h": "1h", "4h": "4h"}[freq]
+    expected = pd.date_range(ts.min(), ts.max(), freq=step)
+    missing = expected.difference(ts)
+    off_grid = ts.difference(expected)
+    frac = len(missing) / max(len(expected), 1)
+    status: Status = (
+        "pass" if not len(missing) and not len(off_grid) else ("warn" if frac <= 0.02 else "fail")
+    )
+    if len(off_grid):
+        status = "fail"
+    # summarize gaps as contiguous runs (an outage is one run, not hundreds of bars)
+    runs = 0
+    if len(missing):
+        runs = int((pd.Series(missing).diff() != pd.Timedelta(step)).sum())
+    return CheckResult(
+        name="sessions",
+        status=status,
+        count=len(missing) + len(off_grid),
+        details=f"expected={len(expected)} present={len(ts)} missing={len(missing)} ({frac:.3%}) "
+        f"in {runs} gap(s); off-grid={len(off_grid)}",
+        examples=_examples(pd.Index(missing).strftime("%Y-%m-%d %H:%M")),
+    )
 
 
 def check_monotonic(df: pd.DataFrame) -> CheckResult:
@@ -218,16 +249,17 @@ def check_corporate_actions(df: pd.DataFrame) -> CheckResult:
     return _ok("corporate_actions", f"dividends={n_div} splits={n_split}; factor monotone")
 
 
-def validate_bars(df: pd.DataFrame, market: MarketConfig) -> QualityReport:
+def validate_bars(df: pd.DataFrame, market: MarketConfig, freq: str = "1d") -> QualityReport:
     checks = [check_schema(df)]
     if checks[0].status != "fail":
+        daily = freq == "1d"
         checks += [
             check_nulls(df),
-            check_duplicates(df),
+            check_duplicates(df, "session_date" if daily else "open_time_utc"),
             check_monotonic(df),
             check_prices(df),
             check_volume(df),
-            check_sessions(df, market),
+            check_sessions(df, market) if daily else check_intraday_continuity(df, freq),
             check_outlier_returns(df),
             check_corporate_actions(df),
         ]
@@ -237,6 +269,7 @@ def validate_bars(df: pd.DataFrame, market: MarketConfig) -> QualityReport:
         symbol=str(df["symbol"].iloc[0]) if len(df) and "symbol" in df else "?",
         market=str(df["market"].iloc[0]) if len(df) and "market" in df else "?",
         provider=str(df["provider"].iloc[0]) if len(df) and "provider" in df else "?",
+        freq=freq,
         rows=len(df),
         first_session=first,
         last_session=last,

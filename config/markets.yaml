@@ -7,6 +7,7 @@ markets:
     exchange_tz: America/New_York
     currency: USD
     periods_per_year: 252
+    start: "2000-01-01"
     costs_bps: {commission: 0.0, half_spread: 1.0, slippage: 2.0, sell_tax: 0.3}
   IN:
     description: Indian equities (NSE symbols via Yahoo '.NS')
@@ -14,6 +15,7 @@ markets:
     exchange_tz: Asia/Kolkata
     currency: INR
     periods_per_year: 252
+    start: "2000-01-01"
     # STT on delivery 0.1% per side dominates; exchange + stamp approximated in commission
     costs_bps: {commission: 1.5, half_spread: 2.0, slippage: 3.0, sell_tax: 10.0, buy_tax: 10.0}
   CRYPTO:
@@ -22,26 +24,134 @@ markets:
     exchange_tz: UTC
     currency: USDT
     periods_per_year: 365
+    start: "2017-08-01"
     costs_bps: {commission: 10.0, half_spread: 1.0, slippage: 2.0}
 
 instruments:
+  # ---------------- core: the 13 instruments behind every hypothesis registered on 2026-11-24 --------
   - {symbol: AAPL, market: US, provider: yahoo, provider_symbol: AAPL, exchange: NASDAQ}
   - {symbol: RELIANCE, market: IN, provider: yahoo, provider_symbol: RELIANCE.NS, exchange: NSE}
-  - {symbol: BTCUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: BTCUSDT, exchange: BINANCE}
-  # expansion universe (added after the vertical slice passed audit, 2026-11-24)
+  - {symbol: BTCUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: BTCUSDT, exchange: BINANCE, kind: crypto, intraday: [1h, 1m]}
   - {symbol: MSFT, market: US, provider: yahoo, provider_symbol: MSFT, exchange: NASDAQ}
   - {symbol: NVDA, market: US, provider: yahoo, provider_symbol: NVDA, exchange: NASDAQ}
-  - {symbol: SPY, market: US, provider: yahoo, provider_symbol: SPY, exchange: NYSEARCA}
-  - {symbol: QQQ, market: US, provider: yahoo, provider_symbol: QQQ, exchange: NASDAQ}
+  - {symbol: SPY, market: US, provider: yahoo, provider_symbol: SPY, exchange: NYSEARCA, kind: etf}
+  - {symbol: QQQ, market: US, provider: yahoo, provider_symbol: QQQ, exchange: NASDAQ, kind: etf}
   - {symbol: TCS, market: IN, provider: yahoo, provider_symbol: TCS.NS, exchange: NSE}
   - {symbol: INFY, market: IN, provider: yahoo, provider_symbol: INFY.NS, exchange: NSE}
   - {symbol: HDFCBANK, market: IN, provider: yahoo, provider_symbol: HDFCBANK.NS, exchange: NSE}
-  - {symbol: NIFTY50, market: IN, provider: yahoo, provider_symbol: ^NSEI, exchange: NSE}
-  - {symbol: ETHUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: ETHUSDT, exchange: BINANCE}
-  - {symbol: SOLUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: SOLUSDT, exchange: BINANCE}
+  - {symbol: NIFTY50, market: IN, provider: yahoo, provider_symbol: ^NSEI, exchange: NSE, kind: index}
+  - {symbol: ETHUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: ETHUSDT, exchange: BINANCE, kind: crypto, intraday: [1h, 1m]}
+  - {symbol: SOLUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: SOLUSDT, exchange: BINANCE, kind: crypto, intraday: [1h]}
 
-# Instruments never used to design a hypothesis - held out for confirmatory tests (e.g. H-XM-003)
+  # ---------------- extended (added 2026-11-25): today's large caps -> SURVIVORSHIP-BIASED ----------
+  # US large caps
+  - {symbol: AMZN, market: US, provider: yahoo, provider_symbol: AMZN, exchange: US, tier: extended}
+  - {symbol: GOOGL, market: US, provider: yahoo, provider_symbol: GOOGL, exchange: US, tier: extended}
+  - {symbol: META, market: US, provider: yahoo, provider_symbol: META, exchange: US, tier: extended}
+  - {symbol: BRK_B, market: US, provider: yahoo, provider_symbol: BRK-B, exchange: US, tier: extended}
+  - {symbol: JPM, market: US, provider: yahoo, provider_symbol: JPM, exchange: US, tier: extended}
+  - {symbol: V, market: US, provider: yahoo, provider_symbol: V, exchange: US, tier: extended}
+  - {symbol: JNJ, market: US, provider: yahoo, provider_symbol: JNJ, exchange: US, tier: extended}
+  - {symbol: UNH, market: US, provider: yahoo, provider_symbol: UNH, exchange: US, tier: extended}
+  - {symbol: XOM, market: US, provider: yahoo, provider_symbol: XOM, exchange: US, tier: extended}
+  - {symbol: PG, market: US, provider: yahoo, provider_symbol: PG, exchange: US, tier: extended}
+  - {symbol: MA, market: US, provider: yahoo, provider_symbol: MA, exchange: US, tier: extended}
+  - {symbol: HD, market: US, provider: yahoo, provider_symbol: HD, exchange: US, tier: extended}
+  - {symbol: CVX, market: US, provider: yahoo, provider_symbol: CVX, exchange: US, tier: extended}
+  - {symbol: KO, market: US, provider: yahoo, provider_symbol: KO, exchange: US, tier: extended}
+  - {symbol: PEP, market: US, provider: yahoo, provider_symbol: PEP, exchange: US, tier: extended}
+  - {symbol: ABBV, market: US, provider: yahoo, provider_symbol: ABBV, exchange: US, tier: extended}
+  - {symbol: MRK, market: US, provider: yahoo, provider_symbol: MRK, exchange: US, tier: extended}
+  - {symbol: COST, market: US, provider: yahoo, provider_symbol: COST, exchange: US, tier: extended}
+  - {symbol: WMT, market: US, provider: yahoo, provider_symbol: WMT, exchange: US, tier: extended}
+  - {symbol: BAC, market: US, provider: yahoo, provider_symbol: BAC, exchange: US, tier: extended}
+  - {symbol: DIS, market: US, provider: yahoo, provider_symbol: DIS, exchange: US, tier: extended}
+  - {symbol: CSCO, market: US, provider: yahoo, provider_symbol: CSCO, exchange: US, tier: extended}
+  - {symbol: ORCL, market: US, provider: yahoo, provider_symbol: ORCL, exchange: US, tier: extended}
+  - {symbol: INTC, market: US, provider: yahoo, provider_symbol: INTC, exchange: US, tier: extended}
+  - {symbol: AMD, market: US, provider: yahoo, provider_symbol: AMD, exchange: US, tier: extended}
+  - {symbol: NFLX, market: US, provider: yahoo, provider_symbol: NFLX, exchange: US, tier: extended}
+  - {symbol: ADBE, market: US, provider: yahoo, provider_symbol: ADBE, exchange: US, tier: extended}
+  # US ETFs (broad, bonds, gold, sectors)
+  - {symbol: IWM, market: US, provider: yahoo, provider_symbol: IWM, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: DIA, market: US, provider: yahoo, provider_symbol: DIA, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: TLT, market: US, provider: yahoo, provider_symbol: TLT, exchange: NASDAQ, kind: etf, tier: extended}
+  - {symbol: GLD, market: US, provider: yahoo, provider_symbol: GLD, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLK, market: US, provider: yahoo, provider_symbol: XLK, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLF, market: US, provider: yahoo, provider_symbol: XLF, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLE, market: US, provider: yahoo, provider_symbol: XLE, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLV, market: US, provider: yahoo, provider_symbol: XLV, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLY, market: US, provider: yahoo, provider_symbol: XLY, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLP, market: US, provider: yahoo, provider_symbol: XLP, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLI, market: US, provider: yahoo, provider_symbol: XLI, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLU, market: US, provider: yahoo, provider_symbol: XLU, exchange: NYSEARCA, kind: etf, tier: extended}
+  - {symbol: XLB, market: US, provider: yahoo, provider_symbol: XLB, exchange: NYSEARCA, kind: etf, tier: extended}
+  # India: large NSE names approximating the current NIFTY 50 (current membership -> survivorship)
+  - {symbol: ICICIBANK, market: IN, provider: yahoo, provider_symbol: ICICIBANK.NS, exchange: NSE, tier: extended}
+  - {symbol: HINDUNILVR, market: IN, provider: yahoo, provider_symbol: HINDUNILVR.NS, exchange: NSE, tier: extended}
+  - {symbol: ITC, market: IN, provider: yahoo, provider_symbol: ITC.NS, exchange: NSE, tier: extended}
+  - {symbol: SBIN, market: IN, provider: yahoo, provider_symbol: SBIN.NS, exchange: NSE, tier: extended}
+  - {symbol: BHARTIARTL, market: IN, provider: yahoo, provider_symbol: BHARTIARTL.NS, exchange: NSE, tier: extended}
+  - {symbol: KOTAKBANK, market: IN, provider: yahoo, provider_symbol: KOTAKBANK.NS, exchange: NSE, tier: extended}
+  - {symbol: LT, market: IN, provider: yahoo, provider_symbol: LT.NS, exchange: NSE, tier: extended}
+  - {symbol: AXISBANK, market: IN, provider: yahoo, provider_symbol: AXISBANK.NS, exchange: NSE, tier: extended}
+  - {symbol: BAJFINANCE, market: IN, provider: yahoo, provider_symbol: BAJFINANCE.NS, exchange: NSE, tier: extended}
+  - {symbol: ASIANPAINT, market: IN, provider: yahoo, provider_symbol: ASIANPAINT.NS, exchange: NSE, tier: extended}
+  - {symbol: MARUTI, market: IN, provider: yahoo, provider_symbol: MARUTI.NS, exchange: NSE, tier: extended}
+  - {symbol: HCLTECH, market: IN, provider: yahoo, provider_symbol: HCLTECH.NS, exchange: NSE, tier: extended}
+  - {symbol: SUNPHARMA, market: IN, provider: yahoo, provider_symbol: SUNPHARMA.NS, exchange: NSE, tier: extended}
+  - {symbol: TITAN, market: IN, provider: yahoo, provider_symbol: TITAN.NS, exchange: NSE, tier: extended}
+  - {symbol: ULTRACEMCO, market: IN, provider: yahoo, provider_symbol: ULTRACEMCO.NS, exchange: NSE, tier: extended}
+  - {symbol: WIPRO, market: IN, provider: yahoo, provider_symbol: WIPRO.NS, exchange: NSE, tier: extended}
+  - {symbol: NESTLEIND, market: IN, provider: yahoo, provider_symbol: NESTLEIND.NS, exchange: NSE, tier: extended}
+  - {symbol: ONGC, market: IN, provider: yahoo, provider_symbol: ONGC.NS, exchange: NSE, tier: extended}
+  - {symbol: NTPC, market: IN, provider: yahoo, provider_symbol: NTPC.NS, exchange: NSE, tier: extended}
+  - {symbol: POWERGRID, market: IN, provider: yahoo, provider_symbol: POWERGRID.NS, exchange: NSE, tier: extended}
+  - {symbol: TATASTEEL, market: IN, provider: yahoo, provider_symbol: TATASTEEL.NS, exchange: NSE, tier: extended}
+  - {symbol: MM, market: IN, provider: yahoo, provider_symbol: M&M.NS, exchange: NSE, tier: extended}
+  - {symbol: JSWSTEEL, market: IN, provider: yahoo, provider_symbol: JSWSTEEL.NS, exchange: NSE, tier: extended}
+  - {symbol: ADANIPORTS, market: IN, provider: yahoo, provider_symbol: ADANIPORTS.NS, exchange: NSE, tier: extended}
+  - {symbol: TECHM, market: IN, provider: yahoo, provider_symbol: TECHM.NS, exchange: NSE, tier: extended}
+  - {symbol: HINDALCO, market: IN, provider: yahoo, provider_symbol: HINDALCO.NS, exchange: NSE, tier: extended}
+  - {symbol: GRASIM, market: IN, provider: yahoo, provider_symbol: GRASIM.NS, exchange: NSE, tier: extended}
+  - {symbol: COALINDIA, market: IN, provider: yahoo, provider_symbol: COALINDIA.NS, exchange: NSE, tier: extended}
+  - {symbol: BAJAJFINSV, market: IN, provider: yahoo, provider_symbol: BAJAJFINSV.NS, exchange: NSE, tier: extended}
+  - {symbol: DRREDDY, market: IN, provider: yahoo, provider_symbol: DRREDDY.NS, exchange: NSE, tier: extended}
+  - {symbol: CIPLA, market: IN, provider: yahoo, provider_symbol: CIPLA.NS, exchange: NSE, tier: extended}
+  - {symbol: BRITANNIA, market: IN, provider: yahoo, provider_symbol: BRITANNIA.NS, exchange: NSE, tier: extended}
+  - {symbol: EICHERMOT, market: IN, provider: yahoo, provider_symbol: EICHERMOT.NS, exchange: NSE, tier: extended}
+  - {symbol: HEROMOTOCO, market: IN, provider: yahoo, provider_symbol: HEROMOTOCO.NS, exchange: NSE, tier: extended}
+  - {symbol: APOLLOHOSP, market: IN, provider: yahoo, provider_symbol: APOLLOHOSP.NS, exchange: NSE, tier: extended}
+  - {symbol: BPCL, market: IN, provider: yahoo, provider_symbol: BPCL.NS, exchange: NSE, tier: extended}
+  - {symbol: TATACONSUM, market: IN, provider: yahoo, provider_symbol: TATACONSUM.NS, exchange: NSE, tier: extended}
+  - {symbol: SBILIFE, market: IN, provider: yahoo, provider_symbol: SBILIFE.NS, exchange: NSE, tier: extended}
+  - {symbol: HDFCLIFE, market: IN, provider: yahoo, provider_symbol: HDFCLIFE.NS, exchange: NSE, tier: extended}
+  - {symbol: INDUSINDBK, market: IN, provider: yahoo, provider_symbol: INDUSINDBK.NS, exchange: NSE, tier: extended}
+  - {symbol: BAJAJ_AUTO, market: IN, provider: yahoo, provider_symbol: BAJAJ-AUTO.NS, exchange: NSE, tier: extended}
+  - {symbol: SHRIRAMFIN, market: IN, provider: yahoo, provider_symbol: SHRIRAMFIN.NS, exchange: NSE, tier: extended}
+  - {symbol: TRENT, market: IN, provider: yahoo, provider_symbol: TRENT.NS, exchange: NSE, tier: extended}
+  - {symbol: BEL, market: IN, provider: yahoo, provider_symbol: BEL.NS, exchange: NSE, tier: extended}
+  - {symbol: ADANIENT, market: IN, provider: yahoo, provider_symbol: ADANIENT.NS, exchange: NSE, tier: extended}
+  # Crypto majors (Binance spot USDT pairs)
+  - {symbol: BNBUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: BNBUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: XRPUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: XRPUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: ADAUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: ADAUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: DOGEUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: DOGEUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: LTCUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: LTCUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: LINKUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: LINKUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: DOTUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: DOTUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: TRXUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: TRXUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: AVAXUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: AVAXUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: BCHUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: BCHUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: ATOMUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: ATOMUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: XLMUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: XLMUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+  - {symbol: ETCUSDT, market: CRYPTO, provider: binance_vision, provider_symbol: ETCUSDT, exchange: BINANCE, kind: crypto, tier: extended, intraday: [1h]}
+
+# Core instruments never used to design a hypothesis - held out for confirmatory tests (e.g. H-XM-003)
 holdout: [MSFT, NVDA, SPY, QQQ, TCS, INFY, HDFCBANK, NIFTY50, ETHUSDT, SOLUSDT]
 
 defaults:
   start: "2018-01-01"
+  # Frozen sample of every hypothesis registered on the core universe on 2026-11-24 (reproducibility):
+  core_start: "2018-01-01"
+  core_end: "2026-11-23"

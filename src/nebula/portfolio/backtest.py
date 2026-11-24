@@ -90,11 +90,16 @@ class PortfolioBacktestResult:
         return self.ledger["equity_net"]
 
 
-def load_market_panel(market: str, symbols: list[str], paths: Paths | None = None) -> MarketPanel:
+def load_market_panel(
+    market: str,
+    symbols: list[str],
+    paths: Paths | None = None,
+    window: tuple[str | None, str | None] | None = None,
+) -> MarketPanel:
     """Read validated bars, drop provider placeholder rows (volume 0 and H == L), adjust prices."""
     opens, closes, vols, excluded = {}, {}, {}, {}
     for s in symbols:
-        bars = read_bars(s, market, paths)
+        bars = read_bars(s, market, paths, window=window)
         ph = (bars["volume"] == 0) & (bars["high"] == bars["low"])
         excluded[s] = [str(d) for d in bars.loc[ph, "session_date"]]
         adj = adjusted_ohlc(bars.loc[~ph].reset_index(drop=True)).set_index("session_date")

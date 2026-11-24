@@ -56,6 +56,16 @@ def _months(start: date, end_exclusive: date) -> list[str]:
     return out
 
 
+INTERVALS: dict[str, timedelta] = {
+    "1m": timedelta(minutes=1),
+    "5m": timedelta(minutes=5),
+    "15m": timedelta(minutes=15),
+    "1h": timedelta(hours=1),
+    "4h": timedelta(hours=4),
+    "1d": timedelta(days=1),
+}
+
+
 class BinanceVisionAdapter:
     name = "binance_vision"
 
@@ -70,6 +80,18 @@ class BinanceVisionAdapter:
     def fetch_daily(
         self, instrument: InstrumentConfig, start: str, end: str | None, raw_dir: Path
     ) -> RawBatch:
+        return self.fetch(instrument, start, end, raw_dir, interval="1d")
+
+    def normalize_daily(self, batch: RawBatch, market: MarketConfig) -> pd.DataFrame:
+        return self.normalize(batch, market)
+
+    def fetch(
+        self, instrument: InstrumentConfig, start: str, end: str | None, raw_dir: Path, interval: str = "1d"
+    ) -> RawBatch:
+        """Klines at `interval` (e.g. 1d, 1h, 1m): complete monthly files, then daily files for the
+        current month up to yesterday (today's bars may be incomplete and are never fetched)."""
+        if interval not in INTERVALS:
+            raise ValueError(f"unsupported interval {interval!r}; use one of {sorted(INTERVALS)}")
         sym = instrument.provider_symbol
         retrieved = datetime.now(UTC)
         start_d = pd.Timestamp(start).date()
@@ -79,16 +101,16 @@ class BinanceVisionAdapter:
         files: list[Path] = []
         notes: list[str] = []
         for ym in _months(start_d, month_start):
-            name = f"{sym}-1d-{ym}.zip"
-            p = self._download(f"{BASE}/monthly/klines/{sym}/1d/{name}", raw_dir / "monthly" / name)
+            name = f"{sym}-{interval}-{ym}.zip"
+            p = self._download(f"{BASE}/monthly/klines/{sym}/{interval}/{name}", raw_dir / "monthly" / name)
             if p is None:
                 notes.append(f"monthly file not published: {name}")
             else:
                 files.append(p)
         d = max(month_start, start_d)
         while d < end_d:  # daily files for the current month; today's bar is incomplete -> excluded
-            name = f"{sym}-1d-{d.isoformat()}.zip"
-            p = self._download(f"{BASE}/daily/klines/{sym}/1d/{name}", raw_dir / "daily" / name)
+            name = f"{sym}-{interval}-{d.isoformat()}.zip"
+            p = self._download(f"{BASE}/daily/klines/{sym}/{interval}/{name}", raw_dir / "daily" / name)
             if p is None:
                 notes.append(f"daily file not yet published: {name}")
             else:
@@ -114,15 +136,16 @@ class BinanceVisionAdapter:
             retrieved_at_utc=retrieved,
             frame=df,
             files=files,
-            request={"symbol": sym, "start": start, "end": str(end_d), "interval": "1d", "base": BASE},
+            request={"symbol": sym, "start": start, "end": str(end_d), "interval": interval, "base": BASE},
             notes=notes,
         )
 
-    def normalize_daily(self, batch: RawBatch, market: MarketConfig) -> pd.DataFrame:
+    def normalize(self, batch: RawBatch, market: MarketConfig) -> pd.DataFrame:
         raw = batch.frame
         inst = batch.instrument
+        step = INTERVALS[batch.request.get("interval", "1d")]
         open_utc = _to_utc(raw["open_time"])
-        close_utc = open_utc + pd.Timedelta(days=1)  # Binance close_time is open+1d-1unit; use the boundary
+        close_utc = open_utc + step  # Binance close_time is open+step-1unit; use the boundary
         out = pd.DataFrame(
             {
                 "session_date": open_utc.dt.date,

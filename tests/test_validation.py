@@ -75,6 +75,32 @@ def test_schema_missing_column(us_bars):
     assert rep.status == "fail" and len(rep.checks) == 1
 
 
+def _hourly(n=500):
+    from nebula.data.contracts import BAR_COLUMNS
+
+    t = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
+    df = pd.DataFrame({c: 1.0 for c in BAR_COLUMNS}, index=range(n))
+    df["open_time_utc"], df["close_time_utc"] = t, t + pd.Timedelta(hours=1)
+    df["session_date"] = t.date
+    df[["symbol", "provider_symbol", "market", "exchange", "exchange_tz", "currency", "provider"]] = "X"
+    df["ingested_at_utc"] = pd.Timestamp("2026-01-01", tz="UTC")
+    df["open"] = df["high"] = df["low"] = df["close"] = df["adj_close"] = 100.0
+    return df
+
+
+def test_intraday_continuity_and_duplicate_key():
+    ok = validate_bars(_hourly(), CRYPTO, freq="1h")
+    assert _status(ok, "sessions") == "pass" and _status(ok, "duplicates") == "pass"
+    # an outage of 5 hours = one gap run, 1% missing -> warn
+    gap = _hourly().drop(index=range(100, 105)).reset_index(drop=True)
+    s = next(c for c in validate_bars(gap, CRYPTO, freq="1h").checks if c.name == "sessions")
+    assert s.status == "warn" and s.count == 5 and "in 1 gap" in s.details
+    # many bars per session_date must not count as duplicates intraday
+    assert _status(validate_bars(_hourly(), CRYPTO, freq="1h"), "duplicates") == "pass"
+    big = _hourly().drop(index=range(50, 120)).reset_index(drop=True)
+    assert _status(validate_bars(big, CRYPTO, freq="1h"), "sessions") == "fail"
+
+
 def test_validation_does_not_mutate(us_bars):
     before = us_bars.copy()
     validate_bars(us_bars, US)

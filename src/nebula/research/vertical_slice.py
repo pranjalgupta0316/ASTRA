@@ -88,7 +88,7 @@ def run_symbol(symbol: str, paths: Paths | None = None) -> dict[str, Any]:
     inst = cfg.instrument(symbol)
     mkt = cfg.markets[inst.market]
     ppy = mkt.periods_per_year
-    bars = read_bars(symbol, inst.market, paths)
+    bars = read_bars(symbol, inst.market, paths, window=cfg.core_window())
     manifest = read_manifest(symbol, inst.market, paths)
     datasets = [manifest]
     # Provider placeholder rows (no trading: volume 0 and H == L) are excluded from research, not

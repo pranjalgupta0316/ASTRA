@@ -31,7 +31,7 @@ def run_holdout_tsmom(symbols: list[str] | None = None, paths: Paths | None = No
         inst = cfg.instrument(sym)
         mkt = cfg.markets[inst.market]
         ppy = mkt.periods_per_year
-        f = load_features(sym, paths)
+        f = load_features(sym, paths, window=cfg.core_window())
         bt = (
             pd.DataFrame(
                 {

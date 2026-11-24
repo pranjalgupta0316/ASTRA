@@ -30,19 +30,50 @@ def env() -> None:
 
 @app.command()
 def ingest(
-    symbols: list[str] = typer.Argument(None), start: str | None = None, end: str | None = None
+    symbols: list[str] = typer.Argument(None),
+    start: str | None = None,
+    end: str | None = None,
+    tier: str | None = typer.Option(None, help="core | extended (default: all)"),
+    intraday: bool = typer.Option(False, help="ingest each instrument's configured intraday frequencies"),
 ) -> None:
-    """Fetch, validate and store daily bars (default: all configured instruments)."""
+    """Fetch, validate and store bars (default: daily bars for all configured instruments)."""
     from nebula.data.ingest import ingest_symbol
 
-    syms = symbols or [i.symbol for i in get_config().instruments]
-    failed = False
+    cfg = get_config()
+    syms = symbols or cfg.symbols(tier=tier)
+    failed: list[str] = []
     for s in syms:
-        res = ingest_symbol(s, start=start, end=end)
-        typer.echo(res.report.summary())
-        typer.echo(f"  raw: {res.raw_file}\n  validated: {res.validated_file}")
-        failed |= res.validated_file is None
+        freqs = cfg.instrument(s).intraday if intraday else ["1d"]
+        for f in freqs:
+            try:
+                res = ingest_symbol(s, start=start, end=end, freq=f)
+            except Exception as exc:  # keep going; report every failure at the end
+                typer.echo(f"{s} [{f}] FAILED: {exc!r}")
+                failed.append(f"{s}:{f}")
+                continue
+            typer.echo(f"[{f}] " + res.report.summary())
+            if res.validated_file is None:
+                failed.append(f"{s}:{f}")
+    if failed:
+        typer.echo(f"failed: {failed}")
     raise typer.Exit(code=1 if failed else 0)
+
+
+@app.command("ingest-fundamentals")
+def ingest_fundamentals() -> None:
+    """SEC EDGAR companyfacts for US stocks (point-in-time; generic User-Agent unless SEC_USER_AGENT set)."""
+    from nebula.data.fundamentals import ingest_sec
+
+    typer.echo(json.dumps(ingest_sec(), indent=2, default=str)[:20000])
+
+
+@app.command("ingest-macro")
+def ingest_macro() -> None:
+    """Market macro (Yahoo: yields, VIX, DXY, USD/INR) + BLS CPI/unemployment. FRED is manual-CSV only."""
+    from nebula.data.macro import ingest_bls, ingest_market_macro
+
+    for res in (ingest_market_macro(), ingest_bls()):
+        typer.echo(json.dumps(res, indent=2, default=str)[:20000])
 
 
 @app.command()
@@ -50,7 +81,7 @@ def research(symbols: list[str] = typer.Argument(None)) -> None:
     """Run the vertical-slice research (H-XM-000/001/002) for each symbol."""
     from nebula.research.vertical_slice import run_symbol
 
-    syms = symbols or [i.symbol for i in get_config().instruments]
+    syms = symbols or get_config().symbols(tier="core")
     for s in syms:
         typer.echo(json.dumps(run_symbol(s), indent=2, default=str))
 

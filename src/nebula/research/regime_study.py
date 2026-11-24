@@ -93,7 +93,7 @@ def run_regime_study(symbols: list[str] | None = None, paths: Paths | None = Non
     set_seed(SEED)
     paths = paths or get_paths()
     cfg = get_config()
-    symbols = symbols or [i.symbol for i in cfg.instruments]
+    symbols = symbols or cfg.symbols(tier="core")
     tracker = Tracker(paths)
     per: dict[str, dict[str, Any]] = {}
     for sym in symbols:

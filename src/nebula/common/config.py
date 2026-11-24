@@ -37,6 +37,7 @@ class MarketConfig(BaseModel):
     currency: str
     periods_per_year: int
     costs_bps: CostConfig
+    start: str | None = None  # earliest history to ingest for this market
 
     @property
     def is_24_7(self) -> bool:
@@ -49,6 +50,11 @@ class InstrumentConfig(BaseModel):
     provider: Literal["yahoo", "binance_vision"]
     provider_symbol: str
     exchange: str
+    # core = the 13 instruments behind every hypothesis registered before 2026-11-25 (their scope is
+    # frozen); extended = the broader universe added for cross-sectional and large-panel studies.
+    tier: Literal["core", "extended"] = "core"
+    kind: Literal["stock", "etf", "index", "crypto"] = "stock"
+    intraday: list[str] = Field(default_factory=list)  # extra bar frequencies to ingest, e.g. ["1h"]
 
 
 class NebulaConfig(BaseModel):
@@ -56,6 +62,25 @@ class NebulaConfig(BaseModel):
     instruments: list[InstrumentConfig]
     holdout: list[str] = Field(default_factory=list)
     defaults: dict[str, str] = Field(default_factory=dict)
+
+    def symbols(
+        self, tier: str | None = None, market: str | None = None, kind: str | None = None
+    ) -> list[str]:
+        return [
+            i.symbol
+            for i in self.instruments
+            if (tier is None or i.tier == tier)
+            and (market is None or i.market == market)
+            and (kind is None or i.kind == kind)
+        ]
+
+    def core_window(self) -> tuple[str, str]:
+        """Frozen sample of every hypothesis registered on the core universe (2026-11-24)."""
+        return self.defaults.get("core_start", "2018-01-01"), self.defaults.get("core_end", "2026-11-23")
+
+    def start_for(self, symbol: str) -> str:
+        m = self.market_of(symbol)
+        return m.start or self.defaults.get("start", "2018-01-01")
 
     def instrument(self, symbol: str) -> InstrumentConfig:
         for inst in self.instruments:

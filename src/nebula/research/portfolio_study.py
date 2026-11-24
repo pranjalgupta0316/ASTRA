@@ -191,7 +191,7 @@ def run_market(market: str, paths: Paths | None = None, tracker: Tracker | None 
     mkt = cfg.markets[market]  # type: ignore[index]
     ppy = mkt.periods_per_year
     syms = UNIVERSES[market]
-    panel: MarketPanel = load_market_panel(market, syms, paths)
+    panel: MarketPanel = load_market_panel(market, syms, paths, window=get_config().core_window())
     rets = panel.returns()
     dates = monthly_decision_dates(panel.close.index)
     cap = default_cap(market)

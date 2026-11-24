@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 
 import requests
 
+NUM_CTX = 8192
 PROMPT = (
     "Summarize this quantitative research report in at most 8 sentences for a technical reader. "
     "Do not invent numbers; quote only numbers that appear in the report; keep every caveat.\n\n"
@@ -41,7 +42,9 @@ def narrate(report_markdown: str, timeout_s: float = 120.0) -> str | None:
                 "model": model,
                 "prompt": PROMPT + report_markdown[:20000],
                 "stream": False,
-                "options": {"temperature": 0},
+                # Ollama's default context is 2048 tokens, which silently truncated reports (~6k tokens)
+                # in the benchmark; 8192 fits the RTX 4060's 8 GB with a 7B q4 model.
+                "options": {"temperature": 0, "seed": 1, "num_ctx": NUM_CTX},
             },
             timeout=timeout_s,
             allow_redirects=False,  # a local proxy must not be able to forward report contents off-machine

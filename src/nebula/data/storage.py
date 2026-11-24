@@ -34,7 +34,7 @@ def raw_dir(paths: Paths, provider: str, symbol: str, freq: str = "1d") -> Path:
 def write_raw(batch: RawBatch, paths: Paths | None = None) -> Path:
     """Persist the provider frame verbatim (immutable, timestamped) plus a metadata sidecar."""
     paths = paths or get_paths()
-    d = raw_dir(paths, batch.provider, batch.instrument.provider_symbol)
+    d = raw_dir(paths, batch.provider, batch.instrument.provider_symbol, batch.request.get("interval", "1d"))
     d.mkdir(parents=True, exist_ok=True)
     stamp = batch.retrieved_at_utc.strftime("%Y%m%dT%H%M%SZ")
     out = d / f"raw_{stamp}.parquet"
@@ -101,17 +101,36 @@ def write_report(report: QualityReport, paths: Paths | None = None) -> Path:
     d = paths.reports / "quality"
     d.mkdir(parents=True, exist_ok=True)
     stamp = datetime.fromisoformat(report.created_at_utc).strftime("%Y%m%dT%H%M%SZ")
-    p = d / f"{report.market}_{report.symbol}_{stamp}.json"
+    suffix = "" if report.freq == "1d" else f"_{report.freq}"
+    p = d / f"{report.market}_{report.symbol}{suffix}_{stamp}.json"
     p.write_text(report.model_dump_json(indent=2), encoding="utf-8")
     return p
 
 
-def read_bars(symbol: str, market: str, paths: Paths | None = None, freq: str = "1d") -> pd.DataFrame:
+def read_bars(
+    symbol: str,
+    market: str,
+    paths: Paths | None = None,
+    freq: str = "1d",
+    window: tuple[str | None, str | None] | None = None,
+) -> pd.DataFrame:
+    """Validated bars; `window=(start, end)` (inclusive session dates) restricts the sample, e.g. the
+    frozen sample of a registered study (see NebulaConfig.core_window)."""
     paths = paths or get_paths()
     p = validated_path(paths, market, symbol, freq)
     if not p.exists():
         raise FileNotFoundError(f"No validated data for {market}/{symbol}; run `nebula ingest` first ({p})")
-    return pq.read_table(p).to_pandas()
+    df = pq.read_table(p).to_pandas()
+    if window is not None:
+        d = pd.to_datetime(df["session_date"])
+        start, end = window
+        keep = pd.Series(True, index=df.index)
+        if start:
+            keep &= d >= pd.Timestamp(start)
+        if end:
+            keep &= d <= pd.Timestamp(end)
+        df = df.loc[keep].reset_index(drop=True)
+    return df
 
 
 def read_manifest(symbol: str, market: str, paths: Paths | None = None, freq: str = "1d") -> dict[str, Any]:

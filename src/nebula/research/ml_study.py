@@ -96,14 +96,14 @@ def run_instrument_grid(
     set_seed(SEED)
     paths = paths or get_paths()
     cfg = get_config()
-    symbols = symbols or [i.symbol for i in cfg.instruments]
+    symbols = symbols or cfg.symbols(tier="core")
     rows = []
     t0 = time.perf_counter()
     tracemalloc.start()
     reset_peak()
     for sym in symbols:
         ppy = cfg.market_of(sym).periods_per_year
-        df = model_frame(load_features(sym, paths), SEQ_LEN)
+        df = model_frame(load_features(sym, paths, window=cfg.core_window()), SEQ_LEN)
         y = df["target_up"].to_numpy()
         cv = PurgedWalkForward(min_train=2 * ppy, test_size=ppy // 4, label_horizon=2, embargo=5)
         for name in MODELS:
@@ -188,8 +188,8 @@ def run_panel(
     set_seed(SEED)
     paths = paths or get_paths()
     cfg = get_config()
-    symbols = symbols or [i.symbol for i in cfg.instruments]
-    df = panel(symbols, SEQ_LEN, paths)
+    symbols = symbols or cfg.symbols(tier="core")
+    df = panel(symbols, SEQ_LEN, paths, window=cfg.core_window())
     y = df["target_up"].to_numpy()
     t0 = time.perf_counter()
     reset_peak()
