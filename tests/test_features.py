@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.features.technical import FEATURE_COLUMNS, build_features, garman_klass_var, parkinson_var, rsi
+from astra.features.technical import FEATURE_COLUMNS, build_features, garman_klass_var, parkinson_var, rsi
 
 
 def test_features_are_causal_truncation_invariant(us_bars):
@@ -29,9 +29,9 @@ def test_targets_are_forward_looking(us_bars):
 
 def test_nonpositive_adjustment_becomes_missing(us_bars):
     """Provider error (ADANIENT 2002): adj_close <= 0 must give missing prices, never negative ones."""
-    from nebula.common.config import get_config
-    from nebula.data.validation import validate_bars
-    from nebula.features.technical import adjusted_ohlc
+    from astra.common.config import get_config
+    from astra.data.validation import validate_bars
+    from astra.features.technical import adjusted_ohlc
 
     bad = us_bars.copy()
     bad.loc[10:12, "adj_close"] = -0.01

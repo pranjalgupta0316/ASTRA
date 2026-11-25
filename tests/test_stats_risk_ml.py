@@ -6,16 +6,16 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.ml.classical import classification_metrics, logistic_factory, walk_forward_classifier
-from nebula.ml.validation import PurgedWalkForward
-from nebula.risk.metrics import cagr, expected_shortfall, max_drawdown, sortino, var_historical
-from nebula.stats.inference import (
+from astra.ml.classical import classification_metrics, logistic_factory, walk_forward_classifier
+from astra.ml.validation import PurgedWalkForward
+from astra.risk.metrics import cagr, expected_shortfall, max_drawdown, sortino, var_historical
+from astra.stats.inference import (
     deflated_sharpe_ratio,
     newey_west_tstat,
     probabilistic_sharpe_ratio,
     sharpe,
 )
-from nebula.stats.tests import ljung_box, stationarity
+from astra.stats.tests import ljung_box, stationarity
 
 
 def test_sharpe_annualization():
@@ -72,7 +72,7 @@ def test_psr_and_dsr_behaviour():
 
 
 def test_sharpe_difference_bootstrap():
-    from nebula.stats.inference import sharpe_difference_bootstrap
+    from astra.stats.inference import sharpe_difference_bootstrap
 
     rng = np.random.default_rng(11)
     a = pd.Series(rng.normal(0.0005, 0.01, 1500))

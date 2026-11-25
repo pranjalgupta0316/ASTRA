@@ -6,13 +6,13 @@ from datetime import UTC, datetime
 
 import pandas as pd
 
-from nebula.common.config import get_config
-from nebula.data.adapters.base import RawBatch
-from nebula.data.adapters.binance import BinanceVisionAdapter, _to_utc
-from nebula.data.adapters.yahoo import YahooAdapter
-from nebula.data.calendars import session_schedule
-from nebula.data.contracts import BAR_COLUMNS
-from nebula.data.validation import validate_bars
+from astra.common.config import get_config
+from astra.data.adapters.base import RawBatch
+from astra.data.adapters.binance import BinanceVisionAdapter, _to_utc
+from astra.data.adapters.yahoo import YahooAdapter
+from astra.data.calendars import session_schedule
+from astra.data.contracts import BAR_COLUMNS
+from astra.data.validation import validate_bars
 
 CFG = get_config()
 

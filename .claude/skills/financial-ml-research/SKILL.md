@@ -1,13 +1,13 @@
 ---
 name: financial-ml-research
-description: Use when building, training or evaluating NEBULA ML/DL models on financial data - classical models (linear, ridge/lasso, logistic, RF, gradient boosting, XGBoost, SVM), PyTorch MLP/LSTM/GRU/TCN/Transformer forecasters, multimodal fusion, calibration, uncertainty, feature importance, drift, or walk-forward evaluation on GPU/CPU.
+description: Use when building, training or evaluating ASTRA ML/DL models on financial data - classical models (linear, ridge/lasso, logistic, RF, gradient boosting, XGBoost, SVM), PyTorch MLP/LSTM/GRU/TCN/Transformer forecasters, multimodal fusion, calibration, uncertainty, feature importance, drift, or walk-forward evaluation on GPU/CPU.
 ---
 
-# Financial ML Research (NEBULA)
+# Financial ML Research (ASTRA)
 
 ## Purpose
 Models that beat honest baselines out of sample, or a documented record that they did not.
-Code: `src/nebula/ml/` (classical, validation), `src/nebula/dl/` (PyTorch).
+Code: `src/astra/ml/` (classical, validation), `src/astra/dl/` (PyTorch).
 
 ## Activate when
 Defining targets/labels, building feature matrices, training any model, comparing models, ablations,
@@ -26,8 +26,8 @@ choosing a validation scheme, GPU/batch-size decisions.
 7. **Track** with seed, data version, config hash, folds, metrics (experiment tracker).
 
 ## Standards
-- Deterministic seeds (`nebula.common.seed.set_seed`), `torch.backends.cudnn.benchmark=False` for repro runs.
-- Device: `nebula.dl.device.get_device()` - CUDA if available else CPU; RTX 4060 Laptop has 8 GB VRAM:
+- Deterministic seeds (`astra.common.seed.set_seed`), `torch.backends.cudnn.benchmark=False` for repro runs.
+- Device: `astra.dl.device.get_device()` - CUDA if available else CPU; RTX 4060 Laptop has 8 GB VRAM:
   start with hidden <= 128, batch <= 512 for daily data; log `torch.cuda.max_memory_allocated`.
 - Class imbalance: report base rate; AUC alone hides it.
 - Calibration: reliability curve + Brier; isotonic only fit on validation fold.

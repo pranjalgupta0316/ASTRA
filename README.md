@@ -1,4 +1,4 @@
-# NEBULA
+# ASTRA
 
 Local-first quantitative research and AI/ML platform for **US equities, Indian equities and crypto**,
 built for rigor over demo value: free data with provenance and quality reports, causal features,
@@ -16,15 +16,15 @@ every failed and inconclusive result.
 ```powershell
 uv sync --all-extras                  # Python 3.12 + deps (PyTorch CUDA 12.8; CPU fallback works)
 uv run pytest -m "not network"        # offline test suite
-uv run nebula ingest                  # daily bars, 111 instruments (Yahoo + Binance)
-uv run nebula ingest --intraday       # hourly crypto (16 pairs) + 1-minute BTC/ETH
-uv run nebula ingest-fundamentals     # SEC EDGAR point-in-time facts (30 US stocks)
-uv run nebula ingest-macro            # Yahoo yields/VIX/DXY/USDINR + BLS CPI/unemployment
-uv run nebula run-all --skip-ingest   # every study (~45 min; --heavy-dl adds ~3 h of MLP/GRU)
-uv run nebula dashboard               # http://127.0.0.1:8501
+uv run astra ingest                  # daily bars, 111 instruments (Yahoo + Binance)
+uv run astra ingest --intraday       # hourly crypto (16 pairs) + 1-minute BTC/ETH
+uv run astra ingest-fundamentals     # SEC EDGAR point-in-time facts (30 US stocks)
+uv run astra ingest-macro            # Yahoo yields/VIX/DXY/USDINR + BLS CPI/unemployment
+uv run astra run-all --skip-ingest   # every study (~45 min; --heavy-dl adds ~3 h of MLP/GRU)
+uv run astra dashboard               # http://127.0.0.1:8501
 ```
 
-## Commands (`uv run nebula --help`)
+## Commands (`uv run astra --help`)
 | command | what it does |
 |---|---|
 | `env` | hardware / GPU / library report |
@@ -40,8 +40,8 @@ uv run nebula dashboard               # http://127.0.0.1:8501
 | `run-all`, `dashboard` | reproduce everything; Streamlit dashboard on localhost |
 
 Long order-book captures with a hard disk cap: `uv run python scripts/capture_depth.py --duration 3600`.
-Optional local LLM: install Ollama, `ollama pull qwen2.5:7b`, set `NEBULA_LLM_URL=http://127.0.0.1:11434`
-and `NEBULA_LLM_MODEL=qwen2.5:7b`, then `uv run nebula report --llm`.
+Optional local LLM: install Ollama, `ollama pull qwen2.5:7b`, set `ASTRA_LLM_URL=http://127.0.0.1:11434`
+and `ASTRA_LLM_MODEL=qwen2.5:7b`, then `uv run astra report --llm`.
 
 ## Universe
 **Core (13, frozen sample 2018-01-01…2026-11-23 for registered studies):** AAPL, MSFT, NVDA, SPY, QQQ ·
@@ -52,7 +52,7 @@ majors - today's names, so **survivorship-biased** (stated on every result).
 ## Layout
 ```
 config/markets.yaml   markets, 111 instruments (core/extended tiers), costs, frozen core window
-src/nebula/           common, data (adapters, fundamentals, macro, validation, storage), features, stats,
+src/astra/           common, data (adapters, fundamentals, macro, validation, storage), features, stats,
                       ml, dl, backtest, portfolio, risk, microstructure, research, tracking, agents,
                       dashboard, cli
 tests/                unit, data-validation, quantitative-correctness, leakage canaries, dashboard, network

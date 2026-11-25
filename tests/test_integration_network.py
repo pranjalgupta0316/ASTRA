@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from nebula.common.paths import Paths
-from nebula.data.ingest import ingest_symbol
-from nebula.data.storage import query
+from astra.common.paths import Paths
+from astra.data.ingest import ingest_symbol
+from astra.data.storage import query
 
 
 @pytest.mark.network

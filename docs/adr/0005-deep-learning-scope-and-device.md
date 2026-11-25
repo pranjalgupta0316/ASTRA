@@ -1,7 +1,7 @@
 # ADR-0005: Small PyTorch models, GPU by default, results tagged with device
 
 - **Decision**: deep learning limited to small MLP (13→32→16) and GRU (hidden 16, 10-day window) behind a
-  scikit-learn-style `TorchClassifier`; CUDA when available, CPU fallback (`NEBULA_DEVICE=cpu`); every
+  scikit-learn-style `TorchClassifier`; CUDA when available, CPU fallback (`ASTRA_DEVICE=cpu`); every
   record stores the device; pooled panels are used to give DL a fair sample (~29.5k rows).
 - **Problem**: per-instrument daily samples (~1.5-2k training rows) are too small for larger networks;
   the prompt forbids large architectures before baselines work.

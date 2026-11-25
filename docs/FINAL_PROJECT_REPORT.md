@@ -1,11 +1,11 @@
-# NEBULA - final project report (v0.3)
+# ASTRA - final project report (v0.3)
 
-*2026-11-25. Numbers come from experiment records in `experiments/`; the final `nebula run-all` was run
+*2026-11-25. Numbers come from experiment records in `experiments/`; the final `astra run-all` was run
 from a clean commit (see PROJECT_STATUS). Every hypothesis was registered before it was run
 (docs/RESEARCH_HYPOTHESES.md, docs/research/H-ML.md, docs/research/H-EXT.md), and every
 trading-relevant result went through an independent audit by a separate agent that re-ran the code.*
 
-## 1. What NEBULA is
+## 1. What ASTRA is
 A local-first, ₹0-recurring-cost quantitative research platform for US equities, Indian equities and
 crypto, running on one Windows laptop (i7-14700HX, 16 GB RAM, RTX 4060 Laptop 8 GB):
 free data with provenance → validation → causal features → statistical, ML/DL, volatility, regime,
@@ -64,20 +64,20 @@ and the larger the cost relative to the move it predicts.
   and forced fixes for: a hindsight ML baseline, a fragile canary, cost borrowing, an excluded data
   package (.gitignore), Yahoo in-progress bars, benchmark cash drag (rebalance tolerance), an
   under-invested buy-and-hold benchmark, panel DM weighting, and more. Superseded records are kept.
-- Reproducibility: frozen sample windows for registered core studies; `nebula run-all` reproduces all
+- Reproducibility: frozen sample windows for registered core studies; `astra run-all` reproduces all
   studies; two earlier full reruns matched bit-for-bit on 86/86 records.
 
 ## 5. Limitations
 Survivorship-biased universes (today's names); assumed spreads for equities; one venue and one night of
 order-book data; revised (not first-release) macro; no Indian fundamentals; no news data; DL results
-device-dependent; GRU on the full panel near the laptop's memory limits. NEBULA is a research
+device-dependent; GRU on the full panel near the laptop's memory limits. ASTRA is a research
 platform, **not** production trading infrastructure.
 
 ## 6. Reproduce
 ```powershell
 uv sync --all-extras
-uv run nebula ingest; uv run nebula ingest --intraday; uv run nebula ingest-fundamentals; uv run nebula ingest-macro
-uv run nebula run-all --skip-ingest            # add --heavy-dl for the ~3 h MLP/GRU runs
+uv run astra ingest; uv run astra ingest --intraday; uv run astra ingest-fundamentals; uv run astra ingest-macro
+uv run astra run-all --skip-ingest            # add --heavy-dl for the ~3 h MLP/GRU runs
 uv run pytest -m "not network"
-uv run nebula dashboard
+uv run astra dashboard
 ```

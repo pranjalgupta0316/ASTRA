@@ -1,21 +1,21 @@
 ---
 name: market-microstructure
-description: Use when working on NEBULA limit-order-book or trade-level analytics - L1/L2/L3 data semantics, Binance depth-stream capture and order-book reconstruction, sequence-gap detection, spread, microprice, order-flow and trade imbalance, liquidity, price impact, queue position or adverse selection.
+description: Use when working on ASTRA limit-order-book or trade-level analytics - L1/L2/L3 data semantics, Binance depth-stream capture and order-book reconstruction, sequence-gap detection, spread, microprice, order-flow and trade imbalance, liquidity, price impact, queue position or adverse selection.
 ---
 
-# Market Microstructure (NEBULA)
+# Market Microstructure (ASTRA)
 
 ## Purpose
-Analytics that are honest about the data level actually available. Code: `src/nebula/microstructure/`,
+Analytics that are honest about the data level actually available. Code: `src/astra/microstructure/`,
 independent of the daily OHLCV pipeline.
 
 ## Activate when
 Capturing or parsing trades/depth, reconstructing a book, computing spread/microprice/OFI/imbalance or
-impact, or making any claim about what order-book data NEBULA has.
+impact, or making any claim about what order-book data ASTRA has.
 
 ## Data levels (never blur these)
 - **L1**: best bid/ask (+ sizes). **L2 / market-by-price**: aggregated size per price level.
-- **L3 / market-by-order**: individual orders with IDs. Binance public streams are **L2 only**; NEBULA
+- **L3 / market-by-order**: individual orders with IDs. Binance public streams are **L2 only**; ASTRA
   has **no L3** source and must not claim queue-position accuracy beyond L2 approximations.
 - Historical free data: Binance aggTrades/trades yes; historical spot depth **no**. Order-book research
   is therefore **prospective**: capture now, analyse later.

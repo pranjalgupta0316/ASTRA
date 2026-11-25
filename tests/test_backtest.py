@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.backtest.audit import cost_sensitivity, leakage_canary
-from nebula.backtest.engine import BacktestConfig, buy_and_hold, run_backtest, run_gross, signal_strategy
-from nebula.common.config import CostConfig
-from nebula.features.technical import build_features
+from astra.backtest.audit import cost_sensitivity, leakage_canary
+from astra.backtest.engine import BacktestConfig, buy_and_hold, run_backtest, run_gross, signal_strategy
+from astra.common.config import CostConfig
+from astra.features.technical import build_features
 
 
 def toy() -> pd.DataFrame:

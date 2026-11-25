@@ -1,4 +1,4 @@
-"""Offline, synthetic tests for nebula.microstructure (no network)."""
+"""Offline, synthetic tests for astra.microstructure (no network)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import numpy as np
 import polars as pl
 import pytest
 
-from nebula.microstructure.orderbook import (
+from astra.microstructure.orderbook import (
     DepthEvent,
     DepthSnapshot,
     OrderBook,
@@ -23,7 +23,7 @@ from nebula.microstructure.orderbook import (
     replay,
     spread_bps,
 )
-from nebula.microstructure.trades import (
+from astra.microstructure.trades import (
     aggressor_sign,
     detect_epoch_unit,
     extract_csv,
@@ -252,7 +252,7 @@ def test_kyle_lambda_recovers_slope() -> None:
 
 # ------------------------------------------------------------------ capture (offline parts)
 def test_live_sync_requests_resync_on_gap() -> None:
-    from nebula.microstructure.capture import CaptureReport, _LiveSync
+    from astra.microstructure.capture import CaptureReport, _LiveSync
 
     rep = CaptureReport(symbol="X", run_dir="")
     s = _LiveSync(rep)
@@ -271,7 +271,7 @@ def test_live_sync_requests_resync_on_gap() -> None:
 def test_long_capture_requires_disk_budget(monkeypatch: pytest.MonkeyPatch) -> None:
     import importlib.util
 
-    from nebula.microstructure.capture import CaptureReport
+    from astra.microstructure.capture import CaptureReport
 
     spec = importlib.util.spec_from_file_location(
         "capture_depth", Path(__file__).resolve().parents[1] / "scripts" / "capture_depth.py"
@@ -328,7 +328,7 @@ def _states(seg: int, t0_ms: int, mids: list[float], imb: list[float], dt_ms: in
 def test_horizon_samples_never_cross_segments() -> None:
     import pandas as pd
 
-    from nebula.research.microstructure_study import horizon_samples
+    from astra.research.microstructure_study import horizon_samples
 
     st = pd.concat(
         [_states(0, 0, [1.0, 2.0, 3.0], [0.1, 0.2, 0.3]), _states(1, 3000, [10.0, 9.0], [0.5, -0.5])],
@@ -341,7 +341,7 @@ def test_horizon_samples_never_cross_segments() -> None:
 
 
 def test_segment_block_bootstrap_counts_blocks_and_brackets_auc() -> None:
-    from nebula.research.microstructure_study import auc, segment_block_bootstrap_auc
+    from astra.research.microstructure_study import auc, segment_block_bootstrap_auc
 
     rng = np.random.default_rng(1)
     n = 4000
@@ -359,14 +359,14 @@ def test_segment_block_bootstrap_counts_blocks_and_brackets_auc() -> None:
 
 
 def test_auc_hand_example_and_ties() -> None:
-    from nebula.research.microstructure_study import auc
+    from astra.research.microstructure_study import auc
 
     assert auc(np.array([0.1, 0.4, 0.35, 0.8]), np.array([0, 0, 1, 1])) == pytest.approx(0.75)
     assert auc(np.array([1.0, 1.0]), np.array([0, 1])) == pytest.approx(0.5)
 
 
 def test_h_ms_002_verdict_rule() -> None:
-    from nebula.research.microstructure_study import h_ms_002_verdict
+    from astra.research.microstructure_study import h_ms_002_verdict
 
     def r(lo, hi, nb=40, nz=1000):
         return {"ci_lo": lo, "ci_hi": hi, "n_blocks": nb, "n_nonzero": nz}
@@ -378,7 +378,7 @@ def test_h_ms_002_verdict_rule() -> None:
 
 
 def test_taker_strategy_cost_arithmetic() -> None:
-    from nebula.research.microstructure_study import taker_strategy
+    from astra.research.microstructure_study import taker_strategy
 
     # 1 state per second for 21 s; mid rises 1 bp per 10 s; imbalance positive -> long
     mids = [100.0 * (1 + 1e-4 * (i // 10)) for i in range(21)]

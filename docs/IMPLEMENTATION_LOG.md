@@ -2,15 +2,15 @@
 
 ## 2026-11-24 - Session 1: preflight + vertical slice
 **Created**: pyproject.toml, uv.lock, .gitignore, .env.example, README.md, config/markets.yaml,
-src/nebula/{common,data,data/adapters,features,stats,ml,backtest,risk,research,tracking,dashboard}/*,
-src/nebula/cli.py, tests/* (7 files), scripts/validate_skills.py, .github/workflows/ci.yml,
+src/astra/{common,data,data/adapters,features,stats,ml,backtest,risk,research,tracking,dashboard}/*,
+src/astra/cli.py, tests/* (7 files), scripts/validate_skills.py, .github/workflows/ci.yml,
 .claude/skills/* (7 skills + README, REGISTRY, DEPENDENCIES, VALIDATION_REPORT), .claude/agents/* (7),
 .claude/AGENT_ARCHITECTURE.md, .claude/AGENT_WORKFLOWS.md, .claude/launch.json, docs/* (all listed in README).
 
 **Commands executed (key)**
 - `uv python install 3.12`; `uv sync --python 3.12` (core deps OK); `uv sync --all-extras` (PyTorch cu128 - still downloading at session end)
-- `uv run nebula ingest` → 3 instruments ingested (AAPL 2236 rows pass; RELIANCE 2196 warn; BTCUSDT 3249 warn)
-- `uv run nebula research` ×2 (second run after audit fixes; both runs retained in experiments/)
+- `uv run astra ingest` → 3 instruments ingested (AAPL 2236 rows pass; RELIANCE 2196 warn; BTCUSDT 3249 warn)
+- `uv run astra research` ×2 (second run after audit fixes; both runs retained in experiments/)
 - `uv run pytest -m "not network"` → 41 passed; `uv run pytest -m network` → 3/4 then 1/1 + 3 repeats passed
 - `uv run ruff check` clean; `uv run pyright` 0 errors
 - Streamlit dashboard started on 127.0.0.1:8501; Data and Backtests pages verified rendering stored outputs.
@@ -27,11 +27,11 @@ src/nebula/cli.py, tests/* (7 files), scripts/validate_skills.py, .github/workfl
 portfolio-risk-analyst: portfolio/risk; microstructure-specialist: L2/aggTrades) on disjoint files;
 orchestrator: ML/DL grid + panel, holdout study, runtime agents, dashboard, CLI, run-all.
 **Audits**: backtest-auditor (final methodology), test-security-reviewer → fixes in commit 2ec4dbe.
-**Key commands**: `nebula ingest` (13 instruments), `nebula ml-study` (13.5 min), `nebula holdout`,
-`nebula run-all --skip-ingest` ×3 (17.6 / 16.0 min; last two from clean commits, results identical),
+**Key commands**: `astra ingest` (13 instruments), `astra ml-study` (13.5 min), `astra holdout`,
+`astra run-all --skip-ingest` ×3 (17.6 / 16.0 min; last two from clean commits, results identical),
 `pytest -m "not network"` → 135 passed, `pytest -m network` → 4 passed, ruff clean, pyright 0 errors.
 **Incidents**: PowerShell 5.1 `Get-Content -Raw` re-encoded a UTF-8 file (emoji mojibake) → fixed,
-subsequent scripted edits use explicit UTF-8; `.gitignore` excluded `src/nebula/data` → fixed (06b9574);
+subsequent scripted edits use explicit UTF-8; `.gitignore` excluded `src/astra/data` → fixed (06b9574);
 a run made while docs were being edited produced dirty-tree records → rerun from a clean commit.
 **Environment changes**: removed unused deps (pydantic-settings, hypothesis, pytest-cov, mlflow-skinny);
 added websockets as a direct dependency.

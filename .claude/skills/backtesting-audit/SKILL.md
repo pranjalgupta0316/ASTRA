@@ -1,12 +1,12 @@
 ---
 name: backtesting-audit
-description: Use when building or changing the NEBULA event-driven backtester, modelling execution (fees, spread, slippage, impact), running walk-forward / purged CV, or auditing any backtest or strategy result for look-ahead, survivorship, leakage, unrealistic fills or overfitting before it is reported.
+description: Use when building or changing the ASTRA event-driven backtester, modelling execution (fees, spread, slippage, impact), running walk-forward / purged CV, or auditing any backtest or strategy result for look-ahead, survivorship, leakage, unrealistic fills or overfitting before it is reported.
 ---
 
-# Backtesting & Audit (NEBULA)
+# Backtesting & Audit (ASTRA)
 
 ## Purpose
-Make every reported strategy number defensible. Code: `src/nebula/backtest/`. This skill is the
+Make every reported strategy number defensible. Code: `src/astra/backtest/`. This skill is the
 independent check: a result produced under `quantitative-research` or `financial-ml-research` is not
 "validated" until it passes the audit checklist below.
 
@@ -26,7 +26,7 @@ strategy claim; choosing a CV scheme for time series.
 
 ## Audit checklist (all must be answered in the report)
 - [ ] Signal/execution alignment test: shifting signals one bar later changes results as expected,
-      and a deliberately leaky signal (future return) is caught by `nebula.backtest.audit`.
+      and a deliberately leaky signal (future return) is caught by `astra.backtest.audit`.
 - [ ] Features computed with rolling/expanding windows only; scalers fit on train only.
 - [ ] Universe defined point-in-time (or survivorship limitation stated explicitly).
 - [ ] Corporate actions: trading on unadjusted prices or consistently adjusted; dividends credited.

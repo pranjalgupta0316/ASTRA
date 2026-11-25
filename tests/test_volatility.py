@@ -7,8 +7,8 @@ import pandas as pd
 import pytest
 from arch import arch_model
 
-from nebula.research.volatility_study import MIN_TRAIN, MODELS, build_forecast_frame, evaluate
-from nebula.stats.volatility import (
+from astra.research.volatility_study import MIN_TRAIN, MODELS, build_forecast_frame, evaluate
+from astra.stats.volatility import (
     diebold_mariano,
     ewma_forecast,
     garch_forecast,

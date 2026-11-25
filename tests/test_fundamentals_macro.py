@@ -13,13 +13,13 @@ import pandas as pd
 import pyarrow.parquet as pq
 import pytest
 
-from nebula.common.config import get_config
-from nebula.common.paths import get_paths
-from nebula.data.adapters.base import RawBatch
-from nebula.data.calendars import session_schedule
-from nebula.data.fundamentals import sec
-from nebula.data.macro import bls, fred, market
-from nebula.data.macro.features import derived_series, macro_features
+from astra.common.config import get_config
+from astra.common.paths import get_paths
+from astra.data.adapters.base import RawBatch
+from astra.data.calendars import session_schedule
+from astra.data.fundamentals import sec
+from astra.data.macro import bls, fred, market
+from astra.data.macro.features import derived_series, macro_features
 
 # ------------------------------------------------------------------------------------ fixtures
 
@@ -192,7 +192,7 @@ def test_user_agent_default_has_no_personal_contact(monkeypatch):
 def test_env_user_agent_used_but_never_persisted(monkeypatch, tmp_path):
     sentinel = "Tester sentinel-contact@test.invalid"
     monkeypatch.setenv(sec.UA_ENV, sentinel)
-    monkeypatch.delenv("NEBULA_DATA_DIR", raising=False)
+    monkeypatch.delenv("ASTRA_DATA_DIR", raising=False)
     assert sec.user_agent() == sentinel
     assert sec.make_session().headers["User-Agent"] == sentinel
     paths = get_paths(tmp_path)
@@ -216,7 +216,7 @@ def test_env_user_agent_used_but_never_persisted(monkeypatch, tmp_path):
 
 def test_sec_403_reported_as_blocked(monkeypatch, tmp_path):
     monkeypatch.delenv(sec.UA_ENV, raising=False)
-    monkeypatch.delenv("NEBULA_DATA_DIR", raising=False)
+    monkeypatch.delenv("ASTRA_DATA_DIR", raising=False)
     res = sec.ingest_sec(["AAPL"], paths=get_paths(tmp_path), http=_FakeHttp(status=403))  # type: ignore[arg-type]
     assert res["blocked"] is True and "403" in res["error"]
 
@@ -286,7 +286,7 @@ def test_parse_and_macro_features_never_before_available():
 
 
 def test_ingest_fred_requires_manual_csv_or_explicit_download(tmp_path, monkeypatch):
-    monkeypatch.delenv("NEBULA_DATA_DIR", raising=False)
+    monkeypatch.delenv("ASTRA_DATA_DIR", raising=False)
     paths = get_paths(tmp_path)
     with pytest.raises(fred.FredTermsNotAcceptedError):
         fred.ingest_fred(["CPIAUCSL"], paths=paths)
@@ -317,7 +317,7 @@ def test_stale_facts_not_carried_forward_and_brk_excluded(facts):
 
 def test_predecessor_cik_used_only_before_successor_first_filing(monkeypatch, tmp_path):
     monkeypatch.delenv(sec.UA_ENV, raising=False)
-    monkeypatch.delenv("NEBULA_DATA_DIR", raising=False)
+    monkeypatch.delenv("ASTRA_DATA_DIR", raising=False)
     monkeypatch.setattr(sec, "PREDECESSOR_CIKS", {"AAPL": ["0000000002"]})
     pred = {
         "cik": 2,
@@ -380,7 +380,7 @@ class _FakeAdapter:
 
 
 def test_ingest_market_macro_offline(tmp_path, monkeypatch):
-    monkeypatch.delenv("NEBULA_DATA_DIR", raising=False)
+    monkeypatch.delenv("ASTRA_DATA_DIR", raising=False)
     res = market.ingest_market_macro(["TNX", "VIX"], paths=get_paths(tmp_path), adapter=_FakeAdapter())
     assert res["rows"] == 6 and not res["errors"]
     assert Path(res["validated"]).exists() and Path(res["quality_report"]).exists()
@@ -453,7 +453,7 @@ def test_parse_bls_drops_missing_and_annual():
 
 
 def test_ingest_bls_quota_and_cache(tmp_path, monkeypatch):
-    monkeypatch.delenv("NEBULA_DATA_DIR", raising=False)
+    monkeypatch.delenv("ASTRA_DATA_DIR", raising=False)
     monkeypatch.setattr(bls, "PAUSE_S", 0.0)
     monkeypatch.setattr(bls, "MAX_QUERIES_PER_DAY", 2)
     paths = get_paths(tmp_path)

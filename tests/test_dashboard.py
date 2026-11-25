@@ -9,13 +9,13 @@ from pathlib import Path
 
 import pytest
 
-from nebula.common.paths import get_paths
+from astra.common.paths import get_paths
 
-APP = Path(__file__).resolve().parents[1] / "src" / "nebula" / "dashboard" / "app.py"
+APP = Path(__file__).resolve().parents[1] / "src" / "astra" / "dashboard" / "app.py"
 
 pytestmark = pytest.mark.skipif(
     not (get_paths().experiments / "index.jsonl").exists(),
-    reason="no stored experiments (run `nebula run-all`)",
+    reason="no stored experiments (run `astra run-all`)",
 )
 
 

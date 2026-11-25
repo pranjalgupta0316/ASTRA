@@ -1,4 +1,4 @@
-"""Validate NEBULA project skills and subagents; writes .claude/skills/SKILL_VALIDATION_REPORT.md.
+"""Validate ASTRA project skills and subagents; writes .claude/skills/SKILL_VALIDATION_REPORT.md.
 
 Checks: YAML frontmatter parses; `name` matches directory and is kebab-case <= 64 chars; description
 present (<= 1024 chars) and says when to use; required sections present; referenced files exist;

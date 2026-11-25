@@ -4,7 +4,7 @@ Registered on 2026-11-24 **before** any capture was analysed or any aggTrades fi
 Parameters are fixed a priori; no tuning. Results are filled in from experiment records
 (`experiments/`), never edited by hand to look better.
 
-Data-level honesty: Binance public streams are **L2 (market-by-price) only**. NEBULA has no L3
+Data-level honesty: Binance public streams are **L2 (market-by-price) only**. ASTRA has no L3
 (market-by-order) source and no historical spot depth; every order-book result below comes from a
 short prospective live capture made by `scripts/capture_depth.py`.
 

@@ -1,6 +1,6 @@
 # Data sources and feasibility matrix
 
-Status legend: **verified** = NEBULA fetched real data from it in code; **probed** = endpoint answered
+Status legend: **verified** = ASTRA fetched real data from it in code; **probed** = endpoint answered
 an HTTP request on 2026-11-24; **researched** = documentation reviewed only; **rejected** = not used.
 
 ## Source-availability matrix (vertical slice + planned)
@@ -38,7 +38,7 @@ Details: [docs/data/FUNDAMENTALS_MACRO.md](data/FUNDAMENTALS_MACRO.md).
 | Crypto aggTrades (daily) | `https://data.binance.vision/data/spot/daily/aggTrades/...` (+ `.CHECKSUM`) | microstructure/trades.py |
 | L2 snapshot | `https://data-api.binance.vision/api/v3/depth?limit=1000` | microstructure/capture.py |
 | L2 diffs + trades (live) | `wss://stream.binance.com:9443` (fallback `wss://data-stream.binance.vision`) | microstructure/capture.py |
-| Optional LLM | localhost only (`NEBULA_LLM_URL`), disabled by default | agents/llm.py |
+| Optional LLM | localhost only (`ASTRA_LLM_URL`), disabled by default | agents/llm.py |
 | US fundamentals | `https://data.sec.gov/api/xbrl/companyfacts/CIK*.json`, `https://www.sec.gov/files/company_tickers.json` | data/fundamentals/sec.py |
 | CPI / unemployment | `https://api.bls.gov/publicAPI/v1/timeseries/data/` | data/macro/bls.py |
 | Market macro | Yahoo via yfinance (^TNX ^FVX ^IRX ^VIX DX-Y.NYB INR=X) | data/macro/market.py |

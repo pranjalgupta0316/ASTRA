@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.common.config import get_config
-from nebula.data.calendars import session_schedule
-from nebula.data.contracts import BAR_COLUMNS
+from astra.common.config import get_config
+from astra.data.calendars import session_schedule
+from astra.data.contracts import BAR_COLUMNS
 
 
 def make_bars(market: str = "US", n: int = 300, seed: int = 0, start: str = "2020-01-02") -> pd.DataFrame:

@@ -4,23 +4,23 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.common.config import CostConfig
-from nebula.portfolio.backtest import (
+from astra.common.config import CostConfig
+from astra.portfolio.backtest import (
     MarketPanel,
     PortfolioBacktestConfig,
     monthly_decision_dates,
     run_portfolio_backtest,
     run_portfolio_gross,
 )
-from nebula.portfolio.construction import compute_targets, minvar_fn
-from nebula.portfolio.covariance import (
+from astra.portfolio.construction import compute_targets, minvar_fn
+from astra.portfolio.covariance import (
     condition_number,
     estimate_covariance,
     is_psd,
     ledoit_wolf_cov,
     nearest_psd,
 )
-from nebula.portfolio.optimizers import (
+from astra.portfolio.optimizers import (
     equal_weight,
     max_sharpe,
     mean_variance,
@@ -28,7 +28,7 @@ from nebula.portfolio.optimizers import (
     risk_parity,
     vol_target,
 )
-from nebula.risk.attribution import (
+from astra.risk.attribution import (
     effective_n,
     effective_number_of_bets,
     hhi,

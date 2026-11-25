@@ -26,8 +26,8 @@ engine level for all multi-asset studies.
 *Original (superseded) first-run report follows.*
 
 Registered in `docs/research/H-EXT.md` (2026-11-25, before any run). Run 2026-11-25 with
-`run_cross_sectional()` (`src/nebula/research/cross_sectional.py`, signals in
-`src/nebula/research/signals.py`). Status: **research results, not validated**. They have to be audited
+`run_cross_sectional()` (`src/astra/research/cross_sectional.py`, signals in
+`src/astra/research/signals.py`). Status: **research results, not validated**. They have to be audited
 (`backtest-auditor`) before anyone calls them tradeable.
 
 **Survivorship bias.** The universes are today's large caps (30 US stocks), today's NIFTY names
@@ -36,7 +36,7 @@ failed or were delisted are missing. Both absolute and relative numbers depend o
 universe. For reversal in particular, "losers that recovered" are over-represented.
 
 ## Design (as registered)
-- Signals use data up to the close at t, and orders fill at the next open (`nebula.portfolio.backtest`).
+- Signals use data up to the close at t, and orders fill at the next open (`astra.portfolio.backtest`).
   - US/IN momentum: 12-1 log return, log(C[t-21]/C[t-252]), rebalanced on the first session of each month.
   - Crypto momentum: 4-week log return, log(C[t-1]/C[t-28]), rebalanced weekly (first session of the ISO
     week, which is Monday for crypto).
@@ -168,5 +168,5 @@ These figures do not enter any verdict. The IN reversal spread is large gross, b
   - H-CS-002: NW t 0.12.
 - The verdicts are identical in both runs.
 
-Reproduce: `uv run --no-sync python -c "from nebula.research.cross_sectional import run_cross_sectional; run_cross_sectional()"`
+Reproduce: `uv run --no-sync python -c "from astra.research.cross_sectional import run_cross_sectional; run_cross_sectional()"`
 (about 28 s wall time, peak working set about 1.26 GB on this machine).

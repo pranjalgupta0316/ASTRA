@@ -15,7 +15,7 @@ order-book data. Final report: [FINAL_PROJECT_REPORT.md](FINAL_PROJECT_REPORT.md
 | Repository | clean, all work committed locally | never pushed (by request) |
 
 ## Reproduction provenance
-`nebula run-all --skip-ingest` from clean commit d3653bb (32.7 min, 218 records, 0 dirty) plus
+`astra run-all --skip-ingest` from clean commit d3653bb (32.7 min, 218 records, 0 dirty) plus
 H-MS-001/002 re-run from the same commit. Not re-run in the final pass: H-ML-003/004 MLP and GRU
 (~2.5 h; records from the earlier audited run) and the live captures themselves (not replayable).
 Versus the previous clean run (642025c): 216/218 verdicts identical; SOLUSDT H-XM-001 changed because

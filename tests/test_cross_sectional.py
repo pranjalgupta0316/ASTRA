@@ -1,4 +1,4 @@
-"""Tests for nebula.research.signals and the cross-sectional study helpers (H-CS-001 / H-CS-002)."""
+"""Tests for astra.research.signals and the cross-sectional study helpers (H-CS-001 / H-CS-002)."""
 
 from __future__ import annotations
 
@@ -8,14 +8,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.research.cross_sectional import (
+from astra.research.cross_sectional import (
     bh_verdicts,
     compute_signal,
     rebalance_dates,
     signal_spec,
     verdict_t,
 )
-from nebula.research.signals import (
+from astra.research.signals import (
     eligibility,
     equal_weight_targets,
     momentum_signal,
@@ -196,7 +196,7 @@ def test_verdicts_and_bh() -> None:
 
 
 def test_regular_sessions_drops_single_name_rows_causally() -> None:
-    from nebula.research.signals import regular_sessions
+    from astra.research.signals import regular_sessions
 
     close = _panel(n=300, k=6)
     close.iloc[150, 1:] = np.nan  # spurious holiday row: only S0 has a bar

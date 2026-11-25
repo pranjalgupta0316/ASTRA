@@ -5,8 +5,8 @@ import pytest
 
 torch = pytest.importorskip("torch")  # optional `dl` extra; CI runs without it
 
-from nebula.dl.device import get_device
-from nebula.dl.models import TorchClassifier
+from astra.dl.device import get_device
+from astra.dl.models import TorchClassifier
 
 
 def test_device_cpu_fallback_forced():

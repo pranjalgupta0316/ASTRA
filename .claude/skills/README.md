@@ -1,7 +1,7 @@
-# NEBULA project skills
+# ASTRA project skills
 
 Project-level Claude Code skills (`.claude/skills/<name>/SKILL.md`). Claude Code discovers them
-automatically when a session is opened in `C:\Projects\NEBULA`; each loads only when its
+automatically when a session is opened in `C:\Projects\ASTRA`; each loads only when its
 `description` matches the task (progressive disclosure: `SKILL.md` is short, detail lives in
 `references/`).
 
@@ -16,4 +16,4 @@ automatically when a session is opened in `C:\Projects\NEBULA`; each loads only 
 | research-paper-analysis | verified citations, honest reproductions |
 
 See `SKILL_REGISTRY.md`, `SKILL_DEPENDENCIES.md`, `SKILL_VALIDATION_REPORT.md`.
-These are **development-time** aids; NEBULA's runtime does not depend on them or on Claude.
+These are **development-time** aids; ASTRA's runtime does not depend on them or on Claude.

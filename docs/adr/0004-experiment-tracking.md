@@ -1,6 +1,6 @@
 # ADR-0004: File-based experiment tracker first; MLflow optional
 
-- **Decision**: `nebula.tracking.Tracker` writes `experiments/<id>/record.json` + Parquet artifacts and
+- **Decision**: `astra.tracking.Tracker` writes `experiments/<id>/record.json` + Parquet artifacts and
   an append-only `index.jsonl`. `mlflow-skinny` is an optional extra, not required.
 - **Problem**: every experiment (including failures) must be recorded with hypothesis, data hashes,
   code version, config, seed, metrics and conclusion.

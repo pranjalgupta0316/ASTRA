@@ -1,6 +1,6 @@
 # Costs and cross-validation reference
 
-## Default NEBULA cost assumptions (per side, editable in config/markets.yaml)
+## Default ASTRA cost assumptions (per side, editable in config/markets.yaml)
 | Market | Commission | Half-spread | Slippage | Notes |
 |---|---|---|---|---|
 | US large-cap | 0 bps (retail zero-commission) + SEC/TAF fees ~0.3 bps on sells | 1 bp | 2 bps | conservative for AAPL/SPY |
@@ -11,7 +11,7 @@ These are assumptions, not measurements; always run sensitivity.
 ## Purged K-fold with embargo (Lopez de Prado, Advances in Financial Machine Learning, 2018, ch. 7)
 - Purge: drop training samples whose label interval [t, t+h] overlaps the test fold.
 - Embargo: additionally drop training samples within `embargo` bars after the test fold.
-- Implemented in `nebula.ml.validation.PurgedWalkForward`.
+- Implemented in `astra.ml.validation.PurgedWalkForward`.
 
 ## Annualization
 periods_per_year: US/IN equities 252, crypto daily 365, crypto hourly 8760. Sharpe = mean/std * sqrt(P).

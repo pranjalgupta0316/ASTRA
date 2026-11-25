@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-from nebula.common.config import get_config
-from nebula.data.validation import validate_bars
+from astra.common.config import get_config
+from astra.data.validation import validate_bars
 
 US = get_config().markets["US"]
 CRYPTO = get_config().markets["CRYPTO"]
@@ -76,7 +76,7 @@ def test_schema_missing_column(us_bars):
 
 
 def _hourly(n=500):
-    from nebula.data.contracts import BAR_COLUMNS
+    from astra.data.contracts import BAR_COLUMNS
 
     t = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
     df = pd.DataFrame({c: 1.0 for c in BAR_COLUMNS}, index=range(n))

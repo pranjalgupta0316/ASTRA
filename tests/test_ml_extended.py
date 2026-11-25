@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from astra.data.fundamentals import sec
+from astra.features.technical import FEATURE_COLUMNS, build_features
+from astra.research import ml_extended as me
+from astra.research import multimodal as mm
 from conftest import make_bars
-from nebula.data.fundamentals import sec
-from nebula.features.technical import FEATURE_COLUMNS, build_features
-from nebula.research import ml_extended as me
-from nebula.research import multimodal as mm
 
 # ------------------------------------------------------------------------------ H-MM-001 rows / target
 

@@ -22,8 +22,8 @@ below are from the superseded first run.
 *Original (superseded for single-instrument counts) report follows.*
 
 The hypotheses were registered in `docs/research/H-EXT.md` before any run, and that file is unchanged.
-Run 2026-11-25 (UTC timestamps in the experiment IDs). Code: `src/nebula/research/vol_managed.py` and
-`src/nebula/research/cross_market.py`. Tests: `tests/test_vol_managed_xmkt.py`. Alignment rules:
+Run 2026-11-25 (UTC timestamps in the experiment IDs). Code: `src/astra/research/vol_managed.py` and
+`src/astra/research/cross_market.py`. Tests: `tests/test_vol_managed_xmkt.py`. Alignment rules:
 `docs/adr/0007-cross-market-weekly-alignment.md`.
 
 **Survivorship.** Every series comes from today's universe: 30 US mega-caps, 15 ETFs, the 49 current
@@ -51,10 +51,10 @@ Common settings:
   over the same post-calibration window.
 
 **Execution.**
-- Single instruments use `nebula.backtest.engine`. It trades when |target − current| ≥ 0.02, its
+- Single instruments use `astra.backtest.engine`. It trades when |target − current| ≥ 0.02, its
   default tolerance. NIFTY50 is an index with unreliable volume, so it has no participation cap and
   volume is not used.
-- EW portfolios use `nebula.portfolio.backtest` with per-leg tolerance 0. The 0.02 tolerance is applied
+- EW portfolios use `astra.portfolio.backtest` with per-leg tolerance 0. The 0.02 tolerance is applied
   to the exposure scale instead: a managed order is issued when |scale_t − last issued| > 0.02, or on a
   monthly date. On non-monthly trigger days the managed book keeps the unmanaged book's drifted
   composition, so the two differ only in exposure. σ̂ for an EW portfolio comes from its own unmanaged

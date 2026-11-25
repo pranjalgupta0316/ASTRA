@@ -12,7 +12,7 @@ htmlcov/
 *.key
 
 # data and generated outputs (reproducible from code + providers; never commit)
-# Anchored to the repo root: an unanchored `data/` also matched the src/nebula/data package.
+# Anchored to the repo root: an unanchored `data/` also matched the src/astra/data package.
 /data/
 /logs/
 /experiments/

@@ -19,7 +19,7 @@
 ## Multiple testing
 - Benjamini-Hochberg FDR: `statsmodels.stats.multitest.multipletests(p, method="fdr_bh")`.
 - Deflated Sharpe ratio (Bailey & Lopez de Prado, 2014, J. Portfolio Management): adjusts the observed
-  Sharpe for number of trials, skew and kurtosis. Implemented in `nebula.stats.inference`.
+  Sharpe for number of trials, skew and kurtosis. Implemented in `astra.stats.inference`.
 
 ## Volatility estimators (per-period variance)
 - Parkinson: (1/(4 ln 2)) * ln(H/L)^2

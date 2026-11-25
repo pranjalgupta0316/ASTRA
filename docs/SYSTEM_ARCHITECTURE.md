@@ -1,6 +1,6 @@
 # System architecture
 
-NEBULA is a **local-first modular monolith** (one Python package, `src/nebula`), storing data as
+ASTRA is a **local-first modular monolith** (one Python package, `src/astra`), storing data as
 zstd Parquet queried by DuckDB/pandas/Polars. No services, brokers or cloud dependencies.
 
 ```

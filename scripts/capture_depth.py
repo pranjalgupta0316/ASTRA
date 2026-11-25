@@ -17,7 +17,7 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from nebula.microstructure.capture import run_capture
+from astra.microstructure.capture import run_capture
 
 MAX_DURATION_S = 24 * 3600
 PROBE_THRESHOLD_S = 600

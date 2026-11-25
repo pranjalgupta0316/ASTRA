@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 (renamed) - 2026-11-25
+- Project renamed **NEBULA → ASTRA** everywhere: Python package `astra` (was `nebula`), CLI command
+  `astra` (was `nebula`), environment variables `ASTRA_*` (were `NEBULA_*`), folder `C:\Projects\ASTRA`.
+  No functional change. Historical git commit messages and stored experiment records/logs keep the old
+  name (they are provenance and were not rewritten).
+
 ## 0.3.0 - 2026-11-25
 - Universe 13 → 111 instruments (core/extended tiers), equities history from 2000; Binance hourly
   (16 pairs) and 1-minute (BTC, ETH) klines; frozen sample window for registered core studies.

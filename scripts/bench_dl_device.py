@@ -1,4 +1,4 @@
-"""Benchmark CPU vs CUDA for NEBULA's small PyTorch classifiers on real walk-forward folds.
+"""Benchmark CPU vs CUDA for ASTRA's small PyTorch classifiers on real walk-forward folds.
 
 Usage: uv run python scripts/bench_dl_device.py [SYMBOL]
 """
@@ -11,12 +11,12 @@ import time
 import numpy as np
 import torch
 
-from nebula.common.config import get_config
-from nebula.dl.device import gpu_memory, reset_peak
-from nebula.ml.classical import walk_forward_from_splits
-from nebula.ml.datasets import load_features, model_frame
-from nebula.ml.validation import PurgedWalkForward
-from nebula.research.ml_study import SEQ_LEN, _inputs, model_factory
+from astra.common.config import get_config
+from astra.dl.device import gpu_memory, reset_peak
+from astra.ml.classical import walk_forward_from_splits
+from astra.ml.datasets import load_features, model_frame
+from astra.ml.validation import PurgedWalkForward
+from astra.research.ml_study import SEQ_LEN, _inputs, model_factory
 
 
 def main(symbol: str = "AAPL") -> None:

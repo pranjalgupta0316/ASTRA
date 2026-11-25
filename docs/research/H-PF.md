@@ -1,10 +1,10 @@
 # H-PF: Portfolio construction hypotheses (milestone M8)
 
 Registered on 2026-11-24 **before** any portfolio result was computed (no portfolio backtest had been
-run on NEBULA data when this file was written). All parameters below are fixed a priori; no tuning.
+run on ASTRA data when this file was written). All parameters below are fixed a priori; no tuning.
 Results are filled in from experiment records (`experiments/`, hypothesis ids `H-PF-001`, `H-PF-002`),
-never edited by hand. Code: `src/nebula/portfolio/`, `src/nebula/risk/attribution.py`,
-`src/nebula/research/portfolio_study.py`.
+never edited by hand. Code: `src/astra/portfolio/`, `src/astra/risk/attribution.py`,
+`src/astra/research/portfolio_study.py`.
 
 ## Common design (fixed a priori)
 - **Per-market portfolios in local currency; no FX mixing.** US (USD): AAPL, MSFT, NVDA, SPY, QQQ.

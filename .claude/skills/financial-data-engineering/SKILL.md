@@ -1,13 +1,13 @@
 ---
 name: financial-data-engineering
-description: Use when ingesting, validating, normalizing or storing any NEBULA market data - OHLCV, trades, order-book snapshots/diffs, corporate actions, calendars, timezones, point-in-time fundamentals, macro vintages - or touching Parquet/DuckDB/Polars storage, data contracts or data-quality reports.
+description: Use when ingesting, validating, normalizing or storing any ASTRA market data - OHLCV, trades, order-book snapshots/diffs, corporate actions, calendars, timezones, point-in-time fundamentals, macro vintages - or touching Parquet/DuckDB/Polars storage, data contracts or data-quality reports.
 ---
 
-# Financial Data Engineering (NEBULA)
+# Financial Data Engineering (ASTRA)
 
 ## Purpose
-Every dataset in NEBULA is real, provenanced, validated, point-in-time correct and reproducible.
-Code: `src/nebula/data/` (adapters, validation, storage, calendars). Docs: `docs/DATA_SOURCES.md`,
+Every dataset in ASTRA is real, provenanced, validated, point-in-time correct and reproducible.
+Code: `src/astra/data/` (adapters, validation, storage, calendars). Docs: `docs/DATA_SOURCES.md`,
 `docs/DATA_DICTIONARY.md`.
 
 ## Activate when
@@ -20,10 +20,10 @@ adjusting for splits/dividends, or reporting data availability.
 2. **Raw layer** (`data/raw/<provider>/<dataset>/...`): store exactly what the provider returned, plus a
    sidecar metadata JSON (provider, URL/endpoint, retrieval UTC time, request params, row count, sha256).
    Raw is immutable.
-3. **Validate** with `nebula.data.validation` -> a `QualityReport` (persisted to `data/reports/`).
+3. **Validate** with `astra.data.validation` -> a `QualityReport` (persisted to `data/reports/`).
    Checks: schema, nulls, duplicates, monotonic time, OHLC consistency (L <= O,C <= H), non-negative
    price/volume, missing sessions vs. exchange calendar, gaps for 24/7 crypto, outlier returns.
-4. **Normalize** to the canonical bar contract (`nebula.data.contracts.BAR_SCHEMA`): `ts_utc`
+4. **Normalize** to the canonical bar contract (`astra.data.contracts.BAR_SCHEMA`): `ts_utc`
    (bar open, UTC), `ts_local`, `exchange_tz`, `symbol`, `market`, `currency`, OHLCV, `adj_close` if
    provided, `provider`, `ingested_at`. Keep the original timezone.
 5. **Store** validated data as zstd Parquet partitioned by `market/symbol/frequency`; query via DuckDB.

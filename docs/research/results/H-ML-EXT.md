@@ -24,8 +24,8 @@
 ---
 
 Registration: `docs/research/H-EXT.md` (2026-11-25, committed before any run). Earlier ML design and
-amendment A2: `docs/research/H-ML.md`. Code: `src/nebula/research/ml_extended.py`,
-`src/nebula/research/multimodal.py`. Tests: `tests/test_ml_extended.py`.
+amendment A2: `docs/research/H-ML.md`. Code: `src/astra/research/ml_extended.py`,
+`src/astra/research/multimodal.py`. Tests: `tests/test_ml_extended.py`.
 Seed 7 everywhere. Models and hyperparameters are the fixed H-ML-001/002 ones; nothing was tuned.
 **Survivorship:** the extended universe is today's large caps, NIFTY names and crypto majors, so it is
 survivorship-biased. Every record says so.
@@ -46,7 +46,7 @@ bls.manifest.json. BLS.gov cannot vouch for the data or analyses derived from th
 | DL batch / epochs | **Unchanged** (batch 256, <= 200 epochs, patience 15) | Benchmark of the largest fold (595,547 training rows): MLP 80 s, GRU 96 s. No override was needed |
 | H-MM-001 F columns | revenue_growth_yoy, net_margin, roe, leverage, earnings_yield, earnings_yield_ni, book_to_market, log(market_cap) | Scale-free columns. Raw USD TTM levels and the EPS level are not comparable across firms. Non-finite ratios (a filed share count of 0 gives market_cap = 0, e.g. MRK/KO in 2009, book_to_market = inf) are set to missing |
 | H-MM-001 M columns | Every `macro_features` column: TNX, FVX, IRX, VIX, DXY, USDINR, CPI, UNRATE, slope_10y_3m, tnx_chg_20d, vix_z20, cpi_3m_ann, unrate_chg_3m | as registered ("macro, as-of"). FRED is absent, because it is manual-CSV only |
-| H-MM-001 target | R = adjusted open(t+22) / open(t+1) - 1 (decision at close t, fill at open t+1, 21 sessions held); target = 1[R_i > equal-weight mean of R over eligible US stocks on that date] | Same execution convention as all NEBULA targets |
+| H-MM-001 target | R = adjusted open(t+22) / open(t+1) - 1 (decision at close t, fill at open t+1, 21 sessions held); target = 1[R_i > equal-weight mean of R over eligible US stocks on that date] | Same execution convention as all ASTRA targets |
 | H-MM-001 month ends | Last session of each calendar month; the month of the final data session is excluded | That month may be incomplete |
 | H-MM-001 purge/embargo | The 2 decision months before each test year are dropped from training (purge 1 + embargo 1) | Same convention as `PurgedWalkForward` (gap = horizon + embargo) |
 | Imputation | `SimpleImputer(median, add_indicator=True)` inside the Pipeline, fitted on training rows only. It is applied to all sets and both models; P has no missing values, so it is a no-op there | as instructed |
@@ -212,8 +212,8 @@ hypothesis, and it belongs to the backtest-auditor.
 ## Reproduce
 
 ```
-uv run --no-sync python -c "from nebula.research.ml_extended import run_ml_panel_extended; run_ml_panel_extended()"
-uv run --no-sync python -c "from nebula.research.multimodal import run_multimodal; run_multimodal()"
-uv run --no-sync python -c "from nebula.research.ml_extended import run_hourly_crypto; run_hourly_crypto()"
+uv run --no-sync python -c "from astra.research.ml_extended import run_ml_panel_extended; run_ml_panel_extended()"
+uv run --no-sync python -c "from astra.research.multimodal import run_multimodal; run_multimodal()"
+uv run --no-sync python -c "from astra.research.ml_extended import run_hourly_crypto; run_hourly_crypto()"
 uv run --no-sync pytest tests/test_ml_extended.py
 ```

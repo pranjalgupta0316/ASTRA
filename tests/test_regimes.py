@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.stats.regimes import (
+from astra.stats.regimes import (
     fit_mapped_gmm,
     persistence,
     regime_features,

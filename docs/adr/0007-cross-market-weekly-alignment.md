@@ -20,7 +20,7 @@
      session after the bar date, and the IN close comes before the New York session of the same date.
      `weekly_usd_sleeves` asserts this rule. The realized FX observation lag was median 3 days and max
      5 days over 2019-2026. The registration text named FRED DEXINUS, but FRED is manual-CSV-only in
-     NEBULA and no FRED data exist, so the Yahoo series is used (a disclosed deviation).
+     ASTRA and no FRED data exist, so the Yahoo series is used (a disclosed deviation).
   3. **Crypto USDT is treated as USD.** USDT/USD basis risk is ignored.
   4. **Execution lag.** A portfolio decision that uses week-t closes is executed at the closes of week
      t+1. This is strictly after every sleeve close used, including the crypto close at Saturday
@@ -42,5 +42,5 @@
   - The FX rate is 2-5 days older than the IN equity close it converts. The FX move shows up in the
     USD return about one week late in part. This is unbiased in mean but mis-timed.
   - Weekly sampling leaves about 52 observations per year, so bootstrap CIs are wide.
-- **Reversibility**: high. Alignment is isolated in `nebula.research.cross_market` (`weekly_last`,
+- **Reversibility**: high. Alignment is isolated in `astra.research.cross_market` (`weekly_last`,
   `fx_asof`, `weekly_usd_sleeves`), and tests in `tests/test_vol_managed_xmkt.py` cover it.

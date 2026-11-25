@@ -1,13 +1,13 @@
 ---
 name: quantitative-research
-description: Use when designing, running or judging a NEBULA alpha/signal hypothesis - momentum, mean reversion, stat-arb, pairs/cointegration, factor models, PCA, regime detection, GARCH-family volatility, stationarity and hypothesis tests, multiple-testing correction, or out-of-sample validation of any quantitative claim.
+description: Use when designing, running or judging an ASTRA alpha/signal hypothesis - momentum, mean reversion, stat-arb, pairs/cointegration, factor models, PCA, regime detection, GARCH-family volatility, stationarity and hypothesis tests, multiple-testing correction, or out-of-sample validation of any quantitative claim.
 ---
 
-# Quantitative Research (NEBULA)
+# Quantitative Research (ASTRA)
 
 ## Purpose
 Turn a market intuition into a falsifiable, cost-aware, out-of-sample-tested research result that is
-recorded whether it succeeds or fails. Code lives in `src/nebula/research/`, `src/nebula/stats/`,
+recorded whether it succeeds or fails. Code lives in `src/astra/research/`, `src/astra/stats/`,
 hypotheses in `docs/RESEARCH_HYPOTHESES.md`.
 
 ## Activate when
@@ -28,7 +28,7 @@ hypotheses in `docs/RESEARCH_HYPOTHESES.md`.
    Sharpe/IC confidence intervals; never iid bootstrap autocorrelated series.
 6. **Multiple testing**: count every variant tried (parameters, universes, horizons). Apply
    Benjamini-Hochberg across the family, and report the deflated Sharpe ratio when > 5 variants.
-7. **Economic significance**: net of NEBULA cost model (`backtesting-audit` skill) - a significant IC
+7. **Economic significance**: net of ASTRA cost model (`backtesting-audit` skill) - a significant IC
    that dies after 10 bps is a negative result, record it as such.
 8. **Stability**: sub-period and per-regime results, parameter-neighbourhood sensitivity.
 9. **Record** the outcome (supported / rejected / inconclusive) in the experiment tracker.

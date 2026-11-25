@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from nebula.features.technical import FEATURE_COLUMNS, build_features
-from nebula.ml.classical import walk_forward_from_splits
-from nebula.ml.datasets import date_folds, lag_columns, lagged_matrix, model_frame
+from astra.features.technical import FEATURE_COLUMNS, build_features
+from astra.ml.classical import walk_forward_from_splits
+from astra.ml.datasets import date_folds, lag_columns, lagged_matrix, model_frame
 
 
 def test_lagged_matrix_is_causal(us_bars):

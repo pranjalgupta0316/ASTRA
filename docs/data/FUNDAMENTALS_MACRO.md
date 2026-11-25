@@ -1,6 +1,6 @@
 # Fundamentals (SEC EDGAR) and macro (Yahoo market macro, BLS, manual FRED)
 
-Code: `src/nebula/data/fundamentals/sec.py`; `src/nebula/data/macro/` (`market.py`, `bls.py`,
+Code: `src/astra/data/fundamentals/sec.py`; `src/astra/data/macro/` (`market.py`, `bls.py`,
 `features.py`, `fred.py`).
 Tests: `tests/test_fundamentals_macro.py` (offline, synthetic fixtures).
 Terms and endpoints checked 2026-11-25.
@@ -10,12 +10,12 @@ Terms and endpoints checked 2026-11-25.
 | Dataset | Endpoint | Licence / terms | Access rules |
 |---|---|---|---|
 | Ticker -> CIK | `https://www.sec.gov/files/company_tickers.json` | US government work, public domain | descriptive User-Agent; <= 10 req/s (SEC fair access) |
-| XBRL company facts | `https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json` | public domain | same; NEBULA uses <= 4 req/s, 30 s timeout, backoff on 429/5xx, 403 -> `SecAccessBlockedError` |
+| XBRL company facts | `https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json` | public domain | same; ASTRA uses <= 4 req/s, 30 s timeout, backoff on 429/5xx, 403 -> `SecAccessBlockedError` |
 | FRED series | `https://fred.stlouisfed.org/graph/fredgraph.csv?id=<SERIES>` | FRED Terms of Use + per-series third-party copyright | **manual CSV only**, see section 1.1 |
-| Market macro | Yahoo Finance via `nebula.data.adapters.yahoo.YahooAdapter.fetch_daily` | same as NEBULA price data: unofficial endpoints, personal research use; index data owned by Cboe (^TNX/^FVX/^IRX/^VIX) and ICE (DX-Y.NYB) | adapter retries with backoff; 6 requests per run |
-| BLS CPI-U SA, unemployment rate | `https://api.bls.gov/publicAPI/v1/timeseries/data/` (POST); release dates from `https://www.bls.gov/bls/news-release/{empsit,cpi}.htm` | public domain (section 1.2) | v1: 25 queries/day, 25 series/query, 10 years/query; NEBULA caps at 20/day |
+| Market macro | Yahoo Finance via `astra.data.adapters.yahoo.YahooAdapter.fetch_daily` | same as ASTRA price data: unofficial endpoints, personal research use; index data owned by Cboe (^TNX/^FVX/^IRX/^VIX) and ICE (DX-Y.NYB) | adapter retries with backoff; 6 requests per run |
+| BLS CPI-U SA, unemployment rate | `https://api.bls.gov/publicAPI/v1/timeseries/data/` (POST); release dates from `https://www.bls.gov/bls/news-release/{empsit,cpi}.htm` | public domain (section 1.2) | v1: 25 queries/day, 25 series/query, 10 years/query; ASTRA caps at 20/day |
 
-**SEC User-Agent.** Read from env var `SEC_USER_AGENT`, else `NEBULA research nebula@example.com`
+**SEC User-Agent.** Read from env var `SEC_USER_AGENT`, else `ASTRA research astra@example.com`
 (a reserved placeholder domain). The env value is sent only as the HTTP header. It is never written to
 disk. Raw metadata, manifests and results record only `env:SEC_USER_AGENT`, or the default string when
 the env var is unset. The 2026-11-25 ingestion used the default; SEC did not block it.
@@ -36,7 +36,7 @@ FRED cannot grant rights to those series.
 
 As a result, `ingest_fred` reads CSVs that a person downloaded by hand (`csv_dir/<SERIES>.csv`). It
 calls the endpoint only when `allow_download=True` is passed by someone who has reviewed the terms.
-NEBULA's ML use of FRED data needs a human decision. Alternatives are the primary public-domain
+ASTRA's ML use of FRED data needs a human decision. Alternatives are the primary public-domain
 publishers:
 - Federal Reserve Data Download Program: H.15, H.10, G.17
 - US Treasury yield-curve CSVs
@@ -58,7 +58,7 @@ was built from manually downloaded CSVs.
   - Content must not be modified or falsely represented while citing BLS.
   - There is no clause against automated access within the limits, local storage, or research use.
 
-**Required notice for any NEBULA output that uses BLS data:** "Source: U.S. Bureau of Labor
+**Required notice for any ASTRA output that uses BLS data:** "Source: U.S. Bureau of Labor
 Statistics, Public Data API v1, retrieved <date in bls.manifest.json>. BLS.gov cannot vouch for the
 data or analyses derived from these data."
 
@@ -92,7 +92,7 @@ restated comparatives.
 
 | column | type | meaning |
 |---|---|---|
-| symbol | str | NEBULA symbol (BRK_B; SEC ticker taken from config `provider_symbol`, e.g. BRK-B) |
+| symbol | str | ASTRA symbol (BRK_B; SEC ticker taken from config `provider_symbol`, e.g. BRK-B) |
 | cik | str | 10-digit CIK of the **filing** registrant (can be a predecessor, see 4.4) |
 | concept | str | canonical concept (below) |
 | taxonomy, tag | str | XBRL source, e.g. `us-gaap` / `RevenueFromContractWithCustomerExcludingAssessedTax` |
@@ -256,7 +256,7 @@ it ends more than 5 years before the current year, since seasonal factors are re
 last 5 years. Otherwise it is re-queried, subject to the daily budget. If the budget is exhausted, the
 cached copy is used and the error is reported.
 
-### 5.4 Combined features: `nebula.data.macro.macro_features(dates, table=None, paths=None)`
+### 5.4 Combined features: `astra.data.macro.macro_features(dates, table=None, paths=None)`
 - Long tables (market + BLS + FRED if present) are joined as-of on `available_from`. A value is used on
   date t only if `available_from <= t`, and the latest observation date known on t wins.
 - Derived series are computed on each source's observation sequence and take the latest
@@ -271,7 +271,7 @@ cached copy is used and the error is reported.
 | cpi_3m_ann | (CPI(m) / CPI(m-3))^4 - 1. Requires month m-3 to exist, so values that need Oct 2025 are NaN |
 | unrate_chg_3m | UNRATE(m) - UNRATE(m-3), in percentage points |
 
-The FRED-only as-of join remains available as `nebula.data.macro.fred_macro_features`.
+The FRED-only as-of join remains available as `astra.data.macro.fred_macro_features`.
 
 ## 6. Quality checks
 - **SEC:**

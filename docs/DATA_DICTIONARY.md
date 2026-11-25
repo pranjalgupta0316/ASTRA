@@ -1,7 +1,7 @@
 # Data dictionary
 
 ## Validated daily bars (`data/validated/market=*/symbol=*/freq=1d/bars.parquet`)
-Authoritative definition with types: `src/nebula/data/contracts.py` (`BAR_SCHEMA`, schema_version 1).
+Authoritative definition with types: `src/astra/data/contracts.py` (`BAR_SCHEMA`, schema_version 1).
 Each partition has `manifest.json`: rows, date range, quality status, quality report path, raw file
 path and sha256, own sha256, write time.
 
@@ -10,7 +10,7 @@ path and sha256, own sha256, write time.
 version, retrieval time, row count, sha256, source files (Binance zips with their sha256).
 `files/` (Binance) = original checksummed zips.
 
-## Features (`nebula.features.technical.build_features`)
+## Features (`astra.features.technical.build_features`)
 | column | definition (P = total-return adjusted close, all windows trailing) |
 |---|---|
 | ret_1 | log(P_t / P_{t-1}) |
@@ -32,4 +32,4 @@ Checks: schema, nulls, duplicates, monotonic_time (+tz-aware), price_consistency
 (vs calendar), outlier_returns (MAD z > 12, warn), corporate_actions (adjustment factor monotone).
 
 ## Experiment record (`experiments/<id>/record.json`)
-See `nebula.tracking.tracker.ExperimentRecord`.
+See `astra.tracking.tracker.ExperimentRecord`.

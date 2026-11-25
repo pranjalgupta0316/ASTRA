@@ -11,4 +11,4 @@
 - **Trade-offs**: no concurrent writers; no server-side access control.
 - **Risks**: file sprawl → mitigated by manifests and fixed layout.
 - **Reversibility**: high - Parquet can be bulk-loaded into any database later.
-- **Consequences**: all writers go through `nebula.data.storage`.
+- **Consequences**: all writers go through `astra.data.storage`.

@@ -19,7 +19,7 @@ Final state 2026-11-25 (v0.3). Research numbers: experiment records reproduced f
 |---|---|---|
 | 1 | Vertical slice | hindsight ML baseline (A1), fragile canary, cost borrowing, approximate gross, placeholder rows |
 | 2 | Post-slice methodology | per-date DM weighting, fold sizes, unpurged early stopping (A2), Yahoo settlement buffer |
-| 3 | Tests & security | **`.gitignore` excluded `src/nebula/data`**, disk cap, deps, download hardening |
+| 3 | Tests & security | **`.gitignore` excluded `src/astra/data`**, disk cap, deps, download hardening |
 | 4 | Cross-sectional momentum | **benchmark cash drag from absolute rebalance tolerance** → momentum "supported" became inconclusive; survivorship concentration quantified |
 | 5 | Vol-managed / cross-market | **under-invested buy-and-hold benchmark after volume-capped first fill** → single-instrument counts corrected (also fixed SOLUSDT core results) |
 | 6 | ML panel / hourly / multimodal | no leakage (canary AUC 0.998); wording: statistical vs economic significance; breakeven ≈ 5 bps |

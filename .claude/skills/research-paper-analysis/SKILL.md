@@ -1,12 +1,12 @@
 ---
 name: research-paper-analysis
-description: Use when reading, citing, deriving from or reproducing academic finance/econometrics/ML papers for NEBULA - checking a method's assumptions, deriving formulas, planning a reproduction, comparing to benchmarks, or writing a critical literature review and limitations section.
+description: Use when reading, citing, deriving from or reproducing academic finance/econometrics/ML papers for ASTRA - checking a method's assumptions, deriving formulas, planning a reproduction, comparing to benchmarks, or writing a critical literature review and limitations section.
 ---
 
-# Research Paper Analysis (NEBULA)
+# Research Paper Analysis (ASTRA)
 
 ## Purpose
-Ground NEBULA methods in real, verified literature and reproduce claims honestly.
+Ground ASTRA methods in real, verified literature and reproduce claims honestly.
 Notes live in `docs/literature/`.
 
 ## Activate when
@@ -19,7 +19,7 @@ a literature review or limitations section is drafted.
    titles, years or results.
 2. **Extract**: research question, data (universe, period, frequency), method with equations,
    evaluation metric, headline result, stated limitations.
-3. **Assumption audit**: which assumptions break on NEBULA data (free data, small universe, costs,
+3. **Assumption audit**: which assumptions break on ASTRA data (free data, small universe, costs,
    different market)?
 4. **Derivation**: re-derive key formulas in the note; flag discrepancies with the paper.
 5. **Reproduction plan**: what exactly can be reproduced with available data; label outcome
@@ -29,7 +29,7 @@ a literature review or limitations section is drafted.
 
 ## Note template
 `docs/literature/<first-author>-<year>-<slug>.md` with sections: Citation (verified link), Question,
-Data, Method, Result, Assumptions vs NEBULA, Reproduction status, Critique.
+Data, Method, Result, Assumptions vs ASTRA, Reproduction status, Critique.
 
 ## Failure modes
 Hallucinated citations; claiming reproduction of a result on different data; copying long passages
@@ -39,7 +39,7 @@ Hallucinated citations; claiming reproduction of a result on different data; cop
 Every citation in docs has a verifiable identifier; reproduction claims link to experiment IDs.
 
 ## Limitations
-Many papers rely on paid data (CRSP, TAQ, full-depth books) NEBULA cannot obtain; such results can at
+Many papers rely on paid data (CRSP, TAQ, full-depth books) ASTRA cannot obtain; such results can at
 best be partially reproduced on free proxies, and that must be stated next to every comparison.
 
 ## Interacts with

@@ -1,13 +1,13 @@
 ---
 name: portfolio-risk-engineering
-description: Use when constructing NEBULA portfolios or computing risk - equal weight, minimum variance, mean-variance, max Sharpe, risk parity, volatility targeting, position sizing and limits, covariance estimation/shrinkage, factor exposure, VaR, Expected Shortfall, drawdown, concentration, turnover, or annualization of risk metrics.
+description: Use when constructing ASTRA portfolios or computing risk - equal weight, minimum variance, mean-variance, max Sharpe, risk parity, volatility targeting, position sizing and limits, covariance estimation/shrinkage, factor exposure, VaR, Expected Shortfall, drawdown, concentration, turnover, or annualization of risk metrics.
 ---
 
-# Portfolio & Risk Engineering (NEBULA)
+# Portfolio & Risk Engineering (ASTRA)
 
 ## Purpose
 Numerically stable, constraint-aware portfolio construction and correctly annualized risk metrics.
-Code: `src/nebula/portfolio/`, `src/nebula/risk/`.
+Code: `src/astra/portfolio/`, `src/astra/risk/`.
 
 ## Activate when
 Turning signals into weights, computing any performance/risk statistic, comparing optimizers, setting
@@ -24,7 +24,7 @@ leverage/position/concentration limits.
 4. **Mixed currencies** (USD, INR, USDT): convert returns to a base currency with FX on the same
    timestamps, or keep portfolios per market; state which.
 5. **Sizing**: volatility targeting `w_scaled = w * target_vol / forecast_vol`, capped leverage.
-6. **Metrics** via `nebula.risk.metrics` with explicit `periods_per_year`.
+6. **Metrics** via `astra.risk.metrics` with explicit `periods_per_year`.
 
 ## Standards
 - CAGR from equity curve and calendar time; Sharpe/Sortino with stated rf; max drawdown on net equity.

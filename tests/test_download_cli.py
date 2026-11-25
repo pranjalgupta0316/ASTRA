@@ -7,9 +7,9 @@ import hashlib
 import pytest
 from typer.testing import CliRunner
 
-from nebula.cli import app
-from nebula.data import download
-from nebula.data.download import ChecksumError, checked_download
+from astra.cli import app
+from astra.data import download
+from astra.data.download import ChecksumError, checked_download
 
 PAYLOAD = b"zip-bytes" * 1000
 GOOD = hashlib.sha256(PAYLOAD).hexdigest()

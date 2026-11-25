@@ -7,11 +7,11 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import pandas as pd
 import pytest
 
-from nebula.agents import llm
-from nebula.agents.orchestrator import md_table, write_report
-from nebula.agents.roles import BacktestAnalysisAgent, ModelEvaluationAgent, ResearchPlanningAgent
-from nebula.common.paths import Paths
-from nebula.tracking.tracker import Tracker
+from astra.agents import llm
+from astra.agents.orchestrator import md_table, write_report
+from astra.agents.roles import BacktestAnalysisAgent, ModelEvaluationAgent, ResearchPlanningAgent
+from astra.common.paths import Paths
+from astra.tracking.tracker import Tracker
 
 
 def _seed(tmp_path):
@@ -56,7 +56,7 @@ def test_planning_agent_recommends_per_hypothesis(tmp_path):
 
 
 def test_report_written_without_llm(tmp_path, monkeypatch):
-    monkeypatch.delenv("NEBULA_LLM_URL", raising=False)
+    monkeypatch.delenv("ASTRA_LLM_URL", raising=False)
     paths, a, _ = _seed(tmp_path)
     (tmp_path / "config").mkdir()
     out = write_report(paths)
@@ -70,14 +70,14 @@ def test_md_table_escapes_pipes():
 
 
 def test_llm_rejects_non_local_url(monkeypatch):
-    monkeypatch.setenv("NEBULA_LLM_URL", "https://api.example.com")
-    monkeypatch.setenv("NEBULA_LLM_MODEL", "m")
+    monkeypatch.setenv("ASTRA_LLM_URL", "https://api.example.com")
+    monkeypatch.setenv("ASTRA_LLM_MODEL", "m")
     with pytest.raises(ValueError):
         llm.llm_config()
 
 
 def test_llm_disabled_returns_none(monkeypatch):
-    monkeypatch.delenv("NEBULA_LLM_URL", raising=False)
+    monkeypatch.delenv("ASTRA_LLM_URL", raising=False)
     assert llm.narrate("x") is None
 
 
@@ -100,8 +100,8 @@ def test_llm_client_against_fake_local_server(monkeypatch):
     srv = HTTPServer(("127.0.0.1", 0), H)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     try:
-        monkeypatch.setenv("NEBULA_LLM_URL", f"http://127.0.0.1:{srv.server_port}")
-        monkeypatch.setenv("NEBULA_LLM_MODEL", "fake")
+        monkeypatch.setenv("ASTRA_LLM_URL", f"http://127.0.0.1:{srv.server_port}")
+        monkeypatch.setenv("ASTRA_LLM_MODEL", "fake")
         assert llm.narrate("report body") == "summary text"
         assert seen["body"]["model"] == "fake" and seen["body"]["options"]["temperature"] == 0
     finally:

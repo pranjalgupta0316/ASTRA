@@ -6,7 +6,7 @@ records (`experiments/`), never edited to look better. Negative and inconclusive
 
 Universe (13): US AAPL MSFT NVDA SPY QQQ; IN RELIANCE TCS INFY HDFCBANK NIFTY50;
 CRYPTO BTCUSDT ETHUSDT SOLUSDT. Validated daily bars, total-return adjusted OHLC
-(`nebula.features.technical.adjusted_ohlc`). Excluded rows: provider placeholders
+(`astra.features.technical.adjusted_ohlc`). Excluded rows: provider placeholders
 (volume == 0 and high == low); for NIFTY50 (Yahoo index volume unreliable) high == low only.
 Excluded rows are dropped, not repaired (the following return spans two sessions), and listed in each
 experiment record.
@@ -22,7 +22,7 @@ Common definitions
   normalised form infinite, DM tests use the equivalent form RV/h + ln h, whose per-day differences
   between two models are identical. MSE = (RV - h)^2.
 - Diebold-Mariano: t = mean(d) / HAC se, d_t = L(model)_t - L(EWMA)_t, Newey-West with
-  floor(4 (n/100)^(2/9)) lags (`nebula.stats.inference.newey_west_tstat`); p two-sided, normal.
+  floor(4 (n/100)^(2/9)) lags (`astra.stats.inference.newey_west_tstat`); p two-sided, normal.
 - Out-of-sample window: every origin from index 503 (504 returns available, ~2 equity years) to the
   second-to-last session. Walk-forward only; the OOS window is evaluated exactly once
   (test-set touches = 1 per instrument per hypothesis).

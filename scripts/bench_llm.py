@@ -1,4 +1,4 @@
-"""Benchmark the optional local LLM (Ollama) for NEBULA report narration.
+"""Benchmark the optional local LLM (Ollama) for ASTRA report narration.
 
 Measures load time, prompt/eval throughput, VRAM (nvidia-smi) and a faithfulness check: every number
 in the generated summary must appear in the source report (invented numbers = hallucinations).
@@ -16,8 +16,8 @@ import time
 
 import requests
 
-from nebula.agents.llm import NUM_CTX, PROMPT
-from nebula.common.paths import get_paths
+from astra.agents.llm import NUM_CTX, PROMPT
+from astra.common.paths import get_paths
 
 URL = "http://127.0.0.1:11434"
 NUM = re.compile(r"(?<![\w.])-?\d+(?:\.\d+)?%?")

@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nebula.research.cross_market import (
+from astra.research.cross_market import (
     fx_asof,
     inverse_vol_weights,
     monthly_weeks,
@@ -17,7 +17,7 @@ from nebula.research.cross_market import (
     weekly_last,
     weekly_usd_sleeves,
 )
-from nebula.research.vol_managed import (
+from astra.research.vol_managed import (
     calibrate,
     ewma_sigma,
     managed_ew_targets,

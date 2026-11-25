@@ -11,7 +11,7 @@ Results are filled in from experiment records (`experiments/`), never edited by 
 
 ## H-XM-001 Time-series momentum, 60 days, long/flat
 1. Intuition: trend persistence from under-reaction / herding (Moskowitz, Ooi & Pedersen 2012, JFE -
-   cited for the concept; NEBULA's daily, single-asset, long/flat version is not a reproduction).
+   cited for the concept; ASTRA's daily, single-asset, long/flat version is not a reproduction).
 2. Signal s_t = 1[log P_t − log P_{t−60} > 0]. Target: next open-to-open returns while held.
 3. Data: adjusted daily bars. 5. Execution: decision at close t, fill at open t+1.
 6. Mechanism: avoid prolonged drawdowns; cost: turnover on signal flips.
