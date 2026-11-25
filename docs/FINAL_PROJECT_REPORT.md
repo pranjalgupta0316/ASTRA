@@ -1,77 +1,83 @@
-# NEBULA - final project report
+# NEBULA - final project report (v0.3)
 
-*2026-11-24. All numbers come from experiment records produced from commit `642025c` (clean tree) and
-reproduced bit-for-bit by a second full run (86/86 records: identical conclusions, 0 metric deviations).*
+*2026-11-25. Numbers come from experiment records in `experiments/`; the final `nebula run-all` was run
+from a clean commit (see PROJECT_STATUS). Every hypothesis was registered before it was run
+(docs/RESEARCH_HYPOTHESES.md, docs/research/H-ML.md, docs/research/H-EXT.md), and every
+trading-relevant result went through an independent audit by a separate agent that re-ran the code.*
 
 ## 1. What NEBULA is
 A local-first, ₹0-recurring-cost quantitative research platform for US equities, Indian equities and
-crypto: free data with provenance → validation → causal features → statistical, ML/DL, volatility,
-regime, portfolio and microstructure studies → event-driven cost-aware backtests → experiment records
-(including every negative result) → deterministic research agents → Streamlit dashboard. It runs on one
-Windows laptop (i7-14700HX, 16 GB RAM, RTX 4060 Laptop 8 GB); `nebula run-all` reproduces every study
-in ~16-18 minutes.
+crypto, running on one Windows laptop (i7-14700HX, 16 GB RAM, RTX 4060 Laptop 8 GB):
+free data with provenance → validation → causal features → statistical, ML/DL, volatility, regime,
+portfolio, cross-sectional, multimodal and order-book studies → event-driven cost-aware backtests →
+experiment records that keep every negative result → deterministic research agents (+ optional local
+LLM narration) → a 13-page Streamlit dashboard.
 
-## 2. Headline research findings (honest summary)
-**No tradeable edge was found.** Every claim of outperformance tested out of sample, net of modelled
-costs, was rejected or inconclusive. What *did* hold up are well-known statistical properties.
-
-| Family | Question | Result |
+## 2. Data actually used
+| Data | Source | Size |
 |---|---|---|
-| H-XM-000 | Stylized facts (unit-root prices, stationary returns, volatility clustering) | **supported 13/13** |
-| H-XM-001 | 60d time-series momentum beats buy-and-hold (mean daily net return) | inconclusive 11, rejected 1 (MSFT, t −2.44), "supported" 1 (SOLUSDT, t 2.12 - does not survive BH across 13; confirmatory H-XM-003 on SOL inconclusive) |
-| H-XM-002 | Logistic regression on 13 technical features | inconclusive 9, **rejected 4** (RELIANCE, SPY, INFY, NIFTY50: model or strategy significantly worse) |
-| H-XM-003 | Confirmatory: momentum Sharpe > buy-and-hold on 10 held-out instruments | **inconclusive** (0 BH-significant; median ΔSR −0.06). Descriptively lower max drawdown on 9/10 (not a registered test) |
-| H-ML-001 | Any of logit / RF / XGBoost / MLP / GRU × 13 instruments beats the ex-ante base rate | **rejected**: 0/65 cells, 0 nominally significant, 21 significantly *worse* (XGBoost on 13/13 - overconfident) |
-| H-ML-002 | Pooled-panel MLP / GRU (29.5k rows, GPU) beat baseline and pooled logistic | **inconclusive** (MLP DM t −0.43 vs baseline; GRU −1.73) |
-| H-VOL-001 | GJR-GARCH beats EWMA variance forecasts (QLIKE, DM) | **inconclusive 13/13** after BH (GJR lower QLIKE on 12/13 point estimates; NVDA nominal only) |
-| H-REG-001 | OOS high-vol GMM state → higher next-day variance | **supported 10/13** (close to restating volatility clustering) |
-| H-PF-001 | Min-variance / risk parity have lower realized vol than equal weight | **supported US & crypto**, inconclusive India |
-| H-PF-002 | ... and higher net return than equal weight | **rejected US**, inconclusive India & crypto |
-| H-MS-000 | BTCUSDT aggTrades price impact (Kyle λ, 1 day) | supported: 0.286 bps/BTC, HAC t 3.49 (one day, same-minute association) |
-| H-MS-001 | Top-5 book imbalance predicts next mid move (5-min live L2 capture) | supported by registered rule: AUC 0.81 (1 s), 0.60 (10 s); weak evidence, not tradeable after taker fees |
+| Daily bars, 111 instruments (45 US, 50 India, 16 crypto) | Yahoo, Binance Public Data | 637k bars, equities from 2000 |
+| Hourly klines, 16 crypto pairs | Binance Public Data | ~1.0M bars |
+| 1-minute klines BTC, ETH | Binance Public Data | ~4.87M bars each |
+| US fundamentals (30 stocks) | SEC EDGAR (point-in-time) | 59,726 facts |
+| Macro | Yahoo yields/VIX/DXY/USDINR + BLS CPI & unemployment | 2000→ |
+| Live order book BTCUSDT | Binance WebSocket | 6 h + 5 min, ~211k L2 updates, 0 gaps |
 
-Portfolio results (net, rf = 0): US EW Sharpe 1.16 vs MinVar 0.89 / RP 1.09; India EW 0.58 vs 0.57 / 0.57;
-crypto EW 0.87 vs 0.80 / 0.84. Lower volatility was bought with lower return.
+## 3. Findings - the honest summary
+**No strategy beat its benchmark after realistic trading costs.** Predictability exists at very short
+horizons (hourly crypto, sub-minute order book) but is far smaller than trading costs. Two apparent
+wins (cross-sectional momentum; single-asset volatility management) were traced by independent audits
+to engine defects and survivorship, then corrected.
 
-## 3. What was built (and tested)
-| Area | Status | Evidence |
+| Family | Question | Verdict |
 |---|---|---|
-| Data: Yahoo (US, NSE), Binance Public Data (crypto), 13 instruments, raw sha256 provenance, 9 quality checks, calendars, incomplete-bar and placeholder handling | tested | 4 network + adapter/validation unit tests; quality reports per batch |
-| Features (13 causal) + targets | tested | truncation-invariance test; independent audit |
-| Statistics & inference (ADF/KPSS, Ljung-Box, NW, bootstrap Sharpe CI & difference, PSR/DSR, BH) | tested | known-value tests |
-| Event-driven backtester (next-open fills, per-side costs, volume caps, zero-volume deferral, cost-aware sizing, exact gross) | **validated** | two independent audits; recompute within 2.6e-4; leakage canary |
-| Multi-asset portfolio engine + CVXPY optimizers + risk attribution | **validated** | audit recompute of EW equity to 4.4e-16; analytic tests |
-| Volatility (EWMA/GARCH/GJR) and regimes (walk-forward GMM) | validated (methodology) | GARCH recursion = arch to 1e-14; causality checks |
-| ML (sklearn, XGBoost) + DL (PyTorch MLP/GRU, GPU) with purged walk-forward | validated after amendment A2 | audit; reproducible across runs |
-| Microstructure: Binance L2 sync & gap detection, OFI/microprice, aggTrades, disk-capped capture | tested; live run 0 gaps, replay matched 2 snapshots | 21 tests |
-| Experiment tracking (incl. negative results, git commit, dirty flag) | tested | 86 records from a clean commit |
-| Runtime research agents (deterministic) + report | tested | 7 tests; optional local LLM tested against fake server only |
-| Dashboard (12 pages, stored outputs only, localhost) | tested | headless AppTest renders all 12 pages, 0 exceptions |
-| Claude Code skills (7) + subagents (7) | statically validated; used in practice | validator; 6 agents performed real work and audits |
+| H-XM-000 | Stylized facts (13 core instruments) | supported 13/13 |
+| H-XM-001 / 003 | 60d time-series momentum vs buy-and-hold (13 core / 10 held-out) | inconclusive 12 + rejected 1 (MSFT) / inconclusive 10. An earlier SOLUSDT "win" was an artifact of the under-invested benchmark bug |
+| H-XM-002 | Logistic regression per instrument | inconclusive / 4 rejected |
+| H-ML-001 | 5 models × 13 instruments beat base rate | rejected (0/65) |
+| H-ML-002 | Pooled MLP/GRU (13 instruments) | MLP inconclusive; GRU rejected (borderline: t moved from −1.73 to < −1.96 after Yahoo restated adjusted prices) |
+| **H-ML-003** | Pooled panel, 111 instruments, 600k rows | **supported statistically**, economically negligible (0.0004 nats, AUC 0.517; logit borderline) |
+| **H-ML-004** | Hourly crypto, 1M rows | **supported statistically** (AUC 0.54, DM t 10-12) - **breakeven ≈ 5 bps vs 26 bps cost; net Sharpe −4 to −6** |
+| H-MM-001 | Price + SEC fundamentals + macro | rejected - neither modality helps |
+| H-VOL-001 | GJR-GARCH vs EWMA volatility forecasts | inconclusive 13/13 |
+| H-REG-001 | Regime state predicts next-day variance | supported 10/13 (≈ volatility clustering) |
+| H-PF-001 / 002 | Min-var / risk parity vs equal weight | lower vol supported (US, crypto); higher return rejected (US) / inconclusive |
+| H-CS-001 | Cross-sectional momentum (US 30, IN 49, crypto 16) | inconclusive (t 1.86 / 1.55 / 0.75) after audit fix; residual excess concentrated in later mega caps (survivorship) |
+| H-CS-002 | Short-term reversal | rejected (gross edge destroyed by costs) |
+| H-VT-001 | Volatility-managed exposure (114 series) | inconclusive (0 BH-significant; 7 raw-CI positives incl. EW US/IN +0.14/+0.17 ΔSharpe, shallower drawdowns) |
+| H-XMKT-001 | US + India + crypto diversification | inconclusive |
+| H-MS-000 | BTC price impact (Kyle λ, 1 day) | supported, descriptive |
+| **H-MS-001 / 002** | Order-book imbalance → next mid move (6 h) | **supported**: AUC 0.91 (1 s), 0.66 (10 s); **taker strategy −19.6 bps/trade net, 0/2,095 trades profitable** |
 
-Quality gates at the final commit: **135 offline tests + 4 network tests pass**, ruff clean, pyright
-0 errors (≈280 pandas-stub warnings), fresh clone passes the suite.
+The pattern is the textbook one: the closer to the order book, the stronger the statistical signal -
+and the larger the cost relative to the move it predicts.
 
-## 4. Process highlights
-- Hypotheses registered before results; 2 post-hoc rule amendments disclosed with original verdicts kept.
-- Three independent audits (two methodology, one test/security). They found and we fixed: hindsight
-  baseline, fragile leakage canary, cost borrowing, approximate gross curve, equal-weighted panel DM,
-  fold-size mismatch, unpurged early stopping, **an unanchored `.gitignore` that excluded the data
-  package from git**, an incomplete in-progress Yahoo bar, missing download hardening and disk caps.
-- Parallel specialist agents built volatility/regimes, portfolio and microstructure on disjoint files;
-  an independent auditor reviewed all producers' work.
+## 4. What was built and how it was validated
+- Data layer: adapters (Yahoo, Binance daily/intraday, SEC, BLS, Yahoo macro), checksummed downloads,
+  raw sha256 provenance, 9+ quality checks, calendars, point-in-time fundamentals, release-date-aware macro.
+- Research: causal features; ADF/KPSS/Ljung-Box/NW/bootstrap/PSR/DSR/BH; purged walk-forward; logistic,
+  RF, XGBoost, PyTorch MLP/GRU on GPU; GARCH family; walk-forward GMM regimes; CVXPY portfolios;
+  cross-sectional and volatility-managed strategies; L2 book reconstruction.
+- Engines: single-asset and multi-asset event-driven backtesters (next-open fills, per-side costs,
+  volume caps, zero-volume handling, exact gross runs).
+- Validation: 200+ offline tests, network tests, leakage canaries, **six independent audits** that found
+  and forced fixes for: a hindsight ML baseline, a fragile canary, cost borrowing, an excluded data
+  package (.gitignore), Yahoo in-progress bars, benchmark cash drag (rebalance tolerance), an
+  under-invested buy-and-hold benchmark, panel DM weighting, and more. Superseded records are kept.
+- Reproducibility: frozen sample windows for registered core studies; `nebula run-all` reproduces all
+  studies; two earlier full reruns matched bit-for-bit on 86/86 records.
 
-## 5. Limitations (see KNOWN_ISSUES.md for the full list)
-Survivorship-biased 13-name universe; assumed spreads; daily bars only for equities; one venue and one
-short capture for microstructure; no fundamentals, macro or news yet (researched, not built); no FX or
-cross-market portfolio; DL results device-dependent; optional LLM not benchmarked. NEBULA is a research
-platform - **not** production trading infrastructure.
+## 5. Limitations
+Survivorship-biased universes (today's names); assumed spreads for equities; one venue and one night of
+order-book data; revised (not first-release) macro; no Indian fundamentals; no news data; DL results
+device-dependent; GRU on the full panel near the laptop's memory limits. NEBULA is a research
+platform, **not** production trading infrastructure.
 
-## 6. How to reproduce
+## 6. Reproduce
 ```powershell
 uv sync --all-extras
-uv run nebula ingest
-uv run nebula run-all --skip-ingest
+uv run nebula ingest; uv run nebula ingest --intraday; uv run nebula ingest-fundamentals; uv run nebula ingest-macro
+uv run nebula run-all --skip-ingest            # add --heavy-dl for the ~3 h MLP/GRU runs
 uv run pytest -m "not network"
 uv run nebula dashboard
 ```

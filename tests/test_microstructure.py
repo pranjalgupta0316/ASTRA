@@ -307,3 +307,86 @@ def test_long_capture_requires_disk_budget(monkeypatch: pytest.MonkeyPatch) -> N
     assert calls == [mod.PROBE_S, 3600.0]
     calls.clear()
     assert mod.main(["--duration", "300"]) == 0 and calls == [300.0]  # <= 10 min: no probe
+
+
+# ------------------------------------------------------------------ H-MS-002 machinery
+def _states(seg: int, t0_ms: int, mids: list[float], imb: list[float], dt_ms: int = 1000):
+    import pandas as pd
+
+    n = len(mids)
+    return pd.DataFrame(
+        {
+            "segment": seg,
+            "E_ms": t0_ms + np.arange(n) * dt_ms,
+            "mid": mids,
+            "spread_bps": 0.002,
+            "imbalance_5": imb,
+        }
+    )
+
+
+def test_horizon_samples_never_cross_segments() -> None:
+    import pandas as pd
+
+    from nebula.research.microstructure_study import horizon_samples
+
+    st = pd.concat(
+        [_states(0, 0, [1.0, 2.0, 3.0], [0.1, 0.2, 0.3]), _states(1, 3000, [10.0, 9.0], [0.5, -0.5])],
+        ignore_index=True,
+    )
+    s = horizon_samples(st, 1)
+    # segment 0: t=0 ->+1, t=1 ->+1 ; segment 1: t=3 -> -1 ; last state of each segment dropped
+    assert s["dmid"].tolist() == [1.0, 1.0, -1.0]
+    assert s["segment"].tolist() == [0, 0, 1]
+
+
+def test_segment_block_bootstrap_counts_blocks_and_brackets_auc() -> None:
+    from nebula.research.microstructure_study import auc, segment_block_bootstrap_auc
+
+    rng = np.random.default_rng(1)
+    n = 4000
+    seg = np.repeat([0, 1], n // 2)
+    t = np.concatenate([np.arange(n // 2) * 0.5, 10_000 + np.arange(n // 2) * 0.5])  # 2 x ~1000 s
+    score = rng.normal(size=n)
+    label = (score + rng.normal(size=n) > 0).astype(int)
+    lo, hi, nb = segment_block_bootstrap_auc(seg, t, score, label, block_s=30, n_boot=200)
+    assert nb == 2 * int(999.5 // 30)
+    a = auc(score, label)
+    assert lo < a < hi and lo > 0.5
+    # pure noise: CI should contain 0.5
+    lo0, hi0, _ = segment_block_bootstrap_auc(seg, t, score, rng.integers(0, 2, n), block_s=30, n_boot=200)
+    assert lo0 < 0.5 < hi0
+
+
+def test_auc_hand_example_and_ties() -> None:
+    from nebula.research.microstructure_study import auc
+
+    assert auc(np.array([0.1, 0.4, 0.35, 0.8]), np.array([0, 0, 1, 1])) == pytest.approx(0.75)
+    assert auc(np.array([1.0, 1.0]), np.array([0, 1])) == pytest.approx(0.5)
+
+
+def test_h_ms_002_verdict_rule() -> None:
+    from nebula.research.microstructure_study import h_ms_002_verdict
+
+    def r(lo, hi, nb=40, nz=1000):
+        return {"ci_lo": lo, "ci_hi": hi, "n_blocks": nb, "n_nonzero": nz}
+
+    assert h_ms_002_verdict({"h1s": r(0.6, 0.7), "h10s": r(0.51, 0.6)})[0] == "supported"
+    assert h_ms_002_verdict({"h1s": r(0.6, 0.7), "h10s": r(0.49, 0.6)})[0] == "inconclusive"
+    assert h_ms_002_verdict({"h1s": r(0.3, 0.4), "h10s": r(0.4, 0.49)})[0] == "rejected"
+    assert h_ms_002_verdict({"h1s": r(0.6, 0.7, nb=29), "h10s": r(0.6, 0.7)})[0] == "inconclusive"
+
+
+def test_taker_strategy_cost_arithmetic() -> None:
+    from nebula.research.microstructure_study import taker_strategy
+
+    # 1 state per second for 21 s; mid rises 1 bp per 10 s; imbalance positive -> long
+    mids = [100.0 * (1 + 1e-4 * (i // 10)) for i in range(21)]
+    st = _states(0, 0, mids, [0.5] * 21)
+    t = taker_strategy(st, horizon_s=10, fee_bps=10.0)
+    assert len(t) == 2  # non-overlapping grid at t=0 s and t=10 s
+    assert t["gross_bps"].tolist() == [pytest.approx(1.0), pytest.approx(1e-4 / (1 + 1e-4) * 1e4)]
+    assert t["cost_bps"].tolist() == [pytest.approx(20.002)] * 2
+    assert (t["net_bps"] < 0).all()
+    short = taker_strategy(_states(0, 0, mids, [-0.5] * 21), horizon_s=10)
+    assert short["gross_bps"].iloc[0] == pytest.approx(-1.0)

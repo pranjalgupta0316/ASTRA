@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 - 2026-11-25
+- Universe 13 → 111 instruments (core/extended tiers), equities history from 2000; Binance hourly
+  (16 pairs) and 1-minute (BTC, ETH) klines; frozen sample window for registered core studies.
+- SEC EDGAR point-in-time fundamentals; Yahoo market macro + BLS CPI/unemployment with release-date-
+  aware availability; FRED reduced to manual CSVs because of its terms (ADR-0008).
+- New pre-registered studies: cross-sectional momentum/reversal, volatility-managed exposure,
+  cross-market diversification, 600k-row ML panel, hourly crypto ML, multimodal ablation, 6-hour
+  order-book imbalance study.
+- Engine fixes from audits: zero default rebalance tolerance (cash drag), buy-and-hold re-issues its
+  target (volume-capped first fill), off-grid intraday bars, negative adjusted prices.
+- Local LLM (Ollama, qwen2.5:7b) benchmarked and wired with an 8k context; dashboard page for extended
+  research; CLI `ingest --intraday`, `ingest-fundamentals`, `ingest-macro`, `ext-study`, `ml-ext`.
+
 ## 0.2.0 - 2026-11-24
 - Universe expanded to 13 instruments (10 held out); Yahoo in-progress bars dropped with a 2 h settlement buffer.
 - Volatility forecasting (EWMA/GARCH/GJR, QLIKE, DM) and walk-forward GMM regimes.

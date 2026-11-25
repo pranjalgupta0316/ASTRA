@@ -87,8 +87,8 @@ def month_end_dates(sessions: pd.Series) -> pd.DatetimeIndex:
     """Last session of each calendar month; the month of the final session is dropped (incomplete)."""
     s = pd.Series(pd.to_datetime(pd.unique(pd.to_datetime(sessions)))).sort_values()
     per = s.dt.to_period("M")
-    last = s.groupby(per).max()
-    last = last[last.index != per.iloc[-1]]
+    last = pd.Series(s.groupby(per).max())
+    last = last.loc[last.index != per.iloc[-1]]
     return pd.DatetimeIndex(last.to_numpy())
 
 

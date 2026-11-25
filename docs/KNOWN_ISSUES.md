@@ -17,7 +17,15 @@
 | KI-13 | H-REG-001 largely restates volatility clustering (state built from 20d vol) | limited novelty | incremental value over EWMA not tested |
 | KI-14 | H-PF-002 tests mean return, not Sharpe; two strategies per market without multiplicity correction | test/claim mismatch | Sharpe-difference CI reported as secondary; no result is marginal |
 | KI-15 | Several decision rules were amended after an audit (A1 for H-XM-002, A2 for H-ML-002) | post-hoc risk | amendments disclosed; original-rule verdicts kept in records; verdict direction unchanged |
-| KI-16 | Optional local-LLM narration tested only against a fake server; no model installed/benchmarked | feature unvalidated | platform does not depend on it |
+| KI-16 | Local LLM (qwen2.5:7b) benchmarked: ~37 tok/s, ~5.1 GB VRAM, 0 invented numbers in 3 runs, but wording not deterministic across runs | narration only, never numbers | numbers in reports always come from records |
 | KI-17 | No FX conversion / cross-market portfolio | no cross-market diversification study | ADR-0006 |
-| KI-18 | Fundamentals (SEC EDGAR), macro (FRED/ALFRED) and news adapters are researched only | multimodal research not possible yet | see NEXT_STEPS |
+| KI-18 | News / alternative data not built; no free official Indian fundamentals | multimodal limited to US price + SEC fundamentals + macro | SEC and macro built 2026-11-25 (H-MM-001) |
+| KI-20 | Extended universe (111 names) = today's large caps / NIFTY names / crypto majors | strong survivorship bias for cross-sectional results (momentum excess concentrated in later mega caps) | stated in every record; point-in-time constituents not freely available |
+| KI-21 | FRED automation not permitted by its terms | registered FRED series replaced by Yahoo market series + BLS | ADR-0008; deviation disclosed in H-MM / H-XMKT records |
+| KI-22 | BLS values are revised, not first-release vintages | small look-ahead in macro levels | availability uses actual release dates; documented |
+| KI-23 | Yahoo back-adjustment produced negative adj_close (ADANIENT 2002-07..09) | invalid returns | validation warns; research treats rows as missing |
+| KI-24 | Binance hourly/minute klines off the bar grid after the 2018-02-09 outage | misaligned bars | validation warns (<1%); research filters to the grid |
+| KI-25 | GRU on the 600k-row panel peaked at 7.35 GB RAM and spilled VRAM into shared memory (8 GB card) | memory pressure on 16 GB laptop | CUDA cache cleared per fold; don't run concurrently with other heavy jobs |
+| KI-26 | Two engine defects found by audits and fixed: absolute 2 pp rebalance tolerance (benchmark cash drag) and single-order buy-and-hold under-invested after volume caps | earlier H-CS and H-VT single-instrument results were wrong | fixed (commits 3dbbc45, 2f8e927); superseded records kept, corrections documented |
+| KI-27 | Some extended-study records were produced while other agents' files were uncommitted (dirty tree) | provenance flag | final `run-all` from a clean commit regenerates them |
 | KI-19 | Modules without direct unit tests: env_report, logging, dashboard app (manually exercised), some study runners (exercised end-to-end by run-all) | regressions could slip | CLI smoke test + run-all reproduction |

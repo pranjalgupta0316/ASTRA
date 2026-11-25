@@ -1,61 +1,70 @@
-﻿# NEBULA
+# NEBULA
 
 Local-first quantitative research and AI/ML platform for **US equities, Indian equities and crypto**,
 built for rigor over demo value: free data with provenance and quality reports, causal features,
-purged walk-forward validation, event-driven cost-aware backtesting, portfolio construction, volatility
-and regime models, PyTorch deep learning on GPU, Level-2 microstructure analytics, and an experiment
-tracker that keeps every failed and inconclusive hypothesis.
+pre-registered hypotheses, purged walk-forward validation, event-driven cost-aware backtesting,
+portfolio construction, volatility/regime models, PyTorch deep learning on GPU, SEC fundamentals and
+macro data, live Level-2 order-book capture, independent audits, and an experiment tracker that keeps
+every failed and inconclusive result.
 
-> Research and paper trading only. No real-money execution. No paid services (₹0 recurring cost).
-> Historical results are not evidence of future profitability. **No tradeable edge was found** -
-> see [docs/FINAL_PROJECT_REPORT.md](docs/FINAL_PROJECT_REPORT.md).
+> Research and paper trading only. No real-money execution. ₹0 recurring cost.
+> **Headline finding:** short-horizon predictability exists (hourly crypto AUC 0.54, order-book
+> imbalance AUC 0.91 at 1 s) but no strategy survives realistic trading costs. See
+> [docs/FINAL_PROJECT_REPORT.md](docs/FINAL_PROJECT_REPORT.md).
 
 ## Quick start (Windows, PowerShell)
 ```powershell
-uv sync --all-extras            # Python 3.12 + deps (PyTorch CUDA 12.8 wheels; CPU fallback works)
-uv run pytest -m "not network"  # offline test suite (134 tests)
-uv run nebula ingest            # 13 instruments, daily bars -> data/ (free providers)
-uv run nebula run-all --skip-ingest   # every study, ~20-25 min on an i7-14700HX + RTX 4060
-uv run nebula dashboard         # http://127.0.0.1:8501
+uv sync --all-extras                  # Python 3.12 + deps (PyTorch CUDA 12.8; CPU fallback works)
+uv run pytest -m "not network"        # offline test suite
+uv run nebula ingest                  # daily bars, 111 instruments (Yahoo + Binance)
+uv run nebula ingest --intraday       # hourly crypto (16 pairs) + 1-minute BTC/ETH
+uv run nebula ingest-fundamentals     # SEC EDGAR point-in-time facts (30 US stocks)
+uv run nebula ingest-macro            # Yahoo yields/VIX/DXY/USDINR + BLS CPI/unemployment
+uv run nebula run-all --skip-ingest   # every study (~45 min; --heavy-dl adds ~3 h of MLP/GRU)
+uv run nebula dashboard               # http://127.0.0.1:8501
 ```
 
 ## Commands (`uv run nebula --help`)
 | command | what it does |
 |---|---|
 | `env` | hardware / GPU / library report |
-| `ingest [SYMBOLS]` | fetch → raw (sha256) → validate → validated Parquet + quality report |
-| `research [SYMBOLS]` | vertical slice: stylized facts, 60d momentum, logistic baseline (H-XM-000/001/002) |
-| `holdout` | confirmatory momentum Sharpe test on 10 held-out instruments (H-XM-003) |
-| `vol-study` | EWMA/GARCH/GJR volatility forecasts (H-VOL-001) + walk-forward GMM regimes (H-REG-001) |
-| `portfolio-study [MARKETS]` | EW / min-var / risk parity / max-Sharpe / mean-variance per market (H-PF-001/002) |
-| `ml-study` | 5 models × 13 instruments (H-ML-001) + pooled MLP/GRU panel on GPU (H-ML-002) |
-| `micro-study [--capture-seconds N]` | Binance aggTrades analytics (H-MS-000); optional live L2 capture (H-MS-001) |
-| `report` | deterministic research agents → `data/reports/research/latest.md` |
-| `run-all` | reproduce everything in order |
-| `dashboard` | Streamlit dashboard on localhost |
+| `ingest [SYMBOLS] [--tier] [--intraday]` | fetch → raw (sha256) → validate → validated Parquet + quality report |
+| `ingest-fundamentals`, `ingest-macro` | SEC EDGAR facts; Yahoo market macro + BLS (FRED is manual-CSV only - its terms forbid automation) |
+| `research`, `holdout` | core vertical slice (H-XM-000/001/002) and held-out momentum test (H-XM-003) |
+| `vol-study`, `portfolio-study` | GARCH/EWMA + regimes (H-VOL/H-REG); per-market portfolios (H-PF) |
+| `ml-study` | 5 models × 13 instruments + pooled DL panel (H-ML-001/002) |
+| `ext-study` | cross-sectional momentum/reversal, vol-managed exposure, cross-market, multimodal (H-CS/H-VT/H-XMKT/H-MM) |
+| `ml-ext` | 600k-row daily panel (H-ML-003) + hourly crypto (H-ML-004) |
+| `micro-study [--capture-seconds N]` | Binance aggTrades analytics; optional live L2 capture |
+| `report [--llm]` | deterministic research agents → `data/reports/research/latest.md` (+ optional local-LLM summary) |
+| `run-all`, `dashboard` | reproduce everything; Streamlit dashboard on localhost |
 
-Live order-book capture with a hard disk cap: `uv run python scripts/capture_depth.py --duration 300`.
+Long order-book captures with a hard disk cap: `uv run python scripts/capture_depth.py --duration 3600`.
+Optional local LLM: install Ollama, `ollama pull qwen2.5:7b`, set `NEBULA_LLM_URL=http://127.0.0.1:11434`
+and `NEBULA_LLM_MODEL=qwen2.5:7b`, then `uv run nebula report --llm`.
 
 ## Universe
-US: AAPL, MSFT, NVDA, SPY, QQQ · India (NSE via Yahoo `.NS`): RELIANCE, TCS, INFY, HDFCBANK, NIFTY 50 ·
-Crypto (Binance spot): BTCUSDT, ETHUSDT, SOLUSDT. AAPL/RELIANCE/BTCUSDT were used for design; the other
-10 are held out for confirmatory tests.
+**Core (13, frozen sample 2018-01-01…2026-11-23 for registered studies):** AAPL, MSFT, NVDA, SPY, QQQ ·
+RELIANCE, TCS, INFY, HDFCBANK, NIFTY 50 · BTCUSDT, ETHUSDT, SOLUSDT.
+**Extended (98 more, history from 2000):** 30 US large caps + 15 ETFs, ~49 NSE large caps, 16 crypto
+majors - today's names, so **survivorship-biased** (stated on every result).
 
 ## Layout
 ```
-config/markets.yaml   markets, instruments, cost assumptions, holdout list
-src/nebula/           common, data, features, stats, ml, dl, backtest, portfolio, risk, microstructure,
-                      research (study runners), tracking, agents (runtime research roles), dashboard, cli
-tests/                unit, data-validation, quantitative-correctness, leakage canaries, network (-m network)
-docs/                 charter, architecture, ADRs, data sources, hypotheses (docs/research/*), validation
+config/markets.yaml   markets, 111 instruments (core/extended tiers), costs, frozen core window
+src/nebula/           common, data (adapters, fundamentals, macro, validation, storage), features, stats,
+                      ml, dl, backtest, portfolio, risk, microstructure, research, tracking, agents,
+                      dashboard, cli
+tests/                unit, data-validation, quantitative-correctness, leakage canaries, dashboard, network
+docs/                 final report, status, validation, architecture, ADR 0001-0008, data sources,
+                      hypotheses (docs/research/), results (docs/research/results/)
 .claude/              development-time Claude Code skills and subagents (not a runtime dependency)
 data/ experiments/ logs/   generated, git-ignored
 ```
 
 ## Documentation
 [Final report](docs/FINAL_PROJECT_REPORT.md) · [Status](docs/PROJECT_STATUS.md) ·
-[Validation](docs/VALIDATION_REPORT.md) · [Architecture](docs/SYSTEM_ARCHITECTURE.md) ·
-[Data sources](docs/DATA_SOURCES.md) · [Data dictionary](docs/DATA_DICTIONARY.md) ·
-[Hypotheses](docs/RESEARCH_HYPOTHESES.md) + [docs/research/](docs/research) ·
-[Methodology](docs/RESEARCH_METHODOLOGY.md) · [Decisions](docs/TECHNICAL_DECISIONS.md) ·
+[Validation](docs/VALIDATION_REPORT.md) · [Results](docs/research/results) ·
+[Hypotheses](docs/research/H-EXT.md) · [Architecture](docs/SYSTEM_ARCHITECTURE.md) ·
+[Data sources](docs/DATA_SOURCES.md) · [Decisions](docs/TECHNICAL_DECISIONS.md) ·
 [Known issues](docs/KNOWN_ISSUES.md) · [Next steps](docs/NEXT_STEPS.md)

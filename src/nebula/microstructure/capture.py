@@ -43,7 +43,10 @@ HTTP_TIMEOUT_S = 10
 WS_OPEN_TIMEOUT_S = 10
 RECV_TIMEOUT_S = 10
 MIN_SNAPSHOT_INTERVAL_S = 1.0
-MAX_SNAPSHOTS = 30
+# Separate budgets: verification snapshots must never starve resyncs (bug found in run
+# 20261124T230728Z: 25 verify + 5 sync hit a shared cap of 30 and the last reconnect could not resync).
+MAX_SYNC_SNAPSHOTS = 60  # per run; weight 50 each -> far below Binance REST weight limits
+MAX_VERIFY_SNAPSHOTS = 40
 
 DEPTH_SCHEMA = pa.schema(
     [
@@ -266,8 +269,7 @@ async def capture(
         snap_id += 1
         return snap
 
-    def total_snapshots() -> int:
-        return rep.snapshots_sync + rep.snapshots_verify + rep.snapshot_errors
+    attempts = {"sync": 0, "verify": 0}  # snapshot requests per kind (incl. failed)
 
     async def handle_snapshot_task() -> None:
         nonlocal snap_task
@@ -292,15 +294,23 @@ async def capture(
         now = time.monotonic()
         if snap_task is not None or now - last_snap_t < MIN_SNAPSHOT_INTERVAL_S:
             return
-        if total_snapshots() >= MAX_SNAPSHOTS or now > deadline - 1.0:
+        if now > deadline - 1.0:
             return
         if sync.need_snapshot and sync.pending:
+            if attempts["sync"] >= MAX_SYNC_SNAPSHOTS:
+                return
             snap_kind = "sync"
-        elif not sync.need_snapshot and verify_every_s > 0 and now - last_verify_t >= verify_every_s:
+        elif (
+            not sync.need_snapshot
+            and verify_every_s > 0
+            and now - last_verify_t >= verify_every_s
+            and attempts["verify"] < MAX_VERIFY_SNAPSHOTS
+        ):
             snap_kind = "verify"
             last_verify_t = now
         else:
             return
+        attempts[snap_kind] += 1
         last_snap_t = now
         snap_task = asyncio.create_task(asyncio.to_thread(_fetch_snapshot, http, sym))
 

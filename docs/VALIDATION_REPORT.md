@@ -1,40 +1,34 @@
 # Validation report
 
-Final state 2026-11-24. Research numbers: experiment records from commit `642025c` (clean tree),
-reproduced bit-for-bit by a second `nebula run-all` (86/86 identical conclusions, 0 metric deviations).
+Final state 2026-11-25 (v0.3). Research numbers: experiment records reproduced from clean commit
+`d3653bb` (see PROJECT_STATUS for provenance and the two documented verdict changes).
 
-## Engineering checks (executed at the final commit)
-| Check | Command | Result |
+## Engineering checks at the final commit
+| Check | Result |
+|---|---|
+| Offline tests (`uv run pytest -m "not network"`) | 203 passed |
+| Network integration (`-m network`) | 4 passed (last run) |
+| Lint (`ruff check src tests scripts`) | clean |
+| Types (`pyright`) | 0 errors (pandas-stub noise as warnings, KI-3) |
+| Skills / agents (`scripts/validate_skills.py`) | 7/7, 7/7 |
+| Dashboard (AppTest, all pages) | 0 exceptions |
+| Full reproduction (`run-all`) | 9/9 steps, 0 dirty records |
+
+## Independent audits (separate read-only agents that re-ran code)
+| # | Scope | Key findings → fixes |
 |---|---|---|
-| Offline tests (unit, data validation, quant correctness, leakage canaries, agents, downloads, CLI, dashboard) | `uv run pytest -m "not network"` | **135 passed** |
-| Network integration (Yahoo, Binance, DuckDB view) | `uv run pytest -m network` | **4 passed** |
-| Fresh clone | clone + run suite against clone sources | 134 passed (before the dashboard test was added); all package files tracked |
-| Lint | `uv run ruff check src tests scripts` | clean |
-| Types | `uv run pyright` | 0 errors, ~281 warnings (pandas-stub noise, KI-3) |
-| Skills / agents | `uv run python scripts/validate_skills.py` | 7/7 skills, 7/7 agents pass |
-| Dashboard | headless Streamlit AppTest over all pages | 12/12 pages render, 0 exceptions |
-| Reproducibility | two full `run-all` runs from clean commits | identical |
+| 1 | Vertical slice | hindsight ML baseline (A1), fragile canary, cost borrowing, approximate gross, placeholder rows |
+| 2 | Post-slice methodology | per-date DM weighting, fold sizes, unpurged early stopping (A2), Yahoo settlement buffer |
+| 3 | Tests & security | **`.gitignore` excluded `src/nebula/data`**, disk cap, deps, download hardening |
+| 4 | Cross-sectional momentum | **benchmark cash drag from absolute rebalance tolerance** → momentum "supported" became inconclusive; survivorship concentration quantified |
+| 5 | Vol-managed / cross-market | **under-invested buy-and-hold benchmark after volume-capped first fill** → single-instrument counts corrected (also fixed SOLUSDT core results) |
+| 6 | ML panel / hourly / multimodal | no leakage (canary AUC 0.998); wording: statistical vs economic significance; breakeven ≈ 5 bps |
 
-## Independent audits
-1. **Vertical-slice methodology audit** - 6 defects fixed (hindsight ML baseline → A1, fragile canary,
-   cost borrowing, approximate gross, placeholder rows, missing sensitivity). Engine recompute ≤ 2.6e-4.
-2. **Final methodology audit** (all post-slice work) - PASS on H-XM-003 bootstrap & BH, causal portfolio
-   covariance and fills (EW recompute 4.4e-16), volatility/regime causality, Binance sync rules,
-   aggressor mapping; FAIL on H-ML-002 per-date DM weighting and PARTIAL on panel fold sizes → fixed as
-   amendment A2 (plus purged early stopping, Yahoo 2 h settlement buffer). All verdicts stood.
-3. **Test & security review** - CRITICAL: unanchored `data/` in .gitignore excluded `src/nebula/data`
-   from git → fixed and verified by fresh clone; HIGH: capture disk cap was only a projection → hard cap;
-   MEDIUM: undeclared `websockets`, unused deps, stale docs, untested download paths → fixed; LOW:
-   validator rewriting a tracked file, cached files not re-verified, no 429 backoff, LLM redirects →
-   fixed.
+Every audit's defects were fixed and studies re-run; superseded records remain in `experiments/` and
+each results document carries a correction section.
 
-## Research results
-See FINAL_PROJECT_REPORT.md §2 (table) and the per-family documents in docs/research/ and
-docs/RESEARCH_HYPOTHESES.md. Every record (including rejected/inconclusive) is in experiments/ and on
-the dashboard.
-
-## Status vocabulary
-Backtest engines, portfolio engine, features, volatility/regime methodology: **validated** (independent
-recompute/audit). ML/DL pipeline: **validated** after A2. Microstructure: **tested** (single live run).
-Agents/LLM narration: **tested** (LLM against a fake server only). Nothing is production-ready trading
-infrastructure.
+## Results
+See FINAL_PROJECT_REPORT.md §3 and `docs/research/results/`. Summary: no strategy survives realistic
+costs; statistically significant short-horizon predictability (hourly crypto, order book) is an order
+of magnitude smaller than trading costs; well-known statistical properties (stylized facts, volatility
+clustering, lower-vol portfolios) are confirmed.

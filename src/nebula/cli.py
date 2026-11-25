@@ -143,16 +143,68 @@ def micro_study(
         typer.echo(run_capture_study().experiment_id)
 
 
+@app.command("ext-study")
+def ext_study() -> None:
+    """Extended-universe studies: cross-sectional (H-CS), vol-managed (H-VT), cross-market (H-XMKT),
+    multimodal (H-MM-001). ~10 min."""
+    from nebula.research.cross_market import run_cross_market
+    from nebula.research.cross_sectional import run_cross_sectional
+    from nebula.research.multimodal import run_multimodal
+    from nebula.research.vol_managed import run_vol_managed
+
+    for name, fn in (
+        ("H-CS", run_cross_sectional),
+        ("H-VT", run_vol_managed),
+        ("H-XMKT", run_cross_market),
+        ("H-MM", run_multimodal),
+    ):
+        res = fn()
+        typer.echo(
+            f"{name}: " + json.dumps({k: v for k, v in res.items() if isinstance(v, str | int | float)})
+        )
+
+
+@app.command("ml-ext")
+def ml_ext(
+    models: str = typer.Option(
+        "logit,xgb,mlp,gru", help="comma-separated; MLP+GRU take ~2.5 h on an RTX 4060"
+    ),
+    hourly: bool = typer.Option(True, help="also run H-ML-004 hourly crypto"),
+    device: str | None = typer.Option(None, help="cuda | cpu (default: auto)"),
+) -> None:
+    """Large daily panel (H-ML-003) and hourly crypto (H-ML-004)."""
+    from nebula.research.ml_extended import run_hourly_crypto, run_ml_panel_extended
+
+    ms = [m.strip() for m in models.split(",") if m.strip()]
+    r = run_ml_panel_extended(models=ms, device=device)
+    typer.echo(json.dumps({k: v for k, v in r.items() if isinstance(v, str | int | float)}, default=str))
+    if hourly:
+        hm = [m for m in ms if m != "gru"]  # GRU was not registered for H-ML-004
+        r = run_hourly_crypto(models=hm, device=device)
+        typer.echo(json.dumps({k: v for k, v in r.items() if isinstance(v, str | int | float)}, default=str))
+
+
 @app.command("run-all")
-def run_all(skip_ingest: bool = False) -> None:
-    """Reproduce every study in order (ingest -> research -> holdout -> vol -> portfolio -> ML -> report)."""
-    steps = ([] if skip_ingest else [["ingest"]]) + [
+def run_all(
+    skip_ingest: bool = False,
+    heavy_dl: bool = typer.Option(False, help="include the ~3 h MLP/GRU runs of H-ML-003/004"),
+) -> None:
+    """Reproduce every study in order (ingest -> core -> extended -> ML -> report)."""
+    ingest = (
+        []
+        if skip_ingest
+        else [["ingest"], ["ingest", "--intraday"], ["ingest-fundamentals"], ["ingest-macro"]]
+    )
+    steps = [
+        *ingest,
         ["research"],
         ["holdout"],
         ["vol-study"],
         ["portfolio-study"],
         ["ml-study"],
         ["micro-study"],
+        ["ext-study"],
+        ["ml-ext", "--models", "logit,xgb,mlp,gru" if heavy_dl else "logit,xgb"],
         ["report"],
     ]
     for s in steps:

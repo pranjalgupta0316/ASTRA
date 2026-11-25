@@ -17,6 +17,19 @@ an HTTP request on 2026-11-24; **researched** = documentation reviewed only; **r
 | India official | NSE / BSE websites, bhavcopy | — | 1d | website | ToS restrict automated access | — | — | **not scraped**; manual download only if ever needed | — | rejected (automation) |
 | News | public RSS feeds | varies | event | RSS | per-publisher; headlines only | — | full text usually not licensed | optional; deferred until M5+ | — | researched |
 
+## Extended data (2026-11-25) - verified by ingestion
+| Dataset | Source | Coverage | Size | Notes |
+|---|---|---|---|---|
+| Daily bars, 111 instruments | Yahoo (US 45, IN 50) + Binance (16) | equities 2000→, crypto 2017→ | 637,180 bars | survivorship-biased (today's names) |
+| Hourly klines, 16 crypto pairs | Binance Public Data | 2017→ | ~1.0M bars | off-grid bars after 2018-02-09 outage flagged, excluded in research |
+| 1-minute klines BTCUSDT, ETHUSDT | Binance Public Data | 2017-08→ | ~4.87M bars each | |
+| US fundamentals (30 stocks) | SEC EDGAR companyfacts (public domain) | filings 2009→ | 59,726 facts | first-filed values; usable from session after `filed`; generic User-Agent accepted |
+| Market macro | Yahoo ^TNX ^FVX ^IRX ^VIX DX-Y.NYB INR=X | 2000→ (USDINR 2003→) | 39,792 rows | usable next session |
+| US CPI, unemployment | BLS API v1 (public domain) | 2000-01→2026-10 | 321 months each | availability = max(lag, actual release date) |
+| FRED | — | — | — | **not automated**: terms prohibit scripts, storage, ML training (ADR-0008) |
+| BTCUSDT live L2 + trades | Binance WebSocket | 6 × 1 h + 5 min (2026-11-24/25) | ≈ 211k depth events, 167k trades | 0 sequence gaps |
+Details: [docs/data/FUNDAMENTALS_MACRO.md](data/FUNDAMENTALS_MACRO.md).
+
 ## Endpoints actually used by code
 | Purpose | Endpoint | Module |
 |---|---|---|
@@ -26,6 +39,9 @@ an HTTP request on 2026-11-24; **researched** = documentation reviewed only; **r
 | L2 snapshot | `https://data-api.binance.vision/api/v3/depth?limit=1000` | microstructure/capture.py |
 | L2 diffs + trades (live) | `wss://stream.binance.com:9443` (fallback `wss://data-stream.binance.vision`) | microstructure/capture.py |
 | Optional LLM | localhost only (`NEBULA_LLM_URL`), disabled by default | agents/llm.py |
+| US fundamentals | `https://data.sec.gov/api/xbrl/companyfacts/CIK*.json`, `https://www.sec.gov/files/company_tickers.json` | data/fundamentals/sec.py |
+| CPI / unemployment | `https://api.bls.gov/publicAPI/v1/timeseries/data/` | data/macro/bls.py |
+| Market macro | Yahoo via yfinance (^TNX ^FVX ^IRX ^VIX DX-Y.NYB INR=X) | data/macro/market.py |
 
 ## Verified ingestion (2026-11-24)
 All 13 instruments ingested daily bars from 2018-01-01 (SOLUSDT from its 2020-08 listing): AAPL, MSFT,

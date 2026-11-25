@@ -358,6 +358,411 @@ def run_capture_study(run_dir: Path | None = None, symbol: str = "BTCUSDT") -> E
     return rec
 
 
+# ================================================================== H-MS-002
+# Registered in docs/research/H-EXT.md. Operational details below were fixed in code BEFORE any
+# H-MS-002 number was computed (the registry entry is short; these follow H-MS-001 definitions):
+#  - primary sample: the six 1-hour main runs; the ~60 s disk-budget probes are a labelled sensitivity
+#    pool only; the 5-minute H-MS-001 capture is excluded (it already served as evidence for H-MS-001).
+#  - capture valid iff replay integrity_failures == 0, verify mismatches == 0, unsynced events < 5%.
+#  - future mid as in H-MS-001, never across a (re)sync segment boundary.
+#  - moving-block bootstrap, 30 s blocks that never cross a segment boundary, 2000 resamples, seed 0;
+#    >= 30 blocks required. Verdict rule = H-MS-001 (supported iff CI lo > 0.5 at both horizons).
+#  - descriptive taker test: non-overlapping 10 s grid per segment; at each grid point trade
+#    sign(imbalance_5) (skip if 0), enter at the touch, exit 10 s later at the touch; cost per leg =
+#    10 bps taker fee + half-spread (bps) at that time; gross = signed mid-to-mid return (bps).
+H_MS_002 = (
+    "Pooled over ~6 h of BTCUSDT L2 captures, top-5 book imbalance at t predicts the sign of the mid "
+    "change over the next 1 s and 10 s (AUC 95% moving-block bootstrap CI lower bound > 0.5 at both)."
+)
+H_MS_002_MAIN_RUNS = (
+    "20261124T190304Z",
+    "20261124T200410Z",
+    "20261124T210516Z",
+    "20261124T220622Z",
+    "20261124T230728Z",
+    "20261125T000833Z",
+)
+H_MS_002_PROBES = (
+    "20261124T190202Z",
+    "20261124T200307Z",
+    "20261124T210413Z",
+    "20261124T220520Z",
+    "20261124T230625Z",
+    "20261125T000731Z",
+)
+MIN_BLOCKS_H2 = 30
+TAKER_FEE_BPS = 10.0
+TRADE_H_S = 10
+PROBE_N_BOOT = 200
+
+
+def segment_block_bootstrap_auc(
+    seg: np.ndarray,
+    t_s: np.ndarray,
+    score: np.ndarray,
+    label: np.ndarray,
+    block_s: float = BLOCK_S,
+    n_boot: int = N_BOOT,
+    seed: int = SEED,
+    alpha: float = 0.05,
+) -> tuple[float, float, int]:
+    """Moving-block bootstrap over several disjoint time segments; blocks never cross a segment.
+
+    Each resample draws n_blocks = sum_s floor(span_s / block_s) block starts: a segment chosen with
+    probability proportional to its admissible start range, then a uniform start inside it.
+    Returns (lo, hi, n_blocks).
+    """
+    order = np.lexsort((t_s, seg))
+    seg, t_s, score, label = seg[order], t_s[order], score[order], label[order]
+    if len(seg) == 0:
+        return float("nan"), float("nan"), 0
+    segs, first = np.unique(seg, return_index=True)
+    bounds = list(zip(first, [*first[1:], len(seg)], strict=True))
+    t0 = np.array([t_s[a] for a, _ in bounds])
+    span = np.array([t_s[b - 1] - t_s[a] for a, b in bounds])
+    n_blocks = int(np.sum(np.floor(span / block_s)))
+    room = np.clip(span - block_s, 0.0, None)
+    if n_blocks < 1 or room.sum() <= 0:
+        return float("nan"), float("nan"), n_blocks
+    p = room / room.sum()
+    rng = np.random.default_rng(seed)
+    out = np.empty(n_boot)
+    for b in range(n_boot):
+        which = rng.choice(len(segs), size=n_blocks, p=p)
+        starts = t0[which] + rng.uniform(0.0, 1.0, size=n_blocks) * room[which]
+        parts: list[np.ndarray] = []
+        for j in np.unique(which):
+            a, z = bounds[j]
+            ts = t_s[a:z]
+            st = starts[which == j]
+            lo_i = a + np.searchsorted(ts, st, side="left")
+            hi_i = a + np.searchsorted(ts, st + block_s, side="left")
+            parts.extend(np.arange(x, y) for x, y in zip(lo_i, hi_i, strict=True))
+        idx = np.concatenate(parts) if parts else np.array([], dtype=np.int64)
+        out[b] = auc(score[idx], label[idx]) if len(idx) else np.nan
+    lo, hi = np.nanquantile(out, [alpha / 2, 1 - alpha / 2])
+    return float(lo), float(hi), n_blocks
+
+
+def horizon_samples(states: pd.DataFrame, horizon_s: float, score_col: str = "imbalance_5") -> pd.DataFrame:
+    """Per-state (segment, t_s, score, dmid) for one horizon; states without a full horizon are dropped."""
+    dm = future_mid_change(states, horizon_s)
+    ok = dm.notna() & states[score_col].notna()
+    return pd.DataFrame(
+        {
+            "segment": states.loc[ok, "segment"].to_numpy(),
+            "t_s": states.loc[ok, "E_ms"].to_numpy(dtype=float) / 1000.0,
+            "score": states.loc[ok, score_col].to_numpy(dtype=float),
+            "dmid": dm[ok].to_numpy(),
+        }
+    )
+
+
+def auc_test(samples: pd.DataFrame, n_boot: int = N_BOOT) -> dict[str, Any]:
+    """AUC on non-zero changes + segment-respecting block-bootstrap CI + zero-change base rate."""
+    d = samples["dmid"].to_numpy()
+    nz = d != 0
+    s = samples[nz]
+    label = (s["dmid"].to_numpy() > 0).astype(int)
+    a = auc(s["score"].to_numpy(), label)
+    lo, hi, nb = segment_block_bootstrap_auc(
+        s["segment"].to_numpy(), s["t_s"].to_numpy(), s["score"].to_numpy(), label, n_boot=n_boot
+    )
+    return {
+        "n_obs": len(samples),
+        "n_nonzero": int(nz.sum()),
+        "zero_change_rate": float(1 - nz.mean()) if len(samples) else float("nan"),
+        "up_rate_given_change": float(label.mean()) if len(label) else float("nan"),
+        "auc": a,
+        "ci_lo": lo,
+        "ci_hi": hi,
+        "n_blocks": nb,
+    }
+
+
+def _component_verdict(r: dict[str, Any]) -> str:
+    if not r or r["n_blocks"] < MIN_BLOCKS_H2 or r["n_nonzero"] < MIN_NONZERO:
+        return "inconclusive"
+    if not (math.isfinite(r["ci_lo"]) and math.isfinite(r["ci_hi"])):
+        return "inconclusive"
+    if r["ci_lo"] > 0.5:
+        return "supported"
+    if r["ci_hi"] < 0.5:
+        return "rejected"
+    return "inconclusive"
+
+
+def h_ms_002_verdict(res: dict[str, dict[str, Any]]) -> tuple[str, str]:
+    hs = [res.get(f"h{h}s", {}) for h in HORIZONS_S]
+    if any(not r or r["n_blocks"] < MIN_BLOCKS_H2 or r["n_nonzero"] < MIN_NONZERO for r in hs):
+        return "inconclusive", f"insufficient data (< {MIN_BLOCKS_H2} blocks or < {MIN_NONZERO} changes)"
+    comp = [_component_verdict(r) for r in hs]
+    if all(c == "supported" for c in comp):
+        return "supported", "CI lower bound > 0.5 at both horizons"
+    if all(c == "rejected" for c in comp):
+        return "rejected", "CI upper bound < 0.5 at both horizons"
+    return "inconclusive", "CI includes 0.5 at one or both horizons, or horizons disagree"
+
+
+def taker_strategy(
+    states: pd.DataFrame, horizon_s: float = TRADE_H_S, fee_bps: float = TAKER_FEE_BPS
+) -> pd.DataFrame:
+    """Descriptive taker test on a non-overlapping grid per segment. One row per trade.
+
+    gross = side * (mid_exit / mid_entry - 1) in bps; cost = 2 * fee + half-spread at entry + at exit.
+    """
+    rows: list[dict[str, Any]] = []
+    h_ms = round(horizon_s * 1000)
+    for seg, g in states.groupby("segment", sort=False):
+        e = g["E_ms"].to_numpy(dtype=np.int64)
+        mid = g["mid"].to_numpy(dtype=float)
+        sp = g["spread_bps"].to_numpy(dtype=float)
+        imb = g["imbalance_5"].to_numpy(dtype=float)
+        if len(e) < 2 or e[-1] - e[0] < h_ms:
+            continue
+        grid = np.arange(e[0], e[-1] - h_ms + 1, h_ms)
+        i0 = np.searchsorted(e, grid, side="right") - 1
+        i1 = np.searchsorted(e, grid + h_ms, side="right") - 1
+        for t, a, z in zip(grid, i0, i1, strict=True):
+            sgn = float(np.sign(imb[a]))
+            if sgn == 0 or not np.isfinite(sgn):
+                continue
+            move = (mid[z] / mid[a] - 1) * 1e4
+            cost = 2 * fee_bps + sp[a] / 2 + sp[z] / 2
+            rows.append(
+                {
+                    "segment": seg,
+                    "t_ms": int(t),
+                    "side": sgn,
+                    "gross_bps": sgn * move,
+                    "cost_bps": cost,
+                    "net_bps": sgn * move - cost,
+                    "abs_move_bps": abs(move),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def ofi_association(states: pd.DataFrame) -> dict[str, float]:
+    """Contemporaneous 1 s OFI (sum of e_n) vs 1 s mid change (USD), consecutive seconds in a segment."""
+    import statsmodels.api as sm
+
+    s = states.assign(sec=(states["E_ms"] // 1000).astype("int64"))
+    per = s.groupby(["segment", "sec"]).agg(ofi=("ofi", "sum"), mid=("mid", "last")).reset_index()
+    per["dmid"] = per.groupby("segment")["mid"].diff()
+    per["adj"] = per.groupby("segment")["sec"].diff() == 1
+    d = per[per["adj"] & per["dmid"].notna()]
+    if len(d) < 30:
+        return {
+            "n_seconds": float(len(d)),
+            "corr": float("nan"),
+            "slope": float("nan"),
+            "t_hac": float("nan"),
+        }
+    y, x = d["dmid"].to_numpy(), d["ofi"].to_numpy()
+    lags = math.floor(4 * (len(d) / 100) ** (2 / 9))
+    res = sm.OLS(y, sm.add_constant(x)).fit(cov_type="HAC", cov_kwds={"maxlags": lags})
+    return {
+        "n_seconds": float(len(d)),
+        "corr": float(np.corrcoef(x, y)[0, 1]),
+        "slope": float(np.asarray(res.params)[1]),  # USD mid change per BTC of OFI
+        "t_hac": float(np.asarray(res.tvalues)[1]),
+        "r2": float(res.rsquared),
+    }
+
+
+def _capture_row(run_dir: Path, pool: str, seg_offset: int) -> tuple[dict[str, Any], pd.DataFrame]:
+    cap = json.loads((run_dir / "capture_report.json").read_text(encoding="utf-8"))
+    states, rstats = book_states(run_dir)
+    unsynced_frac = rstats["unsynced_events"] / max(rstats["events"], 1)
+    valid = (
+        not states.empty
+        and rstats["integrity_failures"] == 0
+        and rstats["verify_mismatches"] == 0
+        and unsynced_frac < 0.05
+    )
+    row: dict[str, Any] = {
+        "run": run_dir.name,
+        "pool": pool,
+        "valid": bool(valid),
+        "hours": cap.get("actual_duration_s", 0) / 3600,
+        "reconnects": cap.get("reconnects"),
+        "online_gaps": cap.get("gaps_detected"),
+        "online_resyncs": cap.get("resyncs"),
+        "online_sync_snapshots": cap.get("snapshots_sync"),
+        "unsynced_frac": unsynced_frac,
+        **{f"replay_{k}": v for k, v in rstats.items()},
+    }
+    if not states.empty:
+        states = states.assign(segment=states["segment"] + seg_offset)
+        row["segments"] = int(states["segment"].nunique())
+        row["valid_span_h"] = float(
+            states.groupby("segment")["E_ms"].agg(lambda e: (e.max() - e.min()) / 3.6e6).sum()
+        )
+        row["max_intra_segment_gap_s"] = float(states.groupby("segment")["E_ms"].diff().max() / 1000)
+        row["spread_bps_median"] = float(states["spread_bps"].median())
+        row["share_one_tick"] = float(np.isclose(states["best_ask"] - states["best_bid"], 0.01).mean())
+    return row, states
+
+
+def run_h_ms_002(symbol: str = "BTCUSDT", n_boot: int = N_BOOT) -> dict[str, Any]:
+    """Run H-MS-002 (docs/research/H-EXT.md); log Tracker records (one per horizon + family)."""
+    import time as _time
+
+    from nebula.stats.inference import newey_west_tstat
+
+    t_start = _time.time()
+    paths = get_paths()
+    base = paths.data / "microstructure" / symbol
+    rows: list[dict[str, Any]] = []
+    pooled: dict[str, list[pd.DataFrame]] = {f"h{h}s": [] for h in HORIZONS_S}
+    probe_pool: dict[str, list[pd.DataFrame]] = {f"h{h}s": [] for h in HORIZONS_S}
+    trades: list[pd.DataFrame] = []
+    seg_offset = 0
+    for pool, runs in (("main", H_MS_002_MAIN_RUNS), ("probe", H_MS_002_PROBES)):
+        for run in runs:
+            rd = base / run
+            if not (rd / "capture_report.json").exists():
+                rows.append({"run": run, "pool": pool, "valid": False, "note": "missing"})
+                continue
+            row, st = _capture_row(rd, pool, seg_offset)
+            if not st.empty:
+                seg_offset = int(st["segment"].max()) + 1
+                for h in HORIZONS_S:
+                    smp = horizon_samples(st, h)
+                    r = auc_test(smp, n_boot=n_boot if pool == "main" else PROBE_N_BOOT)
+                    row.update({f"h{h}s_{k}": v for k, v in r.items()})
+                    if row["valid"]:
+                        (pooled if pool == "main" else probe_pool)[f"h{h}s"].append(smp)
+                row.update({f"ofi_{k}": v for k, v in ofi_association(st).items()})
+                if row["valid"] and pool == "main":
+                    tdf_run = taker_strategy(st)
+                    if not tdf_run.empty:
+                        trades.append(tdf_run.assign(run=run))
+            rows.append(row)
+            log_row = {k: v for k, v in row.items() if k in ("run", "valid", "h1s_auc", "h10s_auc")}
+            print("h_ms_002.capture", log_row, flush=True)
+    res = {k: auc_test(pd.concat(v, ignore_index=True), n_boot=n_boot) for k, v in pooled.items() if v}
+    sens = {
+        k: auc_test(pd.concat(pooled[k] + probe_pool[k], ignore_index=True), n_boot=n_boot)
+        for k in pooled
+        if pooled[k] and probe_pool[k]
+    }
+    verdict, reason = h_ms_002_verdict(res)
+    tdf = pd.concat(trades, ignore_index=True) if trades else pd.DataFrame()
+    strat: dict[str, Any] = {}
+    if not tdf.empty:
+        strat = {
+            "n_trades": len(tdf),
+            "gross_mean_bps": float(tdf["gross_bps"].mean()),
+            "gross_nw_t": newey_west_tstat(tdf["gross_bps"]),
+            "hit_rate_gross": float((tdf["gross_bps"] > 0).mean()),
+            "cost_mean_bps": float(tdf["cost_bps"].mean()),
+            "net_mean_bps": float(tdf["net_bps"].mean()),
+            "net_nw_t": newey_west_tstat(tdf["net_bps"]),
+            "share_trades_net_positive": float((tdf["net_bps"] > 0).mean()),
+            "mean_abs_move_10s_bps": float(tdf["abs_move_bps"].mean()),
+            "p99_abs_move_10s_bps": float(tdf["abs_move_bps"].quantile(0.99)),
+            "survives_costs": bool(tdf["net_bps"].mean() > 0),
+        }
+    elapsed = _time.time() - t_start
+    pc = pd.DataFrame(rows)
+    tr = Tracker()
+    datasets = [
+        {
+            "provider": "binance_ws_l2_live_capture",
+            "data_level": "L2 market-by-price (no L3)",
+            "root": _rel(base, paths.root),
+            "runs_main": list(H_MS_002_MAIN_RUNS),
+            "runs_probe_sensitivity_only": list(H_MS_002_PROBES),
+        }
+    ]
+    validation = {
+        "metric": "ROC AUC on non-zero mid changes",
+        "ci": f"segment-respecting moving-block bootstrap, block={BLOCK_S}s, n_boot={n_boot}, seed={SEED}",
+        "min_blocks": MIN_BLOCKS_H2,
+        "registry": "docs/research/H-EXT.md H-MS-002",
+    }
+    ids: dict[str, str] = {}
+    for h in HORIZONS_S:
+        key = f"h{h}s"
+        rec = tr.new(
+            name=f"H-MS-002 component {h}s: imbalance_5 -> sign dmid, pooled {symbol}",
+            hypothesis_id=f"H-MS-002-{h}s",
+            hypothesis=f"{H_MS_002} Component: horizon {h} s.",
+            datasets=datasets,
+            features=["imbalance_5"],
+            validation=validation,
+            seed=SEED,
+        )
+        rec.metrics = {**res.get(key, {}), "sensitivity_with_probes": sens.get(key, {})}
+        rec.conclusion = _component_verdict(res.get(key, {}))  # type: ignore[assignment]
+        rec.notes = "Component record; the family record carries the registered both-horizon decision."
+        keep = [c for c in pc.columns if not c.startswith("h") or c.startswith(f"{key}_") or c == "hours"]
+        tr.save_frame(rec, "per_capture", pc[keep])
+        tr.log(rec)
+        ids[key] = rec.experiment_id
+    fam = tr.new(
+        name=f"H-MS-002 family: L2 imbalance -> mid sign, pooled {symbol}",
+        hypothesis_id="H-MS-002",
+        hypothesis=H_MS_002,
+        datasets=datasets,
+        features=["imbalance_5"],
+        model={"type": "rank score (no fit)"},
+        validation=validation,
+        costs={"taker_fee_bps_per_leg": TAKER_FEE_BPS, "half_spread": "per leg, at entry and exit"},
+        seed=SEED,
+    )
+    fam.metrics = {
+        **{f"{k}_{k2}": v for k, r in res.items() for k2, v in r.items()},
+        **{f"probes_sens_{k}_{k2}": v for k, r in sens.items() for k2, v in r.items()},
+        **{f"strategy10s_{k}": v for k, v in strat.items()},
+        "component_ids": ids,
+        "verdict_reason": reason,
+        "runtime_s": elapsed,
+    }
+    fam.conclusion = verdict  # type: ignore[assignment]
+    fam.notes = (
+        "L2 only, single venue, one night (main runs 19:03-01:08 UTC). Every resync followed a WebSocket "
+        "reconnect; post-resync data come from a freshly synced book and are kept, but no horizon window, "
+        "bootstrap block or strategy trade crosses a segment boundary. Taker test is descriptive."
+    )
+    fam.reproduce = (
+        'uv run --no-sync python -c "from nebula.research.microstructure_study import run_h_ms_002; '
+        'run_h_ms_002()"'
+    )
+    tr.save_frame(fam, "per_capture", pc)
+    pooled_df = pd.DataFrame(
+        [{"horizon": k, "pool": "main", **r} for k, r in res.items()]
+        + [{"horizon": k, "pool": "main+probes", **r} for k, r in sens.items()]
+    )
+    tr.save_frame(fam, "pooled_results", pooled_df)
+    if not tdf.empty:
+        by_run = (
+            tdf.groupby("run")
+            .agg(
+                n=("net_bps", "size"),
+                gross_mean_bps=("gross_bps", "mean"),
+                net_mean_bps=("net_bps", "mean"),
+                mean_abs_move_bps=("abs_move_bps", "mean"),
+            )
+            .reset_index()
+        )
+        tr.save_frame(fam, "strategy10s_by_run", by_run)
+    tr.log(fam)
+    ids["family"] = fam.experiment_id
+    return {
+        "ids": ids,
+        "pooled": res,
+        "sensitivity": sens,
+        "strategy": strat,
+        "per_capture": pc,
+        "verdict": verdict,
+        "reason": reason,
+        "runtime_s": elapsed,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     import sys
 
@@ -366,6 +771,10 @@ def main(argv: list[str] | None = None) -> int:
     if what in ("aggtrades", "all"):
         rec = run_aggtrades_study()
         print(rec.experiment_id, rec.conclusion, json.dumps(rec.metrics, default=str, indent=1))
+    if what == "h-ms-002":
+        out = run_h_ms_002()
+        print(out["ids"], out["verdict"], out["reason"], json.dumps(out["pooled"], default=str))
+        print(json.dumps(out["strategy"], default=str), "runtime_s", out["runtime_s"])
     if what in ("capture", "all"):
         rd = Path(args[1]) if what == "capture" and len(args) > 1 else None
         rec = run_capture_study(rd)
