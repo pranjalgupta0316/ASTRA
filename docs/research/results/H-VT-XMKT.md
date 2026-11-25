@@ -1,5 +1,26 @@
 # Results: H-VT-001 (volatility-managed exposure) and H-XMKT-001 (cross-market diversification)
 
+## CORRECTION (2026-11-25, after independent audit) - current single-instrument counts
+The audit found the single-instrument **buy-and-hold benchmark under-invested**: it placed one order,
+and when the 5 % volume cap cut that fill the remainder was cancelled (25 of 111 benchmarks started
+< 95 % invested; XLE stayed ≈ 3 %). `buy_and_hold()` now re-issues the 100 % target every bar
+(commit 2f8e927). Re-run (family `20261124T235513-H-VT-001-0fec5a`):
+
+| Group | raw-CI supported | raw-CI inconclusive | BH-significant |
+|---|---|---|---|
+| US (45) | 1 | 44 | 0 |
+| IN (50) | 4 | 46 | 0 |
+| CRYPTO (16) | 0 | 16 | 0 |
+| EW portfolios (3) | 2 (US, IN) | 1 | 0 |
+
+The family verdict (**inconclusive**), the EW-portfolio results (unmanaged EW was already fully
+invested) and both H-XMKT-001 verdicts (**inconclusive**) were confirmed by the audit's independent
+recompute and are unchanged. The single-instrument counts and "share ΔSharpe > 0" figures further
+below are from the superseded first run.
+
+---
+*Original (superseded for single-instrument counts) report follows.*
+
 The hypotheses were registered in `docs/research/H-EXT.md` before any run, and that file is unchanged.
 Run 2026-11-25 (UTC timestamps in the experiment IDs). Code: `src/nebula/research/vol_managed.py` and
 `src/nebula/research/cross_market.py`. Tests: `tests/test_vol_managed_xmkt.py`. Alignment rules:

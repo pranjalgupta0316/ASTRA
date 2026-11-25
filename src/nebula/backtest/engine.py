@@ -175,7 +175,12 @@ def signal_strategy(signal: pd.Series) -> Strategy:
 
 
 def buy_and_hold() -> Strategy:
+    """Target 100 % invested on every bar. Re-issuing the target (instead of a single initial order)
+    matters when the volume cap cuts the first fill: the remainder is bought on later bars rather than
+    left in cash (audit 2026-11-25: single-order benchmarks stayed ~3 % invested for thin early ETFs).
+    Once fully invested, the rebalance tolerance suppresses further trades."""
+
     def strat(i: int, hist: pd.DataFrame) -> float | None:
-        return 1.0 if i == 0 else None
+        return 1.0
 
     return strat

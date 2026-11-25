@@ -61,6 +61,14 @@ def test_signal_executes_next_open_not_same_bar():
     assert res.equity_net.iloc[-1] == pytest.approx(1210.0)
 
 
+def test_buy_and_hold_completes_after_volume_cap():
+    """A capped first fill must be completed on later bars (benchmark ends ~fully invested)."""
+    bars = toy().assign(volume=[100.0] * 4)
+    res = run_backtest(bars, buy_and_hold(), BacktestConfig(initial_cash=1100.0, max_participation=0.05))
+    assert len(res.fills) >= 2  # 5 shares on day 1, the rest afterwards
+    assert res.ledger["weight"].iloc[-1] > 0.95
+
+
 def test_participation_cap():
     bars = toy().assign(volume=[100.0] * 4)
     res = run_backtest(bars, buy_and_hold(), BacktestConfig(initial_cash=1100.0, max_participation=0.05))

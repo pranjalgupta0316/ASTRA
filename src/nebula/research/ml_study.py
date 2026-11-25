@@ -75,8 +75,8 @@ def _inputs(df: pd.DataFrame, name: str) -> np.ndarray:
 
 
 def _date_dm(y: np.ndarray, p_ref: np.ndarray, p_model: np.ndarray, dates: np.ndarray) -> float:
-    """NW t-stat of the per-date mean of (log loss of reference - log loss of model); > 0 favours model."""
-    """Row-weighted mean loss difference with date-clustered (Newey-West over dates) inference:
+    """NW t-stat (> 0 favours model) of the row-weighted mean loss
+    difference with date-clustered (Newey-West over dates) inference:
     per-date SUMS scaled by the mean rows per date, so every row has equal weight (crypto-only weekend
     dates are not over-weighted) while within-date correlation is absorbed by clustering."""
     d = _pointwise_log_loss(y, p_ref) - _pointwise_log_loss(y, p_model)

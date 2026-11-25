@@ -37,6 +37,7 @@ PAGES = [
     "Market regimes",
     "Portfolio & risk",
     "Market microstructure",
+    "Extended research (111 instruments)",
     "Research report & agents",
     "System logs",
 ]
@@ -415,6 +416,44 @@ elif page == "Research report & agents":
         st.dataframe(pd.DataFrame(rows).tail(50), width="stretch")
     else:
         st.info("No agent activity logged yet.")
+
+elif page == "Extended research (111 instruments)":
+    st.header("Extended research - 111 instruments, history from 2000")
+    st.caption(
+        "Pre-registered in docs/research/H-EXT.md. Universes are today's large caps / NIFTY names / crypto "
+        "majors, so every result is survivorship-biased. Verdicts below are the latest recorded runs."
+    )
+    ext = ("H-CS", "H-VT", "H-XMKT", "H-ML-003", "H-ML-004", "H-MM", "H-MS-002")
+    df = index()
+    if not need(df, "experiments"):
+        st.stop()
+    sub = df[df["hypothesis_id"].str.startswith(ext)].drop_duplicates(
+        subset=["hypothesis_id", "name", "subject"], keep="last"
+    )
+    if need(sub, "extended studies"):
+        st.dataframe(
+            sub[["hypothesis_id", "name", "subject", "conclusion", "experiment_id"]], width="stretch"
+        )
+        with_eq = [
+            e
+            for e in sub["experiment_id"]
+            if (PATHS.experiments / e / "artifacts" / "equity.parquet").exists()
+        ]
+        if with_eq:
+            eid = st.selectbox("Equity curves", with_eq[::-1])
+            eq = artifact(str(eid), "equity")
+            if eq is not None:
+                cols = [c for c in eq.columns if "equity" in c and pd.api.types.is_numeric_dtype(eq[c])]
+                fig = go.Figure()
+                for c in cols[:8]:
+                    fig.add_scatter(x=eq.index, y=eq[c], name=c)
+                fig.update_layout(height=420, yaxis_title="equity")
+                st.plotly_chart(fig, width="stretch")
+    results_dir = PATHS.root / "docs" / "research" / "results"
+    docs = sorted(results_dir.glob("*.md")) if results_dir.exists() else []
+    if docs:
+        pick = st.selectbox("Results write-up", [p.name for p in docs])
+        st.markdown((results_dir / pick).read_text(encoding="utf-8"))
 
 elif page == "System logs":
     st.header("System logs (last 200 lines)")
