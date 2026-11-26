@@ -86,6 +86,12 @@ def record_subject(rec: ExperimentRecord) -> str:
     return "multi"
 
 
+def _cell_subject(rec: ExperimentRecord) -> str:
+    """Like record_subject, but one symbol at several frequencies (1m + 1d) is still that symbol."""
+    syms = {str(d["symbol"]) for d in rec.datasets if isinstance(d, dict) and d.get("symbol")}
+    return syms.pop() if len(syms) == 1 else record_subject(rec)
+
+
 class Tracker:
     def __init__(self, paths: Paths | None = None) -> None:
         self.paths = (paths or get_paths()).ensure()
@@ -145,3 +151,42 @@ class Tracker:
     def load(self, experiment_id: str) -> ExperimentRecord:
         p = self.root / experiment_id / "record.json"
         return ExperimentRecord.model_validate_json(p.read_text(encoding="utf-8"))
+
+    def status(self) -> pd.DataFrame:
+        """Every record with a computed `superseded` flag (records themselves are never modified).
+
+        A record is superseded when a later record exists for the same (hypothesis_id, subject, name):
+        re-runs after a fix or a re-ingest replace earlier ones for reporting, but stay on disk as
+        provenance. `superseded_by` names the current record of the group."""
+        idx = self.list()
+        if idx.empty:
+            return idx
+        rows = []
+        for eid in idx["experiment_id"]:
+            rec = self.load(eid)
+            rows.append(
+                {
+                    "experiment_id": eid,
+                    "hypothesis_id": rec.hypothesis_id,
+                    "name": rec.name,
+                    "subject": _cell_subject(rec),
+                    "created_at_utc": rec.created_at_utc,
+                    "conclusion": rec.conclusion,
+                    "commit": str(rec.code_version.get("commit", ""))[:7],
+                    "dirty": bool(rec.code_version.get("dirty", False)),
+                    "data_lock": (rec.data_lock or {}).get("name"),
+                }
+            )
+        df = pd.DataFrame(rows).drop_duplicates("experiment_id").sort_values("created_at_utc")
+        key = ["hypothesis_id", "subject", "name"]
+        latest = df.groupby(key, sort=False)["experiment_id"].transform("last")
+        df["superseded"] = df["experiment_id"] != latest
+        df["superseded_by"] = latest.where(df["superseded"], None)
+        return df.reset_index(drop=True)
+
+    def current(self) -> list[ExperimentRecord]:
+        """The non-superseded records."""
+        st = self.status()
+        if st.empty:
+            return []
+        return [self.load(e) for e in st.loc[~st["superseded"], "experiment_id"]]

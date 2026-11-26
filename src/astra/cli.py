@@ -186,6 +186,42 @@ def rv_study() -> None:
             typer.echo(r["table"][cols].to_string(index=False))
 
 
+@app.command("universe")
+def universe(
+    fetch: bool = typer.Option(False, help="re-download the two Wikipedia pages (2 API requests)"),
+    dates: str = typer.Option("2011-01-03,2015-01-02,2018-01-02,2022-01-03", help="comma-separated dates"),
+) -> None:
+    """P8: point-in-time S&P 500 membership (Wikipedia, CC BY-SA) and a survivorship check of the US
+    universe. Writes data/validated/universe/sp500_membership.parquet + manifest."""
+    from astra.data.universe import build, fetch_pages, survivorship_report
+
+    man = build(files=fetch_pages() if fetch else None)
+    typer.echo(
+        json.dumps({k: v for k, v in man.items() if k not in ("sources", "changes_per_year")}, indent=1)
+    )
+    typer.echo(survivorship_report([d.strip() for d in dates.split(",")]).to_string(index=False))
+
+
+@app.command("multiplicity")
+def multiplicity() -> None:
+    """P7: global FDR over all current records, deflated Sharpe of every strategy curve, calibration of
+    stored OOS probabilities. Re-reads records only; writes data/reports/research/multiplicity.*"""
+    from astra.research.multiplicity import write_report
+
+    typer.echo(json.dumps(write_report(), indent=2))
+
+
+@app.command("records")
+def records(all_records: bool = typer.Option(False, "--all", help="include superseded records")) -> None:
+    """List experiment records with the computed superseded flag (records are never modified)."""
+    from astra.tracking.tracker import Tracker
+
+    st = Tracker().status()
+    if not all_records and len(st):
+        st = st.loc[~st["superseded"]]
+    typer.echo(st.drop(columns=["superseded_by"], errors="ignore").to_string(index=False))
+
+
 @app.command("portfolio-study")
 def portfolio_study(markets: list[str] = typer.Argument(None)) -> None:
     """H-PF-001/002 portfolio construction study per market."""
@@ -272,6 +308,7 @@ def run_all(
         ["micro-study"],
         ["ext-study"],
         ["ml-ext", "--models", "logit,xgb,mlp,gru" if heavy_dl else "logit,xgb"],
+        ["multiplicity"],
         ["report"],
     ]
     for s in steps:

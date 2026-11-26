@@ -38,6 +38,7 @@ PAGES = [
     "Portfolio & risk",
     "Market microstructure",
     "Extended research (111 instruments)",
+    "Data versions & multiplicity",
     "Research report & agents",
     "System logs",
 ]
@@ -54,6 +55,11 @@ def index() -> pd.DataFrame:
     if not df.empty:
         df["subject"] = [_subject(e) for e in df["experiment_id"]]
     return df
+
+
+@st.cache_data(ttl=60)
+def status() -> pd.DataFrame:
+    return TR.status()
 
 
 def _subject(eid: str) -> str:
@@ -178,14 +184,32 @@ elif page == "Research experiments":
     df = index()
     if not need(df, "experiments"):
         st.stop()
-    hyps = sorted(df["hypothesis_id"].unique())
+    stat = status()
+    hyps = sorted(stat["hypothesis_id"].unique())
     pick = st.multiselect("Hypotheses", hyps, default=hyps)
-    only_latest = st.checkbox("Latest run per experiment/subject only", value=True)
-    view = df[df["hypothesis_id"].isin(pick)]
-    if only_latest:
-        view = view.drop_duplicates(subset=["hypothesis_id", "name", "subject"], keep="last")
+    only_current = st.checkbox("Current records only (hide superseded re-runs)", value=True)
+    view = stat[stat["hypothesis_id"].isin(pick)]
+    if only_current:
+        view = view[~view["superseded"]]
+    st.caption(
+        f"{len(stat)} records, {int((~stat['superseded']).sum())} current. A record is superseded when a "
+        "later run of the same hypothesis/subject/name exists; records themselves are never modified."
+    )
     st.dataframe(
-        view[["experiment_id", "hypothesis_id", "name", "subject", "conclusion", "created_at_utc"]],
+        view[
+            [
+                "experiment_id",
+                "hypothesis_id",
+                "name",
+                "subject",
+                "conclusion",
+                "created_at_utc",
+                "commit",
+                "dirty",
+                "data_lock",
+                "superseded",
+            ]
+        ],
         width="stretch",
     )
     eid = st.selectbox("Inspect experiment", view["experiment_id"].tolist()[::-1])
@@ -454,6 +478,42 @@ elif page == "Extended research (111 instruments)":
     if docs:
         pick = st.selectbox("Results write-up", [p.name for p in docs])
         st.markdown((results_dir / pick).read_text(encoding="utf-8"))
+
+elif page == "Data versions & multiplicity":
+    st.header("Data versions & project-wide multiple testing")
+    from astra.data.lock import list_locks
+
+    st.subheader("Data locks (immutable snapshots, ADR-0009)")
+    locks = pd.DataFrame(list_locks(PATHS))
+    if need(locks, "data locks"):
+        st.dataframe(locks, width="stretch")
+    rep = PATHS.data / "reports" / "research"
+    tests_p = rep / "multiplicity_global_tests.parquet"
+    st.subheader("Global FDR over all current tests")
+    st.caption("Descriptive: registered verdicts are unchanged. Regenerate with `astra multiplicity`.")
+    if tests_p.exists():
+        t = pd.read_parquet(tests_p)
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("primary tests", len(t))
+        c2.metric("p < 0.05", int(t["sig_raw"].sum()))
+        c3.metric("global BH", int(t["sig_bh_global"].sum()))
+        c4.metric("global BY", int(t["sig_by_global"].sum()))
+        lost = t[(t["local_conclusion"] == "supported") & ~t["sig_bh_global"]]
+        st.write("Locally supported, not significant after global BH:")
+        st.dataframe(
+            lost[["hypothesis_id", "subject", "name", "metric", "p", "q_bh_global"]], width="stretch"
+        )
+        with st.expander("All tests"):
+            st.dataframe(t, width="stretch")
+    else:
+        st.info("No global multiplicity report yet (`astra multiplicity`).")
+    for name, title in (("deflated_sharpe", "Deflated Sharpe ratios"), ("calibration", "Calibration")):
+        p = rep / f"multiplicity_{name}.parquet"
+        st.subheader(title)
+        if p.exists():
+            st.dataframe(pd.read_parquet(p), width="stretch")
+        else:
+            st.info(f"No {title.lower()} table yet.")
 
 elif page == "System logs":
     st.header("System logs (last 200 lines)")
