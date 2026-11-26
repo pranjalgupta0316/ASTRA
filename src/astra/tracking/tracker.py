@@ -113,7 +113,9 @@ class Tracker:
     def save_frame(self, rec: ExperimentRecord, name: str, df: pd.DataFrame) -> Path:
         p = self.artifact_dir(rec) / f"{name}.parquet"
         df.to_parquet(p)
-        rec.artifacts.append(str(p.relative_to(self.paths.root)))
+        # relative to the repo when inside it; absolute when ASTRA_EXPERIMENTS_DIR points elsewhere
+        rel = p.relative_to(self.paths.root) if p.is_relative_to(self.paths.root) else p
+        rec.artifacts.append(str(rel))
         return p
 
     def log(self, rec: ExperimentRecord) -> Path:

@@ -16,5 +16,10 @@
 | M11 | dashboard expansion, profiling | all pages on real outputs |
 | M12 | final audits, report | VALIDATION_REPORT + FINAL_PROJECT_REPORT |
 
+Status 2026-11-26: M0-M12 complete (v0.3.0). Improvement programme from the 2026-11-26 audit, in
+priority order: P1 data locks (done), P2 engine verification (done), P3 realized-volatility study,
+P4 Binance USD-M futures data layer, then P5 microstructure v2, P6 execution simulation, P7 global
+FDR / deflated Sharpe / calibration, P8 point-in-time universe, P9 tracker + dashboard, P10 docs/refactor.
+
 Revision 2026-11-24: M4-M6 vertical slice built together (single pipeline per instrument) because
 the slice acceptance requires data → features → stats → ML → backtest → dashboard end to end.
