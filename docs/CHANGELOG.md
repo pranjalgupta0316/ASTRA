@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (0.4 improvement programme, 2026-11-26)
+- P1 data locks: immutable content-addressed snapshots, `--lock`, lock stored in every record (ADR-0009);
+  `v0.3.0-baseline` reproduces the published records exactly.
+- P2 engine verification: property-based tests (hypothesis) against an independent return-algebra reference,
+  cash reconciliation, truncation invariance; golden regression of headline numbers under the baseline lock.
+- P3 realized volatility (H-RV-001/002/003) from 1-minute and hourly data: all families inconclusive; audited.
+- P6 order-level execution simulator (L1 quotes + trades; through/queue/touch fill bounds, latency, mark-outs).
+- P7 global multiplicity: BH/BY over 242 tests, deflated Sharpe over 192 strategy curves, calibration.
+- P8 point-in-time S&P 500 membership from 2011; survivorship of the US universe quantified.
+- P9 computed `superseded` flag; dashboard page for data versions and multiplicity.
+- Fixes: `Tracker.save_frame` outside the repo root; architecture/methodology docs drift.
+
 ## 0.3.0 (renamed) - 2026-11-25
 - Project renamed **NEBULA → ASTRA** everywhere: Python package `astra` (was `nebula`), CLI command
   `astra` (was `nebula`), environment variables `ASTRA_*` (were `NEBULA_*`), folder `C:\Projects\ASTRA`.

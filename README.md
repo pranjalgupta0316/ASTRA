@@ -37,6 +37,11 @@ uv run astra dashboard               # http://127.0.0.1:8501
 | `ml-ext` | 600k-row daily panel (H-ML-003) + hourly crypto (H-ML-004) |
 | `micro-study [--capture-seconds N]` | Binance aggTrades analytics; optional live L2 capture |
 | `report [--llm]` | deterministic research agents → `data/reports/research/latest.md` (+ optional local-LLM summary) |
+| `rv-study` | realized volatility from 1-minute data: HAR-RV vs GARCH/EWMA (H-RV) |
+| `multiplicity` | project-wide FDR (BH/BY), deflated Sharpe, probability calibration over all current records |
+| `universe [--fetch]` | point-in-time S&P 500 membership (Wikipedia) + survivorship check of the US universe |
+| `records [--all]` | experiment records with computed `superseded` flag, commit and data lock |
+| `data-lock create/list/verify`, global `--lock NAME` | immutable data snapshots; run any study on a pinned data version (ADR-0009) |
 | `run-all`, `dashboard` | reproduce everything; Streamlit dashboard on localhost |
 
 Long order-book captures with a hard disk cap: `uv run python scripts/capture_depth.py --duration 3600`.
