@@ -160,6 +160,32 @@ def vol_study() -> None:
         typer.echo(json.dumps(res.get("counts", {}), indent=2, default=str))
 
 
+@app.command("rv-study")
+def rv_study() -> None:
+    """H-RV-001/002/003 realized-volatility study (1m BTC/ETH, 1h crypto pairs). Run under a data lock."""
+    import pandas as pd
+
+    from astra.research.realized_vol import run_rv_study
+
+    res = run_rv_study()
+    cols = [
+        "symbol",
+        "cell",
+        "n",
+        "qlike_model",
+        "qlike_bench",
+        "dm_t_qlike",
+        "p_bh",
+        "dm_t_mse",
+        "conclusion",
+    ]
+    with pd.option_context("display.width", 200, "display.float_format", "{:.4f}".format):
+        for hid in ("H-RV-001", "H-RV-002", "H-RV-003"):
+            r = res[hid]
+            typer.echo(f"== {hid}: family {r['verdict']} ({r['family_id']})")
+            typer.echo(r["table"][cols].to_string(index=False))
+
+
 @app.command("portfolio-study")
 def portfolio_study(markets: list[str] = typer.Argument(None)) -> None:
     """H-PF-001/002 portfolio construction study per market."""
@@ -240,6 +266,7 @@ def run_all(
         ["research"],
         ["holdout"],
         ["vol-study"],
+        ["rv-study"],
         ["portfolio-study"],
         ["ml-study"],
         ["micro-study"],
