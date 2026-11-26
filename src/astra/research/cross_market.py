@@ -47,6 +47,7 @@ from astra.common.config import get_config
 from astra.common.logging import get_logger
 from astra.common.paths import Paths, get_paths
 from astra.common.seed import set_seed
+from astra.data.lock import resolve
 from astra.data.macro.market import market_path
 from astra.data.storage import read_manifest
 from astra.research.vol_managed import SURVIVORSHIP_NOTE, EwSleeve, ew_sleeve
@@ -79,7 +80,8 @@ def weekly_last(series: pd.Series) -> pd.DataFrame:
 
 
 def load_usdinr(paths: Paths | None = None) -> pd.DataFrame:
-    t = pq.read_table(market_path(paths or get_paths())).to_pandas()
+    paths = paths or get_paths()
+    t = pq.read_table(resolve(market_path(paths), paths)).to_pandas()
     t = t[t["series"] == "USDINR"].copy()
     t["date"] = pd.to_datetime(t["date"])
     t["available_from"] = pd.to_datetime(t["available_from"])

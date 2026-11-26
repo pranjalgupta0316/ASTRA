@@ -400,7 +400,9 @@ def ingest_fred(
 
 
 def load_fred(paths: Paths | None = None) -> pd.DataFrame:
-    return pq.read_table(fred_path(paths)).to_pandas()
+    from astra.data.lock import resolve
+
+    return pq.read_table(resolve(fred_path(paths), paths)).to_pandas()
 
 
 def macro_features(

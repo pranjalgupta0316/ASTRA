@@ -1,0 +1,1065 @@
+{
+ "created_at_utc": "2026-11-26T10:38:38.890174+00:00",
+ "files": {
+  "fundamentals/us_facts.manifest.json": {
+   "bytes": 1045,
+   "sha256": "51ce9e8d64dc6d13302813d1d49880142b2b0a5a3f5266cd9def5c9fd2122ab6"
+  },
+  "fundamentals/us_facts.parquet": {
+   "bytes": 475407,
+   "sha256": "bddc8507b89707aeb0ab8ce6729cedf158e8e8e2eb1f2787101ed7f9f156de3c"
+  },
+  "macro/bls.manifest.json": {
+   "bytes": 458,
+   "sha256": "022fd3e422949e363f2aabdea34769095fa2ba83067350d9f4d64f122d6cf01e"
+  },
+  "macro/bls.parquet": {
+   "bytes": 11220,
+   "sha256": "387e3c05e3de7cb89243cecfa95067c0b9c8ae134665e6faa22820ff04adc671"
+  },
+  "macro/market.manifest.json": {
+   "bytes": 1480,
+   "sha256": "fdee9544b6c654a21cefa3a6949d99091a7c3fe634afc03de0a3be557b91fe02"
+  },
+  "macro/market.parquet": {
+   "bytes": 351087,
+   "sha256": "f249f81b709a00228998b4e2c7c703b5475bcfa4432732d55efc1384a1be4c19"
+  },
+  "market=CRYPTO/symbol=ADAUSDT/freq=1d/bars.parquet": {
+   "bytes": 239584,
+   "sha256": "dd408026cb5bb69343ba707d0379f04a29820bc1b067e57c96da133d050b0296"
+  },
+  "market=CRYPTO/symbol=ADAUSDT/freq=1d/manifest.json": {
+   "bytes": 1100,
+   "sha256": "01781ad24ce8b88e09225b1f6666337fbda9831f540479025c3bd129464f774b"
+  },
+  "market=CRYPTO/symbol=ADAUSDT/freq=1h/bars.parquet": {
+   "bytes": 3989254,
+   "sha256": "e3126f2104a1f9d011f513d87879ee26e010042d1d8d38281980f661e1ae56a0"
+  },
+  "market=CRYPTO/symbol=ADAUSDT/freq=1h/manifest.json": {
+   "bytes": 1104,
+   "sha256": "67f5394ba7bce50edbbad52d6cef3dacb1ad51ba915ef80f5a056b48a92aa11d"
+  },
+  "market=CRYPTO/symbol=ATOMUSDT/freq=1d/bars.parquet": {
+   "bytes": 191210,
+   "sha256": "ef30e8a08c0e799d1e8d793d84a4e9a45f3acc7958ddf5861bed6bba638a6585"
+  },
+  "market=CRYPTO/symbol=ATOMUSDT/freq=1d/manifest.json": {
+   "bytes": 1831,
+   "sha256": "8ef8458431b88e2009db5c5c5f315d65b2c9fccb484068a05e8e2e86d7b970f4"
+  },
+  "market=CRYPTO/symbol=ATOMUSDT/freq=1h/bars.parquet": {
+   "bytes": 3325731,
+   "sha256": "41cebfbc6b36dcc60b8719b6acd22b4a6cb6294d8a9de34bb675e2fb2106b4f2"
+  },
+  "market=CRYPTO/symbol=ATOMUSDT/freq=1h/manifest.json": {
+   "bytes": 1835,
+   "sha256": "05f3dc027e13a37889cec08f757927ce7c25a309d4365fc967594ee0b4475a38"
+  },
+  "market=CRYPTO/symbol=AVAXUSDT/freq=1d/bars.parquet": {
+   "bytes": 156588,
+   "sha256": "fafdbe7738d0b70f3a2f1d00dbd2026631cd5e23366600706e7cdcda8304dc30"
+  },
+  "market=CRYPTO/symbol=AVAXUSDT/freq=1d/manifest.json": {
+   "bytes": 2851,
+   "sha256": "bdd145ccd5b5b6adf8e6f2ebebe2f81d1c08784a16e91341f4932e6f72351496"
+  },
+  "market=CRYPTO/symbol=AVAXUSDT/freq=1h/bars.parquet": {
+   "bytes": 2807547,
+   "sha256": "f25192aa69f0ad0cc80c2ce461932a699f8e0c1d03aa3cf02defd251e7a59806"
+  },
+  "market=CRYPTO/symbol=AVAXUSDT/freq=1h/manifest.json": {
+   "bytes": 2855,
+   "sha256": "d35750080ae1a504ca8d34651abc9df7845d386ac3f3c750140083fd8f2bf0ea"
+  },
+  "market=CRYPTO/symbol=BCHUSDT/freq=1d/bars.parquet": {
+   "bytes": 169064,
+   "sha256": "3bc3ab2837ea0fecdd05fed22a2320ad5417deaf6902b59335d57ab33b3ec3ec"
+  },
+  "market=CRYPTO/symbol=BCHUSDT/freq=1d/manifest.json": {
+   "bytes": 2221,
+   "sha256": "78fcbb197b1a1211bd370817cb2d2e6a7232babc4b5364250ed5defd3f01c29c"
+  },
+  "market=CRYPTO/symbol=BCHUSDT/freq=1h/bars.parquet": {
+   "bytes": 3049864,
+   "sha256": "4df43329fb0c93e3894713bd71f728c1bf4b637cdd31a59f949881618ee9bdf0"
+  },
+  "market=CRYPTO/symbol=BCHUSDT/freq=1h/manifest.json": {
+   "bytes": 2225,
+   "sha256": "13a5d5b1505c0f222a20c7392818fb2fe4ebad0e7995ac998936af7336479053"
+  },
+  "market=CRYPTO/symbol=BNBUSDT/freq=1d/bars.parquet": {
+   "bytes": 236592,
+   "sha256": "4c65f03aa0941f8c69fdcbf371ec2883b71c1fe5f8de44619fecbcff906454e8"
+  },
+  "market=CRYPTO/symbol=BNBUSDT/freq=1d/manifest.json": {
+   "bytes": 805,
+   "sha256": "0981b5875da1c2986eb3584d41cf30e3ed2836f98b3f896ba4696269212494c5"
+  },
+  "market=CRYPTO/symbol=BNBUSDT/freq=1h/bars.parquet": {
+   "bytes": 4815570,
+   "sha256": "40785f8e24e5f35afec21edb216aa6a6c5eda0dfd8e241dc3a65916398c1dde3"
+  },
+  "market=CRYPTO/symbol=BNBUSDT/freq=1h/manifest.json": {
+   "bytes": 809,
+   "sha256": "2b86eb748438c4fd99c30f30c85fea6642e036ab8dd7c6187a3a6afb5e46bc56"
+  },
+  "market=CRYPTO/symbol=BTCUSDT/freq=1d/bars.parquet": {
+   "bytes": 253996,
+   "sha256": "f6f48d5ba18bc8c388a3db81ccbcb6532e90633dd952d92a034e778a9590786a"
+  },
+  "market=CRYPTO/symbol=BTCUSDT/freq=1d/manifest.json": {
+   "bytes": 625,
+   "sha256": "8b94751a7df3e999ddf71dbbe0e8782b79047461bfb00bb5f13052650d6e5b7b"
+  },
+  "market=CRYPTO/symbol=BTCUSDT/freq=1h/bars.parquet": {
+   "bytes": 5918545,
+   "sha256": "36e91b7ef97680f5376e2e57ea5152189537662ed7e54a4d7fd1726d67d84842"
+  },
+  "market=CRYPTO/symbol=BTCUSDT/freq=1h/manifest.json": {
+   "bytes": 629,
+   "sha256": "e4979798bb206a71555317fe6e3c51dca966157fe7ead1f8b9b9e3a0b7665d31"
+  },
+  "market=CRYPTO/symbol=BTCUSDT/freq=1m/bars.parquet": {
+   "bytes": 214413669,
+   "sha256": "b7a697fbf1c887016a31dd6726270d2383bef7b602b7aa1dfaac6457ba81655c"
+  },
+  "market=CRYPTO/symbol=BTCUSDT/freq=1m/manifest.json": {
+   "bytes": 631,
+   "sha256": "a01ce4f15a3df8ffedc01838868a7ca5a545fb29f09aa83290ba943e31a99f10"
+  },
+  "market=CRYPTO/symbol=DOGEUSDT/freq=1d/bars.parquet": {
+   "bytes": 234259,
+   "sha256": "5c2de9a567cde16a37c21a86f767abed421274bdafbaf5aa28fa8aa9c0d8853f"
+  },
+  "market=CRYPTO/symbol=DOGEUSDT/freq=1d/manifest.json": {
+   "bytes": 2011,
+   "sha256": "50e1ea0798fb91982ce1378c218b062e163bc1a0f716b766dc2d01edad58ce68"
+  },
+  "market=CRYPTO/symbol=DOGEUSDT/freq=1h/bars.parquet": {
+   "bytes": 3809029,
+   "sha256": "0979c09782142e6c45fb3a25a4d1ba8ffcc339f27001e42eacc46d8ae45d9c28"
+  },
+  "market=CRYPTO/symbol=DOGEUSDT/freq=1h/manifest.json": {
+   "bytes": 2015,
+   "sha256": "d0681e0d29cb03fde9015bc573fa7d2a9ca7e255e5b30d1e3b2ed6eb71f3cd70"
+  },
+  "market=CRYPTO/symbol=DOTUSDT/freq=1d/bars.parquet": {
+   "bytes": 161291,
+   "sha256": "02d7555aad202902fbd74807364fbadc4126a5c8bc95e9308781068a862c8265"
+  },
+  "market=CRYPTO/symbol=DOTUSDT/freq=1d/manifest.json": {
+   "bytes": 2752,
+   "sha256": "6760f85a1524ac0eab789a20c84fb13a20ea4505c2dbbf87e82b95116195af12"
+  },
+  "market=CRYPTO/symbol=DOTUSDT/freq=1h/bars.parquet": {
+   "bytes": 2861330,
+   "sha256": "504bc118cb5917b4cd004703f921e485bd5ee1fb490783ccb9db2e17a0b22e57"
+  },
+  "market=CRYPTO/symbol=DOTUSDT/freq=1h/manifest.json": {
+   "bytes": 2756,
+   "sha256": "d73d9ac2ac3ae16c3b0f117b5466eb065758d24e2c4babaeae028ff1d44b4892"
+  },
+  "market=CRYPTO/symbol=ETCUSDT/freq=1d/bars.parquet": {
+   "bytes": 215060,
+   "sha256": "b7f202ce1f3789ea987fe5306506ff5675d8d1ad0ad99a8d84cd50895528ea7d"
+  },
+  "market=CRYPTO/symbol=ETCUSDT/freq=1d/manifest.json": {
+   "bytes": 1218,
+   "sha256": "da78533d4eba45e4f44a17a2e25562c47a6189a692a03c8b2b1b4bf9a37755ac"
+  },
+  "market=CRYPTO/symbol=ETCUSDT/freq=1h/bars.parquet": {
+   "bytes": 3939148,
+   "sha256": "eb88bfdacb30949cc19c247d764c8d57c8b814e3526e0f6c46e8e1d49a2d83f0"
+  },
+  "market=CRYPTO/symbol=ETCUSDT/freq=1h/manifest.json": {
+   "bytes": 1222,
+   "sha256": "d301d8840206ecfc7889d3d20abb1244e71b36679eb88c031c3470ea4cd7646b"
+  },
+  "market=CRYPTO/symbol=ETHUSDT/freq=1d/bars.parquet": {
+   "bytes": 237940,
+   "sha256": "7611451e52c6796e8f7737618b7b591f6eabcb6bb58e04a48e5a2be1edea5887"
+  },
+  "market=CRYPTO/symbol=ETHUSDT/freq=1d/manifest.json": {
+   "bytes": 625,
+   "sha256": "bb50fe5023a717cd7e5e44a5ec3decaf25cd387bcde1076b790bb4fdfc24b2df"
+  },
+  "market=CRYPTO/symbol=ETHUSDT/freq=1h/bars.parquet": {
+   "bytes": 4989801,
+   "sha256": "de14e9a67be4fdeed5f0ae430c67e4278098bccdff5586fe19157891f581ea27"
+  },
+  "market=CRYPTO/symbol=ETHUSDT/freq=1h/manifest.json": {
+   "bytes": 629,
+   "sha256": "1804d78318bae4969e7e675daea1d4998e14d6cadeea584dd75bdbd06957adaf"
+  },
+  "market=CRYPTO/symbol=ETHUSDT/freq=1m/bars.parquet": {
+   "bytes": 188462346,
+   "sha256": "e1d68277ded8b43e9f221bf14a296d9e0490fd44adcdf94d3c3930b001c282ec"
+  },
+  "market=CRYPTO/symbol=ETHUSDT/freq=1m/manifest.json": {
+   "bytes": 631,
+   "sha256": "0d6c19392a83027f5f9c0a8a1ec18ef660907b2f608570bd73a886ff48b573e6"
+  },
+  "market=CRYPTO/symbol=LINKUSDT/freq=1d/bars.parquet": {
+   "bytes": 208822,
+   "sha256": "9fc33d8e6c090a10f35c4a8fedd3b0556af747730c2ba82afdbf197b584fff40"
+  },
+  "market=CRYPTO/symbol=LINKUSDT/freq=1d/manifest.json": {
+   "bytes": 1651,
+   "sha256": "ab5823ab2af70074957d4dd0790623378e66bdf427f7d45d073f09a5e35e2e2d"
+  },
+  "market=CRYPTO/symbol=LINKUSDT/freq=1h/bars.parquet": {
+   "bytes": 3743955,
+   "sha256": "c0469a09503f55da7fd07a32504ba8de4aa586523ee3dc2bcdbc348b0ba0c3fc"
+  },
+  "market=CRYPTO/symbol=LINKUSDT/freq=1h/manifest.json": {
+   "bytes": 1655,
+   "sha256": "9d2ea743afb9721ea0c41914cd40f773ffde6e2ba653661b1a5927c0548b268c"
+  },
+  "market=CRYPTO/symbol=LTCUSDT/freq=1d/bars.parquet": {
+   "bytes": 217392,
+   "sha256": "c8a0a4d3f03b9b202e2893650c592b022f6e376872bdf8b1a2958edd06cbee14"
+  },
+  "market=CRYPTO/symbol=LTCUSDT/freq=1d/manifest.json": {
+   "bytes": 864,
+   "sha256": "8c9c0a704f0f33267ce1868b49198ad12334e071c71a98383dfbba420ca10895"
+  },
+  "market=CRYPTO/symbol=LTCUSDT/freq=1h/bars.parquet": {
+   "bytes": 3896576,
+   "sha256": "b2d2b2313f71c551ac338ff6e0b2ccb34adb03b6cdc3ef7358a79d7bae5ad03e"
+  },
+  "market=CRYPTO/symbol=LTCUSDT/freq=1h/manifest.json": {
+   "bytes": 868,
+   "sha256": "0cf45b1c35a287cd9ec041c38dbec42f932de3eacde6b2141a2f8d63e6dd9a07"
+  },
+  "market=CRYPTO/symbol=SOLUSDT/freq=1d/bars.parquet": {
+   "bytes": 165864,
+   "sha256": "a346b302315df818df1bfbe1715377a4a42628d40d7c6c9fb50c932a82808156"
+  },
+  "market=CRYPTO/symbol=SOLUSDT/freq=1d/manifest.json": {
+   "bytes": 2752,
+   "sha256": "f2770bb7dfc47a98e8ab862cfef0dff6627b7301329aca9dd67f9f54705b1ff7"
+  },
+  "market=CRYPTO/symbol=SOLUSDT/freq=1h/bars.parquet": {
+   "bytes": 3068067,
+   "sha256": "f0159a6df364aacf4fcef1674a69885a7e4f04c483911017cb52938009a4e03b"
+  },
+  "market=CRYPTO/symbol=SOLUSDT/freq=1h/manifest.json": {
+   "bytes": 2756,
+   "sha256": "62d7a80d4c7929b2d42d4777d323bbece57e0c6315c356e43f4c982764072abb"
+  },
+  "market=CRYPTO/symbol=TRXUSDT/freq=1d/bars.parquet": {
+   "bytes": 244759,
+   "sha256": "065e8047d11cae9882f1ce6a99c22c1414a2822c61970c97c96344a961a3c683"
+  },
+  "market=CRYPTO/symbol=TRXUSDT/freq=1d/manifest.json": {
+   "bytes": 1218,
+   "sha256": "5a865be827798c7bf995854f3883f467967828f5d4d84775adc4348238a12f18"
+  },
+  "market=CRYPTO/symbol=TRXUSDT/freq=1h/bars.parquet": {
+   "bytes": 3712640,
+   "sha256": "ebe6f806003ef16c8f0443d1e13c17b3fa2a062e5adec2df9970c977842b22b2"
+  },
+  "market=CRYPTO/symbol=TRXUSDT/freq=1h/manifest.json": {
+   "bytes": 1222,
+   "sha256": "bc695a602823ca304210f0d0d11d863cb189a1253067970cdd08c45e13af9c40"
+  },
+  "market=CRYPTO/symbol=XLMUSDT/freq=1d/bars.parquet": {
+   "bytes": 227974,
+   "sha256": "e8c03eedea301d8e256f86363169ccf263f2a7fd0db7c4008cb85db3bb25f2ff"
+  },
+  "market=CRYPTO/symbol=XLMUSDT/freq=1d/manifest.json": {
+   "bytes": 1159,
+   "sha256": "233fcd4d28d8ba249b0db645df86dc9d438e62588cd712a56e21cc739ac9d713"
+  },
+  "market=CRYPTO/symbol=XLMUSDT/freq=1h/bars.parquet": {
+   "bytes": 3746935,
+   "sha256": "5881dd6e22d8b19e8d18390fee69d6f313a2651a11ee4a394bfba227ff1c74df"
+  },
+  "market=CRYPTO/symbol=XLMUSDT/freq=1h/manifest.json": {
+   "bytes": 1163,
+   "sha256": "fe5484fbf8354f9286cb20278db1fe5d92ae7df96eeb7b34f8efa97196fe26cd"
+  },
+  "market=CRYPTO/symbol=XRPUSDT/freq=1d/bars.parquet": {
+   "bytes": 244160,
+   "sha256": "ad1a6611fbc5deeed89a471ee20821e2811a429af107ecfec2fe7a60e58d8e8c"
+  },
+  "market=CRYPTO/symbol=XRPUSDT/freq=1d/manifest.json": {
+   "bytes": 1159,
+   "sha256": "96b244dbada41658c557b8216905bc304f89174d79cca91f2ca702175c7d1ee0"
+  },
+  "market=CRYPTO/symbol=XRPUSDT/freq=1h/bars.parquet": {
+   "bytes": 4277167,
+   "sha256": "01fdf4306a75fd63bd777775ba4626d607f07b0314586012720f23cb49f8f418"
+  },
+  "market=CRYPTO/symbol=XRPUSDT/freq=1h/manifest.json": {
+   "bytes": 1163,
+   "sha256": "d0491c5f1b63adc5b391cc0374481d607c4fddc9d0df639c63a3ea5403a86f4d"
+  },
+  "market=IN/symbol=ADANIENT/freq=1d/bars.parquet": {
+   "bytes": 308848,
+   "sha256": "d12a420d8c598ac3afe9a89a1d0762a8f2b444c34f4a59b2910348f7639c1ced"
+  },
+  "market=IN/symbol=ADANIENT/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "45fc1b47ae3458e2747fe6a8b1c1b4868383eb326b28b828287e411bd3794efb"
+  },
+  "market=IN/symbol=ADANIPORTS/freq=1d/bars.parquet": {
+   "bytes": 226450,
+   "sha256": "505a5ee4153898b4d9b0b2c11cbedf08b7f91e447abd4cd9ba806bb77cafaa0b"
+  },
+  "market=IN/symbol=ADANIPORTS/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "0028c3089c844836c0247ea693e104ac9be43e4411b95ff120696c16901236f9"
+  },
+  "market=IN/symbol=APOLLOHOSP/freq=1d/bars.parquet": {
+   "bytes": 290452,
+   "sha256": "26902083de76771108e9fc89121cf732ef9346e8875f2d0996dccbe1c092e72f"
+  },
+  "market=IN/symbol=APOLLOHOSP/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "1eec98fc4231aa19afd34cf21c75504551593a9800d4e6a76a3945365e66e8e9"
+  },
+  "market=IN/symbol=ASIANPAINT/freq=1d/bars.parquet": {
+   "bytes": 295911,
+   "sha256": "d58f6086f282d998d0112430112893a5a19d29c6853e3ddeaafae73dabb46769"
+  },
+  "market=IN/symbol=ASIANPAINT/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "daf95448d19878d6bd7ff7e47b03e4ddb42b7fc6c11c3958e06d38319027ee38"
+  },
+  "market=IN/symbol=AXISBANK/freq=1d/bars.parquet": {
+   "bytes": 329397,
+   "sha256": "065dff9cc6b1edf96e724f192abbf04bb5ec7a3f8b402ea44f1471b5de74c93c"
+  },
+  "market=IN/symbol=AXISBANK/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "01055bacde8511a8942437c89a2eca7db5369701cab875791c69bb0422020f8a"
+  },
+  "market=IN/symbol=BAJAJFINSV/freq=1d/bars.parquet": {
+   "bytes": 300411,
+   "sha256": "44cfbd4e0d44706d7b8948c7ec6f2ba8fdd3dd4ecd023a4b52f225ea6dc15f44"
+  },
+  "market=IN/symbol=BAJAJFINSV/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "adc796ec24404b8e80916ce02a5e02c6867fab9186ddbb1e75d6d425abc7b329"
+  },
+  "market=IN/symbol=BAJAJ_AUTO/freq=1d/bars.parquet": {
+   "bytes": 292164,
+   "sha256": "85a66087dc4f55c82db0fd8c2ee81520f865042e936a99bf3509e03bcbcadf67"
+  },
+  "market=IN/symbol=BAJAJ_AUTO/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "20d6b2e04425391e2a3b20657eaad0f8cd909bfffb56d27832a83f55484e9b36"
+  },
+  "market=IN/symbol=BAJFINANCE/freq=1d/bars.parquet": {
+   "bytes": 311129,
+   "sha256": "ee8d37e31e2dd348dc4f55641087551a11c3b690e5f8a00a1ed4773df68cc6dc"
+  },
+  "market=IN/symbol=BAJFINANCE/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "d6ed437d56bf57508860ab4a3b1ff15b055cfd1d4bbfa19073d68b82fe153d18"
+  },
+  "market=IN/symbol=BEL/freq=1d/bars.parquet": {
+   "bytes": 310483,
+   "sha256": "cc091872352862584a27ccce3f9a13635909bd1e31175812e6116df7e43034d1"
+  },
+  "market=IN/symbol=BEL/freq=1d/manifest.json": {
+   "bytes": 599,
+   "sha256": "2f40ba6e4f92f1d2eec20f4a8a1a946f27e94e0aa8149d94dc32d4996a704d5c"
+  },
+  "market=IN/symbol=BHARTIARTL/freq=1d/bars.parquet": {
+   "bytes": 301232,
+   "sha256": "914170219320700d4984a338369020fd887abf19291870629ffc2ee3665e3c5a"
+  },
+  "market=IN/symbol=BHARTIARTL/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "716b3adf939f046c05da30f8d0e0d9f1c4f387070847402afe20191a735d0597"
+  },
+  "market=IN/symbol=BPCL/freq=1d/bars.parquet": {
+   "bytes": 327856,
+   "sha256": "cd5538352a0ba89ee116aa4b346641ab0cd6ffb6e6c3bd19ebac52bae5761dcf"
+  },
+  "market=IN/symbol=BPCL/freq=1d/manifest.json": {
+   "bytes": 602,
+   "sha256": "a27497b0cf996d7865ed7086365f5b01772be738cfbc16f5b8e1e875ce110922"
+  },
+  "market=IN/symbol=BRITANNIA/freq=1d/bars.parquet": {
+   "bytes": 321994,
+   "sha256": "ab88f4ce842e85ad932b5b07b1ba38096c605bb41acda781e2a31e40bdf9280e"
+  },
+  "market=IN/symbol=BRITANNIA/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "ceed443115dd4e9af1cedff311a84b636266f23129a240128b5e97aca29d3f04"
+  },
+  "market=IN/symbol=CIPLA/freq=1d/bars.parquet": {
+   "bytes": 321989,
+   "sha256": "4c1574d68a84f1ce9a8c97be1525b21c4b432e86bc55aca1194b1c24bcda3df9"
+  },
+  "market=IN/symbol=CIPLA/freq=1d/manifest.json": {
+   "bytes": 605,
+   "sha256": "f6e9e47bed07a6c0c8f67f45754be4ad79c4e7dc3df81dc23fdfc74b7916626f"
+  },
+  "market=IN/symbol=COALINDIA/freq=1d/bars.parquet": {
+   "bytes": 185514,
+   "sha256": "cece5070463e733b854b6616e8fe330d5c493b6c284f71e702e1faca258b336f"
+  },
+  "market=IN/symbol=COALINDIA/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "bf4ceb319e027fef748222b0427735d55b74b7545b37bfc44f24e334fba2d81d"
+  },
+  "market=IN/symbol=DRREDDY/freq=1d/bars.parquet": {
+   "bytes": 332375,
+   "sha256": "256ee815aeba47017b4d4b71f40fef18408b233612136192ef5ca0164e55cf82"
+  },
+  "market=IN/symbol=DRREDDY/freq=1d/manifest.json": {
+   "bytes": 611,
+   "sha256": "703c997d63153c8161516996bbd1aea1cb0aabc86d91d7c07250848d024fff5b"
+  },
+  "market=IN/symbol=EICHERMOT/freq=1d/bars.parquet": {
+   "bytes": 328855,
+   "sha256": "3d31d067789ba755d33db31483dd543faf763deda9bf13f778ac4da10c94837d"
+  },
+  "market=IN/symbol=EICHERMOT/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "02c5dacf25c1e9a0b1678482d2db10b9bdba1e1b315a71ba97a09e4fc1745778"
+  },
+  "market=IN/symbol=GRASIM/freq=1d/bars.parquet": {
+   "bytes": 307584,
+   "sha256": "0c253e063ed68614ce0a206f28364a3c688295e3a93b5fbaf301754937c0d1bc"
+  },
+  "market=IN/symbol=GRASIM/freq=1d/manifest.json": {
+   "bytes": 608,
+   "sha256": "d68343c9d5276898728a50c703e03b4e5605f06a814bbcbc828cc46365b0d31e"
+  },
+  "market=IN/symbol=HCLTECH/freq=1d/bars.parquet": {
+   "bytes": 290904,
+   "sha256": "13f7d1de6487bd88f76cefc66498ea11115682f63800256eeece7ca5d9ac604d"
+  },
+  "market=IN/symbol=HCLTECH/freq=1d/manifest.json": {
+   "bytes": 611,
+   "sha256": "9df03df8ad9bb6b8fa18bf43e4de1026765447df34b7bd9376e643fae92c5e45"
+  },
+  "market=IN/symbol=HDFCBANK/freq=1d/bars.parquet": {
+   "bytes": 328195,
+   "sha256": "2fcb9c69e924265d25ca405f593e7d1f682feebf498ac251e3d83f108e8a2420"
+  },
+  "market=IN/symbol=HDFCBANK/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "1dfdbddd32512cf5b206a9f35fe649795721d944ff579cbc41b3c498b38d35c8"
+  },
+  "market=IN/symbol=HDFCLIFE/freq=1d/bars.parquet": {
+   "bytes": 109130,
+   "sha256": "448880acba79d538ea74504ac6f3a35ad61ec1fa76708e732fff9cbca422d146"
+  },
+  "market=IN/symbol=HDFCLIFE/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "75f2e656ae5c52299afe889ddfafa18157946253c359b6177ccb51bfd2fef9a0"
+  },
+  "market=IN/symbol=HEROMOTOCO/freq=1d/bars.parquet": {
+   "bytes": 292273,
+   "sha256": "da6d1847046b5194462e13238ff778f2b5b8aa11bf460d12ced350c4b5ce7492"
+  },
+  "market=IN/symbol=HEROMOTOCO/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "3c6d33717620e1db5b4c9c87af11aca22568b74deb6d391bcb2a9dfafffe4bf2"
+  },
+  "market=IN/symbol=HINDALCO/freq=1d/bars.parquet": {
+   "bytes": 326778,
+   "sha256": "8dc8cc9254f91088a2a283f89704707e989e5badc5144b4f79cc69a23819e2d5"
+  },
+  "market=IN/symbol=HINDALCO/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "2b070dc3a18e77d04969e408abf8e3e4b5981fca0d4a0770e27c76b22f2518bb"
+  },
+  "market=IN/symbol=HINDUNILVR/freq=1d/bars.parquet": {
+   "bytes": 316007,
+   "sha256": "b7fe906c8d821c7a55c33a5def0c873e618c353d513d738068bcd6fdad3345ae"
+  },
+  "market=IN/symbol=HINDUNILVR/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "872ddc53137e4ab32792cc53fb0b521dcede3a5b360da55ac66866ffcfc15324"
+  },
+  "market=IN/symbol=ICICIBANK/freq=1d/bars.parquet": {
+   "bytes": 307248,
+   "sha256": "ca86aff8cf7ecee0300a6f42dc816cd2ba5ec784fc22611a33517d89aaecd17e"
+  },
+  "market=IN/symbol=ICICIBANK/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "3c781860402cc9a86ba3d8a61e7579743cb0e030aba1a52f935c76288daef683"
+  },
+  "market=IN/symbol=INDUSINDBK/freq=1d/bars.parquet": {
+   "bytes": 286341,
+   "sha256": "47758c0fadf5eafdbfea4151c5fb2bc0dd025fb3109afad57381f48b7f437ed4"
+  },
+  "market=IN/symbol=INDUSINDBK/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "f6b35e8f111a44221156c643af315b6123d2c613ccbf1ffca2a98d189b68c2c9"
+  },
+  "market=IN/symbol=INFY/freq=1d/bars.parquet": {
+   "bytes": 329597,
+   "sha256": "629721e4da67d04f2b47f101a15d95163bb64b3e866ef66dce536babb5da844f"
+  },
+  "market=IN/symbol=INFY/freq=1d/manifest.json": {
+   "bytes": 602,
+   "sha256": "3a3cc28cb51726fbe43ac8e0a6bfe27d7c7d964e3c1b52921563be906aaded94"
+  },
+  "market=IN/symbol=ITC/freq=1d/bars.parquet": {
+   "bytes": 334273,
+   "sha256": "edceea00fd02463617a4fde40172e6fd78b296d8ea229c6e8378781dd9ff37a5"
+  },
+  "market=IN/symbol=ITC/freq=1d/manifest.json": {
+   "bytes": 599,
+   "sha256": "653921c03fbf8fc543c6e2d3e675bd20abec1602182e1efc9f4ca08f02fecdd7"
+  },
+  "market=IN/symbol=JSWSTEEL/freq=1d/bars.parquet": {
+   "bytes": 290211,
+   "sha256": "eab24894e683d5d211da15f21d72bb3ee68610ca04e90ef3dd9e2b3c87c697d9"
+  },
+  "market=IN/symbol=JSWSTEEL/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "15659101be48932e224790e65c41fbe95e52a8a5f3dd4959b9ed545534f5496b"
+  },
+  "market=IN/symbol=KOTAKBANK/freq=1d/bars.parquet": {
+   "bytes": 320291,
+   "sha256": "9eab3492b17006bf19b95f13fc96f70c4cf74ba38a539b407d064cdaa1a13140"
+  },
+  "market=IN/symbol=KOTAKBANK/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "5efbb224cb15ae633be072a29fe87670715f55024aaf5f2e24948eaf35410499"
+  },
+  "market=IN/symbol=LT/freq=1d/bars.parquet": {
+   "bytes": 307532,
+   "sha256": "45600a88de480c94b0e6c419a6f1f417466bacff2281ebb08aefd0dada17bc3a"
+  },
+  "market=IN/symbol=LT/freq=1d/manifest.json": {
+   "bytes": 596,
+   "sha256": "987872607b67aef03ca7f981389b6b53f69a7eab3b38fb00a4da25eee8671f21"
+  },
+  "market=IN/symbol=MARUTI/freq=1d/bars.parquet": {
+   "bytes": 283663,
+   "sha256": "07a3e8e7cf026cdb26788915a2fefdd5de7f55a691c7169eb5bcf2130cf764cd"
+  },
+  "market=IN/symbol=MARUTI/freq=1d/manifest.json": {
+   "bytes": 608,
+   "sha256": "db14347722c0298f994e2ded1560cc8bcde131d7b35dadc13a2017cd99be44f5"
+  },
+  "market=IN/symbol=MM/freq=1d/bars.parquet": {
+   "bytes": 325306,
+   "sha256": "f163c9fa27242a181e64910c308235c039a699c1cbcc2f86e84c67fb2603a1b4"
+  },
+  "market=IN/symbol=MM/freq=1d/manifest.json": {
+   "bytes": 597,
+   "sha256": "5981702705289244f6b04ab6e4977e1393188adfbcd67ab6d0447f92c6e267b0"
+  },
+  "market=IN/symbol=NESTLEIND/freq=1d/bars.parquet": {
+   "bytes": 250111,
+   "sha256": "c3bb9f73861e2ab1fe7efac7caa255ff0342b2b296443c120e89d7a5f2e0db1c"
+  },
+  "market=IN/symbol=NESTLEIND/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "a66edb7f7981dfb1588acafacbf9bcf6a0b3d28e3231c0407c62bdc85324476d"
+  },
+  "market=IN/symbol=NIFTY50/freq=1d/bars.parquet": {
+   "bytes": 227458,
+   "sha256": "2fe3af30c3dcb9a5bbb7f40cf775737ab3406260953e13a535d4f9ec5a48a99c"
+  },
+  "market=IN/symbol=NIFTY50/freq=1d/manifest.json": {
+   "bytes": 606,
+   "sha256": "d47b8d10d84baab3dce92883a3d928743f7511b3854a193f92b9e283a9aef10e"
+  },
+  "market=IN/symbol=NTPC/freq=1d/bars.parquet": {
+   "bytes": 245377,
+   "sha256": "67865dcd600cf936a7f5aaab04afa2d86861bd6f2df3d88a57c6013fd6977ebe"
+  },
+  "market=IN/symbol=NTPC/freq=1d/manifest.json": {
+   "bytes": 602,
+   "sha256": "55f3db518f84fdb90f2d46d1d6aabaab96e797cf41fbb0f734b5afc999000974"
+  },
+  "market=IN/symbol=ONGC/freq=1d/bars.parquet": {
+   "bytes": 325768,
+   "sha256": "36f1a647d66ef304e75fa851759b3d2857a8f7822de05c129d9e8005b192bf4f"
+  },
+  "market=IN/symbol=ONGC/freq=1d/manifest.json": {
+   "bytes": 602,
+   "sha256": "ac149d6a05734c06e57847f7b2627962dfa12fbdf8fc59c4dc7debb95dba8859"
+  },
+  "market=IN/symbol=POWERGRID/freq=1d/bars.parquet": {
+   "bytes": 217052,
+   "sha256": "a3edc7f95843bd0b563682b6d492cbea9d187553654fcf9f2da8fe8cdbe325d9"
+  },
+  "market=IN/symbol=POWERGRID/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "12741dd85a1f3e87da80511b1ecc4c98edb6317c00c9a369c33a813b62d374ba"
+  },
+  "market=IN/symbol=RELIANCE/freq=1d/bars.parquet": {
+   "bytes": 346550,
+   "sha256": "ffb17877bd92bb724111afef3b62b9d339a4fb26ac6178a2de5584006d13d1c2"
+  },
+  "market=IN/symbol=RELIANCE/freq=1d/manifest.json": {
+   "bytes": 614,
+   "sha256": "e1c8fd0ad005c6b17340075fa3e156f86599dc77b313ae47821d9de7b8df55d1"
+  },
+  "market=IN/symbol=SBILIFE/freq=1d/bars.parquet": {
+   "bytes": 111556,
+   "sha256": "27ff35375cf1067a5b012cf9dddf3fe6b533175b7b066fe427a71ce50a9e47d3"
+  },
+  "market=IN/symbol=SBILIFE/freq=1d/manifest.json": {
+   "bytes": 611,
+   "sha256": "52dd4d3e00af74340c299187966976d6f4c421e611f0413cc9bcd8050b90ff0b"
+  },
+  "market=IN/symbol=SBIN/freq=1d/bars.parquet": {
+   "bytes": 336494,
+   "sha256": "0120a46d2da4c28904a601fe206f23327a576cea9569e83dfc74a33e1f768216"
+  },
+  "market=IN/symbol=SBIN/freq=1d/manifest.json": {
+   "bytes": 602,
+   "sha256": "c1c1b8b19638d42fa46152439a57fea805653b48afebfdbf47384194f0f5d7db"
+  },
+  "market=IN/symbol=SHRIRAMFIN/freq=1d/bars.parquet": {
+   "bytes": 308544,
+   "sha256": "3d8c155a1c60540b39449e6fb27189635921d3acddb491b8cf93d1d008e94e58"
+  },
+  "market=IN/symbol=SHRIRAMFIN/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "38a4e780221342f931f94f982d4276542fc4195d07f5bfb0411bcf6a96a1cdce"
+  },
+  "market=IN/symbol=SUNPHARMA/freq=1d/bars.parquet": {
+   "bytes": 330678,
+   "sha256": "09ade5bd12c3a668ecd51bf9cdb7a5d03101935a5658b1ad4819c12a595c3d07"
+  },
+  "market=IN/symbol=SUNPHARMA/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "c6a9088f3ea7536745efc2f08fb238fed0dfa42bcadb17a89fd855456e7e924d"
+  },
+  "market=IN/symbol=TATACONSUM/freq=1d/bars.parquet": {
+   "bytes": 319040,
+   "sha256": "1a4f5cfdd692771266200c76870c6804313ac0f32d3a60f58116210190f66a8a"
+  },
+  "market=IN/symbol=TATACONSUM/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "f2b6b06a21e9ffebb5ed389e6df94d163f8ba3b268668f32290b652ee11426b3"
+  },
+  "market=IN/symbol=TATASTEEL/freq=1d/bars.parquet": {
+   "bytes": 346771,
+   "sha256": "c487e4670b5369af68b1b493c0cc414fcc26e5d4479899dc75e9f8bceb4f276c"
+  },
+  "market=IN/symbol=TATASTEEL/freq=1d/manifest.json": {
+   "bytes": 617,
+   "sha256": "be32ea917cba40ea4bfea7d0632979d5d8a474f9578c0f8ac8f9f73a11d78a0f"
+  },
+  "market=IN/symbol=TCS/freq=1d/bars.parquet": {
+   "bytes": 287662,
+   "sha256": "67005a9212b67a8b904cc7f4f15e4899ac8239b3e6bf6bcdd855231a98dcb67c"
+  },
+  "market=IN/symbol=TCS/freq=1d/manifest.json": {
+   "bytes": 599,
+   "sha256": "609f4742a4f2844055453c55e35d6823be69eedbdae0ae4fe1110db98872cc91"
+  },
+  "market=IN/symbol=TECHM/freq=1d/bars.parquet": {
+   "bytes": 242043,
+   "sha256": "be9291f260c27cb1c70b65711dd8dc08276a32fc3c260ef9fa0e1fa734b7e99f"
+  },
+  "market=IN/symbol=TECHM/freq=1d/manifest.json": {
+   "bytes": 605,
+   "sha256": "334aa5a92a3a4295ee23334dd143ade288f4f1a6c8c9c88a980590a1f4100b17"
+  },
+  "market=IN/symbol=TITAN/freq=1d/bars.parquet": {
+   "bytes": 332601,
+   "sha256": "631535c5bb821d579190eca74d0d1e7a439a722747f419a1ec96aaa3999b73ea"
+  },
+  "market=IN/symbol=TITAN/freq=1d/manifest.json": {
+   "bytes": 605,
+   "sha256": "a181e86e48dce0933896d7a6ca178b7c5b0112117dfe14c1c0bd5840b714015f"
+  },
+  "market=IN/symbol=TRENT/freq=1d/bars.parquet": {
+   "bytes": 301060,
+   "sha256": "8ed3b530d2ff771ef7ebe6da6d2ad63fda0f05a12e91afeedad2a68330a7fadc"
+  },
+  "market=IN/symbol=TRENT/freq=1d/manifest.json": {
+   "bytes": 605,
+   "sha256": "20e8852fea601d53ff9b9ada35554313d47f837d8efedb0c95bc31287fd6248f"
+  },
+  "market=IN/symbol=ULTRACEMCO/freq=1d/bars.parquet": {
+   "bytes": 293265,
+   "sha256": "1ae29d1b86766d7dca289aacd6eef415a8e3505963d18627bdf462cb2af8aebe"
+  },
+  "market=IN/symbol=ULTRACEMCO/freq=1d/manifest.json": {
+   "bytes": 620,
+   "sha256": "5321ae96971044e915acfc571909d09daf721d243e66aae784914fb95551fff6"
+  },
+  "market=IN/symbol=WIPRO/freq=1d/bars.parquet": {
+   "bytes": 334492,
+   "sha256": "a15cafa3ac43435590eef4320210edd8648b5e02bea167ef5bcaee827d872d94"
+  },
+  "market=IN/symbol=WIPRO/freq=1d/manifest.json": {
+   "bytes": 605,
+   "sha256": "907efb734e6472795df2911c083f73db217564bb7d6239a91aad81d37cf4c773"
+  },
+  "market=US/symbol=AAPL/freq=1d/bars.parquet": {
+   "bytes": 355711,
+   "sha256": "709bbdbe1f26d6ab773a9bd236fb45ec2acec15edcc5acd559a64a69e922c1b1"
+  },
+  "market=US/symbol=AAPL/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "d4e9abb60a70641dc7d9a33c4a168e0046e6ca58f85ebb5661d2a6c96211b4f6"
+  },
+  "market=US/symbol=ABBV/freq=1d/bars.parquet": {
+   "bytes": 176878,
+   "sha256": "8a04f203aa77971a2f0a9bcedfec60c5442e04e6b283ae43d68cc54289a805ac"
+  },
+  "market=US/symbol=ABBV/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "20b71a8e1e6b83386c7592b62fe81a52f697c8861e23eb81746c861af4109811"
+  },
+  "market=US/symbol=ADBE/freq=1d/bars.parquet": {
+   "bytes": 330919,
+   "sha256": "5ef9443d9a32c6b794697ee387ef67aecb379007b0f03fc0a417d8384c8daa98"
+  },
+  "market=US/symbol=ADBE/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "b72dc603411233d0b67345f4f60b9087816382a0ec118c9e16bd99ab90e3d179"
+  },
+  "market=US/symbol=AMD/freq=1d/bars.parquet": {
+   "bytes": 304890,
+   "sha256": "5820ee22d9fd3226e93284da07c74f5429cc444fac0074db68f8383cb16e28c1"
+  },
+  "market=US/symbol=AMD/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "8ce8381b6b66368b45d4194be1812d8a296e7c40903f1968af5f5dd8482dda02"
+  },
+  "market=US/symbol=AMZN/freq=1d/bars.parquet": {
+   "bytes": 353469,
+   "sha256": "50715f40545550eea9e1c3e1b210bf8ff4726673c6cd98b2d5d10e0c3ff1bc65"
+  },
+  "market=US/symbol=AMZN/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "4de278a9d3117b25e80a34640b77e92c2438b2cc27f8213479bc577a9a8b7d88"
+  },
+  "market=US/symbol=BAC/freq=1d/bars.parquet": {
+   "bytes": 311292,
+   "sha256": "a4d053dffa41201262147d2b1a6ce318779c3116e452eb1bbe995b9d94fe2a5c"
+  },
+  "market=US/symbol=BAC/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "39df2cb804c12b03c37304972cb2191cb483d25b284cbe157c7f1a4f10d2816b"
+  },
+  "market=US/symbol=BRK_B/freq=1d/bars.parquet": {
+   "bytes": 310673,
+   "sha256": "0e0e088dc492a4bc8684f017108dd1fbcf828aab9795202f603a54ebed980359"
+  },
+  "market=US/symbol=BRK_B/freq=1d/manifest.json": {
+   "bytes": 671,
+   "sha256": "17efe051f710037f908e91e37504fc1e05b6b8207552f8f280759361d4dcf7db"
+  },
+  "market=US/symbol=COST/freq=1d/bars.parquet": {
+   "bytes": 331194,
+   "sha256": "8d4ef5defc736a43aad86048fd40eb92ca0bbe3a0d876b32cb0a232a745104d5"
+  },
+  "market=US/symbol=COST/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "862cf62f1f1b87b0d6c932c9b62fab446464e71deb46f533acb9f3769276592c"
+  },
+  "market=US/symbol=CSCO/freq=1d/bars.parquet": {
+   "bytes": 305061,
+   "sha256": "ec8a617f7bf3185e70d75a572635e1cf61c6ce4d86f4051687c146d800f489ea"
+  },
+  "market=US/symbol=CSCO/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "a43d83809f67e2a212a4ef295cd2767259b9a359c7dae82f3a136715124257b5"
+  },
+  "market=US/symbol=CVX/freq=1d/bars.parquet": {
+   "bytes": 329384,
+   "sha256": "1f2fd25f6c6121af4fa4bef228968f0690e677b47a162bd90742ef0a86896ac2"
+  },
+  "market=US/symbol=CVX/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "354dfab1abe25f588495796e7c214d196b8f8781c31fc0efa61d5327c8da53eb"
+  },
+  "market=US/symbol=DIA/freq=1d/bars.parquet": {
+   "bytes": 333049,
+   "sha256": "adb5792acc17e8fc5b00cc17a020bd926aa5b5e2e534dbdd360f22343da8c837"
+  },
+  "market=US/symbol=DIA/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "980732c6ca04229ccd3cd22b360d1b3c84c30153c5f01b249d91757569bb6f4f"
+  },
+  "market=US/symbol=DIS/freq=1d/bars.parquet": {
+   "bytes": 329799,
+   "sha256": "54a0298f3e90acccaa8eb91ccf68673a8459b864c7fcfbcabee53294597fe424"
+  },
+  "market=US/symbol=DIS/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "e1714770e85c50440f24605ac8c7f3e0ebea649f8b5f721021c4bb147349145a"
+  },
+  "market=US/symbol=GLD/freq=1d/bars.parquet": {
+   "bytes": 270018,
+   "sha256": "38a86d8255fb775c16a518c49f8619cd8f0b60852dfde185d57325cbd6b133eb"
+  },
+  "market=US/symbol=GLD/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "429ad7d5bfee9bd9b5b7d93a82dcd4930f3ca7dc0eb978852d501436132561c9"
+  },
+  "market=US/symbol=GOOGL/freq=1d/bars.parquet": {
+   "bytes": 300136,
+   "sha256": "d1388ad7d7158ce3a9ed9249be26545237c1eb043097c20101075e38cd75e09d"
+  },
+  "market=US/symbol=GOOGL/freq=1d/manifest.json": {
+   "bytes": 671,
+   "sha256": "834f82f2542eb848ae67f38a12daac7bd4f8c2e0b6eec1083251d2e20e0ed8a8"
+  },
+  "market=US/symbol=HD/freq=1d/bars.parquet": {
+   "bytes": 330778,
+   "sha256": "aa2e4fcaffe5005fc07b61275ade6b8ee8dd59400f45c91c59f92b4c6909fab1"
+  },
+  "market=US/symbol=HD/freq=1d/manifest.json": {
+   "bytes": 662,
+   "sha256": "76e688f4ffd80b69017c0e7339763683fdfd73f5f467a029a3e0dabb92d2d9a3"
+  },
+  "market=US/symbol=INTC/freq=1d/bars.parquet": {
+   "bytes": 307742,
+   "sha256": "3e1a051563cbeded67c6c58ec9c6f48c807a4896d8ef49c1dc0268d1de3259e2"
+  },
+  "market=US/symbol=INTC/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "a6b25a474321cbe6beed69080e08f81e67ffb031d640dfffdf00fa259bf4b5db"
+  },
+  "market=US/symbol=IWM/freq=1d/bars.parquet": {
+   "bytes": 333458,
+   "sha256": "21c935e7298a22588743b305cbd3df6e06401d8e69b57a067b4e3473df01e5fc"
+  },
+  "market=US/symbol=IWM/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "99a6840238ef4a38f1cc7c4598e85a4289b8acacd789a4fb720f6ffbb4697e0e"
+  },
+  "market=US/symbol=JNJ/freq=1d/bars.parquet": {
+   "bytes": 319875,
+   "sha256": "4af557d4215f9ac81a4275a042405d34e09a1d30af7ee8339741baf545c97719"
+  },
+  "market=US/symbol=JNJ/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "9b8ed5d0ca0877e9a49468acbc00cd9f7355bab260835e17650f17eb1abef589"
+  },
+  "market=US/symbol=JPM/freq=1d/bars.parquet": {
+   "bytes": 328391,
+   "sha256": "5a200d818133b65050df09290b20727f009e17ff14a755d94bcdca4338ef8ffe"
+  },
+  "market=US/symbol=JPM/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "8f91d6e3a80549495bad4ca5b25e8e22c707562bdb28efd232ed0745cad5b52e"
+  },
+  "market=US/symbol=KO/freq=1d/bars.parquet": {
+   "bytes": 308801,
+   "sha256": "b0e0231feb2aae179b83f7c1085268cd9881342406d608a0d9857cf0b865de13"
+  },
+  "market=US/symbol=KO/freq=1d/manifest.json": {
+   "bytes": 662,
+   "sha256": "ef1918b5890e0239349ddbb00c68cfaac88efa80a38641dd6ce651a61e1c1083"
+  },
+  "market=US/symbol=MA/freq=1d/bars.parquet": {
+   "bytes": 267152,
+   "sha256": "105df926a59ed555155ee2a3ec256904d23d6f4145c4c75f82164952baa6d2db"
+  },
+  "market=US/symbol=MA/freq=1d/manifest.json": {
+   "bytes": 662,
+   "sha256": "3758f0f7af29edaa9544080ea62002b06edbd63d0f8a981875a94f6b5fedadad"
+  },
+  "market=US/symbol=META/freq=1d/bars.parquet": {
+   "bytes": 190947,
+   "sha256": "636486d9a0f07088c60a2ac559bfb539b383226f73e5ac787c16eb33a64dfbf6"
+  },
+  "market=US/symbol=META/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "c2176bbe5fed7e26343ae27e8c33c17642e4f09c57416205e782d5cd71d07022"
+  },
+  "market=US/symbol=MRK/freq=1d/bars.parquet": {
+   "bytes": 330689,
+   "sha256": "f0f661beb6b0267ef69bb0fbae353c5bf2129f80419676939766380194da54b9"
+  },
+  "market=US/symbol=MRK/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "cf0fd0aeef3c02b117aed109b57ab08332f76f767b8225d0fa420f63c17f1501"
+  },
+  "market=US/symbol=MSFT/freq=1d/bars.parquet": {
+   "bytes": 326094,
+   "sha256": "a73ff96dbff21cde793231f4306f959b112c7280c074165a9ee4cf35f2d18719"
+  },
+  "market=US/symbol=MSFT/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "d39bfa2894b05c1757647e6f5f47d3dae8b2e2cf8cdf43293c7a6d54c35e8280"
+  },
+  "market=US/symbol=NFLX/freq=1d/bars.parquet": {
+   "bytes": 328999,
+   "sha256": "6851795d579d319976c72b3fefee6f80ee9b25c6d1c891e7b08768bd9105c57d"
+  },
+  "market=US/symbol=NFLX/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "64129351d715f31ea9ae1fa6094f1a5b70e4861ed421d31f1d4286fa3fb222a9"
+  },
+  "market=US/symbol=NVDA/freq=1d/bars.parquet": {
+   "bytes": 346723,
+   "sha256": "2c83dfbeb0013d864abb4d00709cb9261ab78f173e9368462aa5623c0cfbdc92"
+  },
+  "market=US/symbol=NVDA/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "45ccbffa506e07bfaea89b8217b06c53cb9e199611a0c9471930fcd7bea15112"
+  },
+  "market=US/symbol=ORCL/freq=1d/bars.parquet": {
+   "bytes": 322154,
+   "sha256": "7ab30461bafbf4f38f2b71ac105e041c7aa449b47b37c0f398020e76cf687add"
+  },
+  "market=US/symbol=ORCL/freq=1d/manifest.json": {
+   "bytes": 668,
+   "sha256": "42b36fec8dea0e1438f9a6b00ddcd168a047299203770767fd0f98633a6f1f4f"
+  },
+  "market=US/symbol=PEP/freq=1d/bars.parquet": {
+   "bytes": 320120,
+   "sha256": "11ea089912e69f4083d438c483b4154e109008ad556baa10a23668e07e1ec7cc"
+  },
+  "market=US/symbol=PEP/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "e52315ebc3570a9e8da7adc02e8ec44c3969ec409500eff8ba56a20ed7be9512"
+  },
+  "market=US/symbol=PG/freq=1d/bars.parquet": {
+   "bytes": 321134,
+   "sha256": "c98e225ebf4eac5933f2014ffc2930f6c8c07f26f7ff0f3bb60295b2ec1cbc96"
+  },
+  "market=US/symbol=PG/freq=1d/manifest.json": {
+   "bytes": 662,
+   "sha256": "2bd3a4f4eaff67b3efc204a309943a1f7d1bbf0e493f7c32ec015ee3da5bbe92"
+  },
+  "market=US/symbol=QQQ/freq=1d/bars.parquet": {
+   "bytes": 338439,
+   "sha256": "e55f3b4b8d2f354631c7ca6f7a03dda73100180b3577dcf6868a8b0676ac7bf1"
+  },
+  "market=US/symbol=QQQ/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "c1ae3821d08a3e5248ed99abba8cd437c0ae054533be590c43b24ed13280b2a2"
+  },
+  "market=US/symbol=SPY/freq=1d/bars.parquet": {
+   "bytes": 340527,
+   "sha256": "8f2ed410e4be3e43c45ab8160e85528acf222ba435e5143d951267939551049e"
+  },
+  "market=US/symbol=SPY/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "619b6cc40d2f177e1257bb2ed946fd39fd9dd177fce7b3b6c0ee6eac0b3fef94"
+  },
+  "market=US/symbol=TLT/freq=1d/bars.parquet": {
+   "bytes": 281963,
+   "sha256": "7aec7ed34001cc3fdb8c2f88fe344338e464a0bd7b3190796afc8607cb2327a8"
+  },
+  "market=US/symbol=TLT/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "ff149db699ae152578c9127bff98469cb96d19c5951806a925d2a19c4f31fc07"
+  },
+  "market=US/symbol=UNH/freq=1d/bars.parquet": {
+   "bytes": 336074,
+   "sha256": "223b38a1027a41e2bd317ffa4ac050fd9f70f928de04961690b849a1e7e77a17"
+  },
+  "market=US/symbol=UNH/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "6eca2e94e3e3acb22fb7252bd548f4c5be6fead68c0aab91ca7aed6cf4b35572"
+  },
+  "market=US/symbol=V/freq=1d/bars.parquet": {
+   "bytes": 240366,
+   "sha256": "8d03000b7cd7e429f3b558f247fbc22e64bdfe3527e1e3e1d97b5519cd826af2"
+  },
+  "market=US/symbol=V/freq=1d/manifest.json": {
+   "bytes": 659,
+   "sha256": "8c0132482e45491d6e95939c15a2211577cfa70b7df1023d56e3b2fb405d5988"
+  },
+  "market=US/symbol=WMT/freq=1d/bars.parquet": {
+   "bytes": 325265,
+   "sha256": "4717c8964f46cc25c3d61722ec377467db52ee8f7637f54cf08e0351dbf86847"
+  },
+  "market=US/symbol=WMT/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "05a180e23381a1746d1272cd2c54076e69389245bc84720bafd59fadfe428f74"
+  },
+  "market=US/symbol=XLB/freq=1d/bars.parquet": {
+   "bytes": 315407,
+   "sha256": "77c0ed9a3bf8b3be158fd971f899781356f2adf8bbf706a8248cdb84c25fca87"
+  },
+  "market=US/symbol=XLB/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "b58c5e567500ebbfd4d6e186d44e731a274906572d63c3cadb28c11cba241968"
+  },
+  "market=US/symbol=XLE/freq=1d/bars.parquet": {
+   "bytes": 322469,
+   "sha256": "18b86a11937d6dc9523d481981a1140e36d0cb4ed2d1b89e5e48183545457f7b"
+  },
+  "market=US/symbol=XLE/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "e031edf67b08ac7488ee0bd21eb8e3d3766ce5e0423c9c8e7ee6c9625e3b6db2"
+  },
+  "market=US/symbol=XLF/freq=1d/bars.parquet": {
+   "bytes": 313599,
+   "sha256": "d1d99e17dad6bf7b712c8c83bafcbf3ce212d0e87f5e36f5cfc40048aba7df7f"
+  },
+  "market=US/symbol=XLF/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "bafcf75ee2c8182fd171cfb7f025e34aafeee59124545e8f0bfecfd49de70c97"
+  },
+  "market=US/symbol=XLI/freq=1d/bars.parquet": {
+   "bytes": 318613,
+   "sha256": "097c0ce19d16a5b97ad002a54ae1487f1587161d00cf9376053b41898e807cba"
+  },
+  "market=US/symbol=XLI/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "ed43f32f986fed30d2ea2bd3468daad7a4e93da787c797350c464647564fd7bf"
+  },
+  "market=US/symbol=XLK/freq=1d/bars.parquet": {
+   "bytes": 318758,
+   "sha256": "298955e653778269bb0f3b840920feaea967b5e3f001dcc6c0b0638e8a7734eb"
+  },
+  "market=US/symbol=XLK/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "2fc20a1bf3ac85a6a54b51ecfe450d7960bae41ac231ab58b01b3b425b8e2786"
+  },
+  "market=US/symbol=XLP/freq=1d/bars.parquet": {
+   "bytes": 301463,
+   "sha256": "03d3ef9674119b8a2de57a86ecb22d2970e169db8f63aa976d0b1c6434070034"
+  },
+  "market=US/symbol=XLP/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "be576b38ca0fe7beca497f135bfba8aa7a4dd53760cd81cf04f9ddd64f96c2a9"
+  },
+  "market=US/symbol=XLU/freq=1d/bars.parquet": {
+   "bytes": 308178,
+   "sha256": "d6cdc6a53a22fcf3dacfea080016a082a630eb291c2f555894792a7eadb9b969"
+  },
+  "market=US/symbol=XLU/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "948986232225e972635d3ae3f791fea32c6a42d2124b0467cb4455276a616f3a"
+  },
+  "market=US/symbol=XLV/freq=1d/bars.parquet": {
+   "bytes": 311606,
+   "sha256": "517c43cbf29157903233c0189dcf4ddb8d8423f9085a427ddb5e0d07513fb9b3"
+  },
+  "market=US/symbol=XLV/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "8dd6f49589a150fcc30f9087947f9cd561efcbf99ed413f7d2aa18f2545941b9"
+  },
+  "market=US/symbol=XLY/freq=1d/bars.parquet": {
+   "bytes": 321751,
+   "sha256": "cfe9cbecde14fde162a5e29bc4ac5bd74085e322f6f59fb6b1f0245790397fd9"
+  },
+  "market=US/symbol=XLY/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "c1e503ab4544010d87e196238b5a8eb1539d97c256ed73e1f2a5613084bdba90"
+  },
+  "market=US/symbol=XOM/freq=1d/bars.parquet": {
+   "bytes": 321686,
+   "sha256": "af2dd6dd5872d20d9a29cfb324f29ff2e971cf24daeba16b2e603fa10619b2e6"
+  },
+  "market=US/symbol=XOM/freq=1d/manifest.json": {
+   "bytes": 665,
+   "sha256": "32e370f5f84f5c6c0616db4bb9d84cedaa12d1b1664cce52201538b150cc7110"
+  }
+ },
+ "n_files": 264,
+ "name": "v0.3.0-baseline",
+ "note": "All validated data as of ASTRA v0.3.0 (rename commit 5b281b9); basis of the 2026-11-25 results",
+ "total_bytes": 497922591
+}

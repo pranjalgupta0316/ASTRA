@@ -41,6 +41,7 @@ from astra.common.config import get_config
 from astra.common.logging import get_logger
 from astra.common.paths import Paths, get_paths
 from astra.common.seed import set_seed
+from astra.data.lock import resolved_exists
 from astra.data.storage import read_manifest, validated_path
 from astra.features.technical import FEATURE_COLUMNS
 from astra.ml.classical import _pointwise_log_loss
@@ -790,7 +791,7 @@ def hourly_data_ready(paths: Paths | None = None) -> tuple[bool, list[str]]:
     """True only if every configured crypto pair has validated 1h bars (BTCUSDT included)."""
     paths = paths or get_paths()
     syms = get_config().symbols(market="CRYPTO")
-    missing = [s for s in syms if not validated_path(paths, "CRYPTO", s, "1h").exists()]
+    missing = [s for s in syms if not resolved_exists(validated_path(paths, "CRYPTO", s, "1h"), paths)]
     return (not missing and "BTCUSDT" in syms), missing
 
 

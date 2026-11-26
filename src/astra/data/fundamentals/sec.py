@@ -551,7 +551,9 @@ def ingest_sec(
 
 
 def load_facts(symbol: str | None = None, paths: Paths | None = None) -> pd.DataFrame:
-    df = pq.read_table(facts_path(paths)).to_pandas()
+    from astra.data.lock import resolve
+
+    df = pq.read_table(resolve(facts_path(paths), paths)).to_pandas()
     if symbol is not None:
         df = df[df["symbol"] == symbol].reset_index(drop=True)
     return df

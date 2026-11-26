@@ -13,11 +13,51 @@ from astra.common.config import get_config
 from astra.common.logging import configure_logging
 
 app = typer.Typer(add_completion=False, help="ASTRA quantitative research platform")
+lock_app = typer.Typer(add_completion=False, help="Pin validated data to immutable snapshots (data locks)")
+app.add_typer(lock_app, name="data-lock")
 
 
 @app.callback()
-def _main(log_level: str = "WARNING") -> None:
+def _main(
+    log_level: str = "WARNING",
+    lock: str | None = typer.Option(
+        None, help="run against a data lock (pinned snapshot); default: ASTRA_DATA_LOCK or live data"
+    ),
+) -> None:
     configure_logging(log_level)
+    if lock:
+        import os
+
+        from astra.data.lock import load_lock
+
+        load_lock(lock)  # fail fast on an unknown lock
+        os.environ["ASTRA_DATA_LOCK"] = lock  # inherited by run-all's subprocesses
+
+
+@lock_app.command("create")
+def lock_create(name: str, note: str = "") -> None:
+    """Snapshot every validated file and write config/data_locks/NAME.json (immutable)."""
+    from astra.data.lock import create_lock
+
+    typer.echo(json.dumps(create_lock(name, note), indent=2))
+
+
+@lock_app.command("list")
+def lock_list() -> None:
+    """List data locks."""
+    from astra.data.lock import list_locks
+
+    typer.echo(json.dumps(list_locks(), indent=2))
+
+
+@lock_app.command("verify")
+def lock_verify(name: str) -> None:
+    """Re-hash every snapshot of a lock; exit 1 if any is missing or corrupted."""
+    from astra.data.lock import verify_lock
+
+    res = verify_lock(name)
+    typer.echo(json.dumps(res, indent=2))
+    raise typer.Exit(code=0 if res["ok"] else 1)
 
 
 @app.command()

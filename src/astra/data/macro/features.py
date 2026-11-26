@@ -12,6 +12,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 from astra.common.paths import Paths, get_paths
+from astra.data.lock import resolve, resolved_exists
 from astra.data.macro.bls import bls_path
 from astra.data.macro.fred import fred_path
 from astra.data.macro.fred import macro_features as asof_join
@@ -25,8 +26,8 @@ def load_macro_tables(paths: Paths | None = None) -> pd.DataFrame:
     paths = paths or get_paths()
     frames = []
     for p, prefix in ((market_path(paths), ""), (bls_path(paths), ""), (fred_path(paths), "FRED_")):
-        if p.exists():
-            t = pq.read_table(p).to_pandas()
+        if resolved_exists(p, paths):
+            t = pq.read_table(resolve(p, paths)).to_pandas()
             t["series"] = prefix + t["series"].astype(str)
             frames.append(t)
     if not frames:

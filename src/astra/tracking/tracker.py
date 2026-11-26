@@ -57,6 +57,18 @@ class ExperimentRecord(BaseModel):
     conclusion: Conclusion = "pending"
     variants_tried: int = 1
     reproduce: str = ""
+    # Exact data version: {"name", "fingerprint"} of the active data lock, or {"name": None} = live data
+    # (records written before data locks existed have {}).
+    data_lock: dict[str, Any] = Field(default_factory=dict)
+
+
+def current_data_lock(paths: Paths | None = None) -> dict[str, Any]:
+    from astra.data.lock import active_lock, lock_fingerprint
+
+    name = active_lock()
+    if not name:
+        return {"name": None, "note": "live validated data (not pinned)"}
+    return {"name": name, "fingerprint": lock_fingerprint(name, paths)}
 
 
 def record_subject(rec: ExperimentRecord) -> str:
@@ -89,6 +101,7 @@ class Tracker:
             hypothesis=hypothesis,
             created_at_utc=stamp.isoformat(),
             code_version=git_state(self.paths.root),
+            data_lock=kw.pop("data_lock", None) or current_data_lock(self.paths),
             **kw,
         )
 

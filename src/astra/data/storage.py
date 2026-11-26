@@ -16,6 +16,7 @@ import pyarrow.parquet as pq
 from astra.common.paths import Paths, get_paths
 from astra.data.adapters.base import RawBatch
 from astra.data.contracts import BAR_SCHEMA
+from astra.data.lock import locked_files_matching, resolve
 from astra.data.validation import QualityReport
 
 
@@ -117,9 +118,10 @@ def read_bars(
     """Validated bars; `window=(start, end)` (inclusive session dates) restricts the sample, e.g. the
     frozen sample of a registered study (see AstraConfig.core_window)."""
     paths = paths or get_paths()
-    p = validated_path(paths, market, symbol, freq)
+    live = validated_path(paths, market, symbol, freq)
+    p = resolve(live, paths)
     if not p.exists():
-        raise FileNotFoundError(f"No validated data for {market}/{symbol}; run `astra ingest` first ({p})")
+        raise FileNotFoundError(f"No validated data for {market}/{symbol}; run `astra ingest` first ({live})")
     df = pq.read_table(p).to_pandas()
     if window is not None:
         d = pd.to_datetime(df["session_date"])
@@ -135,14 +137,18 @@ def read_bars(
 
 def read_manifest(symbol: str, market: str, paths: Paths | None = None, freq: str = "1d") -> dict[str, Any]:
     paths = paths or get_paths()
-    p = validated_path(paths, market, symbol, freq).with_name("manifest.json")
+    p = resolve(validated_path(paths, market, symbol, freq).with_name("manifest.json"), paths)
     return json.loads(p.read_text(encoding="utf-8"))
 
 
 def query(sql: str, paths: Paths | None = None) -> pd.DataFrame:
-    """Run DuckDB SQL; `bars` is a view over all validated daily bars (hive-partitioned)."""
+    """Run DuckDB SQL; `bars` is a view over all validated bars (the active data lock's snapshots
+    when one is active)."""
     paths = paths or get_paths()
     con = duckdb.connect()
-    glob = (paths.validated / "**" / "bars.parquet").as_posix()
-    con.execute(f"CREATE VIEW bars AS SELECT * FROM read_parquet('{glob}', hive_partitioning=false)")
+    files = [p.as_posix() for p in locked_files_matching("bars.parquet", paths)]
+    if not files:
+        raise FileNotFoundError("no validated bars")
+    listing = ", ".join(f"'{f}'" for f in files)
+    con.execute(f"CREATE VIEW bars AS SELECT * FROM read_parquet([{listing}], union_by_name=true)")
     return con.execute(sql).df()
