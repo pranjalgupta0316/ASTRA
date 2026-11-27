@@ -22,7 +22,6 @@ from astra.common.logging import get_logger
 from astra.common.paths import Paths, get_paths
 from astra.common.seed import set_seed
 from astra.dl.device import gpu_memory, reset_peak
-from astra.dl.models import TorchClassifier
 from astra.features.technical import FEATURE_COLUMNS
 from astra.ml.classical import (
     _pointwise_log_loss,
@@ -61,8 +60,12 @@ def model_factory(name: str, device: str | None = None) -> Callable[[], Any]:
             verbosity=0,
         )
     if name == "mlp":
+        from astra.dl.models import TorchClassifier  # needs the optional `dl` extra (torch)
+
         return lambda: TorchClassifier(kind="mlp", seed=SEED, device=device)
     if name == "gru":
+        from astra.dl.models import TorchClassifier
+
         return lambda: TorchClassifier(
             kind="gru", n_features=len(FEATURE_COLUMNS), seq_len=SEQ_LEN, seed=SEED, device=device
         )

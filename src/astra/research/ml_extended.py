@@ -113,7 +113,7 @@ class ResourceProbe:
             tracemalloc.start()
         tracemalloc.reset_peak()
         try:
-            import torch
+            import torch  # pyright: ignore[reportMissingImports]
 
             if torch.cuda.is_available():
                 torch.cuda.synchronize()
@@ -141,7 +141,7 @@ class ResourceProbe:
             "peak_vram_reserved_mb": 0.0,
         }
         try:
-            import torch
+            import torch  # pyright: ignore[reportMissingImports]
 
             if torch.cuda.is_available():
                 snap["peak_vram_allocated_mb"] = round(torch.cuda.max_memory_allocated() / 1e6, 1)
@@ -158,7 +158,7 @@ class ResourceProbe:
         _, heap_peak = tracemalloc.get_traced_memory()
         gpu: dict[str, Any] = {"cuda": False}
         try:
-            import torch
+            import torch  # pyright: ignore[reportMissingImports]
 
             if torch.cuda.is_available():
                 torch.cuda.synchronize()
@@ -412,7 +412,7 @@ def walk_forward(
 
 def _empty_cuda_cache() -> None:
     try:
-        import torch
+        import torch  # pyright: ignore[reportMissingImports]
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()

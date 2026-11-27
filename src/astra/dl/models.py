@@ -12,8 +12,8 @@ import copy
 from dataclasses import dataclass, field
 
 import numpy as np
-import torch
-from torch import nn
+import torch  # pyright: ignore[reportMissingImports]
+from torch import nn  # pyright: ignore[reportMissingImports]
 
 from astra.dl.device import get_device
 
