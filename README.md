@@ -1,5 +1,9 @@
 # ASTRA
 
+**Advanced Statistical Trading & Research Architecture** - a multi-market quantitative research platform for
+market data analysis, strategy development, backtesting, statistical validation, and market microstructure
+research across equities and cryptocurrencies.
+
 Local-first quantitative research and AI/ML platform for **US equities, Indian equities and crypto**,
 built for rigor over demo value: free data with provenance and quality reports, causal features,
 pre-registered hypotheses, purged walk-forward validation, event-driven cost-aware backtesting,
